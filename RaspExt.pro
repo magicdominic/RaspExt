@@ -3,7 +3,7 @@
 # -------------------------------------------------
 QMAKE_CXXFLAGS += -std=c++0x
 QT += xml
-TARGET = QtTest
+TARGET = RaspExt
 TEMPLATE = app
 SOURCES += main.cpp \
     ui/MainWindow.cpp \
