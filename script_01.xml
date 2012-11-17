@@ -1,0 +1,44 @@
+<script>
+	<rule>
+		<condition>
+			<type>Input</type>
+			<subtype>Button</subtype>
+			<name>Button 1</name>
+			<trigger>Pressed</trigger>
+		</condition>
+		<action>
+			<type>output</type>
+			<subtype>relais</subtype>
+			<name>relais 2</name>
+			<state>On</state>
+		</action>
+	</rule>
+	<rule>
+                <condition>
+                        <type>Input</type>
+                        <subtype>Button</subtype>
+                        <name>Button 1</name>
+                        <trigger>Released</trigger>
+                </condition>
+                <action>
+                        <type>output</type>
+                        <subtype>relais</subtype>
+                        <name>relais 2</name>
+                        <state>Off</state>
+                </action>
+        </rule>
+	<rule>
+                <condition>
+                        <type>Input</type>
+                        <subtype>Button</subtype>
+                        <name>Button 1</name>
+                        <trigger>Pressed</trigger>
+                </condition>
+                <action>
+                        <type>output</type>
+                        <subtype>relais</subtype>
+                        <name>relais 4</name>
+                        <state>Toggle</state>
+                </action>
+        </rule>
+</script>

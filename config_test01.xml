@@ -1,0 +1,55 @@
+<config>
+    <input>
+        <name>Button 1</name>
+        <type>Button</type>
+    </input>
+    <input>
+        <name>Button 2</name>
+        <type>Button</type>
+        <hwtype>I2C</hwtype>
+        <SlaveAddress>32</SlaveAddress>
+        <Port>0</Port>
+    </input>
+    <input>
+        <name>Fader 2</name>
+        <type>Fader</type>
+    </input>
+    <input>
+        <name>Fader 1</name>
+        <type>Fader</type>
+        <hwtype>I2C</hwtype>
+        <SlaveAddress>72</SlaveAddress>
+        <Channel>0</Channel>
+    </input>
+    <output>
+        <name>Relais 2</name>
+        <type>Relais</type>
+    </output>
+    <output>
+        <name>Relais 1</name>
+        <type>Relais</type>
+    </output>
+    <output>
+        <name>Relais 4</name>
+        <type>Relais</type>
+    </output>
+    <output>
+        <name>Motor 1</name>
+        <type>DCMotor</type>
+        <hwtype>I2C</hwtype>
+        <SlaveAddress>96</SlaveAddress>
+    </output>
+    <output>
+        <name>LED 1</name>
+        <type>LED</type>
+        <hwtype>I2C</hwtype>
+        <SlaveAddress>99</SlaveAddress>
+        <Channel>0</Channel>
+    </output>
+    <output>
+        <name>Stepper 2</name>
+        <type>Stepper</type>
+        <hwtype>I2C</hwtype>
+        <SlaveAddress>23</SlaveAddress>
+    </output>
+</config>

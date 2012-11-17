@@ -1,0 +1,47 @@
+<script>
+    <rule>
+        <condition>
+            <type>input</type>
+            <name>Fader 1</name>
+            <subtype>Fader</subtype>
+            <trigger>changed</trigger>
+            <TriggerValue>0</TriggerValue>
+        </condition>
+        <action>
+            <type>output</type>
+            <name>Motor 1</name>
+            <subtype>DCMotor</subtype>
+            <InputName>Fader 1</InputName>
+            <state>Forward</state>
+        </action>
+        <name>hjk</name>
+        <type>Normal</type>
+    </rule>
+    <rule>
+        <condition>
+            <type>input</type>
+            <name>Button 1</name>
+            <subtype>Button</subtype>
+            <trigger>Pressed</trigger>
+        </condition>
+        <name>hhjkl</name>
+        <type>Normal</type>
+    </rule>
+    <rule>
+        <action>
+            <type>output</type>
+            <name>Stepper 2</name>
+            <subtype>Stepper</subtype>
+            <StepperType>RunVelocity</StepperType>
+        </action>
+        <action>
+            <type>output</type>
+            <name>Stepper 2</name>
+            <subtype>Stepper</subtype>
+            <StepperType>SoftStop</StepperType>
+        </action>
+        <name>fg</name>
+        <type>Normal</type>
+    </rule>
+    <description></description>
+</script>

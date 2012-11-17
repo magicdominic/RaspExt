@@ -1,0 +1,154 @@
+
+#include "hw/HWOutputLEDI2C.h"
+#include "hw/I2CThread.h"
+#include "ConfigManager.h"
+
+#include <unistd.h>
+#include <sys/ioctl.h>
+#include <linux/i2c-dev.h>
+
+HWOutputLEDI2C::HWOutputLEDI2C()
+{
+    m_slaveAddress = -1;
+    m_channel = -1;
+    m_i2cThread = NULL;
+}
+
+HWOutput* HWOutputLEDI2C::load(QDomElement *root)
+{
+    HWOutputLEDI2C* hw = new HWOutputLEDI2C();
+    QDomElement elem = root->firstChildElement();
+
+    while(!elem.isNull())
+    {
+        if( elem.tagName().toLower().compare("slaveaddress") == 0 )
+        {
+            hw->m_slaveAddress = elem.text().toInt();
+        }
+        else if( elem.tagName().toLower().compare("channel") == 0 )
+        {
+            hw->m_channel = elem.text().toInt();
+        }
+
+        elem = elem.nextSiblingElement();
+    }
+
+    // check for invalid parameters
+    if( hw->m_slaveAddress > 127 || hw->m_slaveAddress < 0 || hw->m_channel > 15)
+    {
+        pi_warn("Invalid i2c parameters");
+        return NULL;
+    }
+
+    return hw;
+}
+
+QDomElement HWOutputLEDI2C::save(QDomElement* root, QDomDocument* document)
+{
+    QDomElement output = HWOutputLED::save(root, document);
+
+    QDomElement type = document->createElement("hwtype");
+    QDomText typeText = document->createTextNode("I2C");
+    type.appendChild(typeText);
+
+    output.appendChild(type);
+
+    QDomElement slaveAddr = document->createElement("SlaveAddress");
+    QDomText slaveAddrText = document->createTextNode(QString::number( m_slaveAddress ));
+    slaveAddr.appendChild(slaveAddrText);
+
+    output.appendChild(slaveAddr);
+
+    QDomElement channel = document->createElement("Channel");
+    QDomText channelText = document->createTextNode(QString::number( m_channel ));
+    channel.appendChild(channelText);
+
+    output.appendChild(channel);
+
+    return output;
+}
+
+void HWOutputLEDI2C::setI2C(int fd)
+{
+    int ret;
+    unsigned char buf[2];
+
+    if( ioctl(fd, I2C_SLAVE, m_slaveAddress) < 0)
+    {
+        pi_warn("Failed to talk to slave");
+        return;
+    }
+
+    // first select register for PWM brightness control
+    buf[0] = 0x02 + m_channel;
+
+    // now set brightness
+    buf[1] = m_value * 255 / 100;
+
+    ret = write(fd, buf, 2);
+    if(ret != 2)
+    {
+        pi_warn("Could not write to bus");
+        return;
+    }
+}
+
+void HWOutputLEDI2C::setupI2C(int fd)
+{
+    int ret;
+    unsigned char buf[2];
+
+    if( ioctl(fd, I2C_SLAVE, m_slaveAddress) < 0)
+    {
+        pi_warn("Failed to talk to slave");
+        return;
+    }
+
+    // activate oscillator and deactivate all call address
+
+    // first select mode register
+    buf[0] = 0x00;
+    buf[1] = 0x00;
+    ret = write(fd, buf, 2);
+    if(ret != 2)
+    {
+        pi_warn("Could not write to bus");
+        return;
+    }
+
+    // set LED output state to control individual brightness
+
+    // first select register to set output state of LED
+    buf[0] = 0x14 + m_channel / 4;
+
+    // now set state to "LED driver x is individual brightness can be controlled through its PWMx register"
+    // see page 17 of datasheet
+    buf[1] = 0xAA;
+
+    ret = write(fd, buf, 2);
+    if(ret != 2)
+    {
+        pi_warn("Could not write to bus");
+        return;
+    }
+}
+
+void HWOutputLEDI2C::init(ConfigManager *config)
+{
+    m_i2cThread = config->getI2CThread();
+
+    // setup I2C device
+    m_i2cThread->addOutput(std::bind(&HWOutputLEDI2C::setupI2C, this, std::placeholders::_1));
+}
+
+void HWOutputLEDI2C::deinit()
+{
+    m_i2cThread = NULL;
+}
+
+void HWOutputLEDI2C::outputChanged()
+{
+    HWOutputLED::outputChanged();
+
+    m_i2cThread->addOutput(this);
+}

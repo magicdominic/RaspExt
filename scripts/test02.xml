@@ -1,0 +1,35 @@
+<script>
+    <rule>
+        <condition>
+            <type>input</type>
+            <name>Button 1</name>
+            <subtype>Button</subtype>
+            <trigger>Pressed</trigger>
+        </condition>
+        <action>
+            <type>CallRule</type>
+            <name>Rule 2</name>
+        </action>
+        <name>Rule 1</name>
+        <type>Normal</type>
+    </rule>
+    <rule>
+        <action>
+            <type>sleep</type>
+            <waitms>20</waitms>
+        </action>
+        <action>
+            <type>output</type>
+            <name>Relais 4</name>
+            <subtype>Relais</subtype>
+            <state>Toggle</state>
+        </action>
+        <action>
+            <type>CallRule</type>
+            <name>Rule 2</name>
+        </action>
+        <name>Rule 2</name>
+        <type>MustBeCalled</type>
+    </rule>
+    <description>This is a small test script</description>
+</script>

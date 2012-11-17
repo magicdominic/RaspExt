@@ -1,0 +1,11 @@
+
+* Check Permissions (root?)
+* Config GUI
+* Edit Variables in Script (GUI)
+* Check Raspberry Revision and select I2C Device based on that
+* Add Sound Support
+* Check script Inputs, Outputs, Variables on select
+* Script Editing should not be live
+* Relais Support is missing
+* Stepper is missing
+* Documentation
