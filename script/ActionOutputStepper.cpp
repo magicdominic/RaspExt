@@ -2,6 +2,7 @@
 #include "script/ActionOutputStepper.h"
 #include "script/ActionOutputStepperSoftStop.h"
 #include "script/ActionOutputStepperRunVelocity.h"
+#include "script/ActionOutputStepperSetPosition.h"
 #include "util/Debug.h"
 
 Action* ActionOutputStepper::load(QDomElement* root)
@@ -17,6 +18,8 @@ Action* ActionOutputStepper::load(QDomElement* root)
                 action = (ActionOutputStepper*)ActionOutputStepperSoftStop::load(root);
             else if(elem.text().toLower().compare("runvelocity") == 0)
                     action = (ActionOutputStepper*)ActionOutputStepperRunVelocity::load(root);
+            else if(elem.text().toLower().compare("setposition") == 0)
+                    action = (ActionOutputStepper*)ActionOutputStepperSetPosition::load(root);
         }
 
         elem = elem.nextSiblingElement();

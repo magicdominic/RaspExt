@@ -59,6 +59,18 @@ void RuleTimerThread::kill()
     m_thread = 0;
 }
 
+/**     clear() is used to clear the queue of RuleTimerThread
+ *      All queued operations are deleted immediatly. The thread must be stopped to do this
+ */
+void RuleTimerThread::clear()
+{
+    pi_assert(m_thread == 0);
+
+    m_mutex.lock();
+    while(!m_queue.empty()) m_queue.pop();
+    m_mutex.unlock();
+}
+
 void RuleTimerThread::addRule(Rule* rule, unsigned int start, unsigned int waitMs)
 {
     Element element;

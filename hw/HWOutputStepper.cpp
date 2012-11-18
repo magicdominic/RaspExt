@@ -56,8 +56,6 @@ void HWOutputStepper::softStop()
 
 void HWOutputStepper::setPosition(short position)
 {
-    m_fullStatus.targetPosition = position;
-
     // this is used internally to be transfered to the stepper
     m_position = position;
 

@@ -14,7 +14,7 @@ OutputDCMotorFrame::OutputDCMotorFrame(HWOutputDCMotor* hw) : OutputFrame(hw), u
     ui->slider->setEnabled(m_hw->getOverride());
 
     connect(ui->buttonOverride, SIGNAL(clicked()), this, SLOT(overrideClicked()));
-    connect(ui->slider, SIGNAL(sliderMoved(int)), this, SLOT(sliderChanged()));
+    connect(ui->slider, SIGNAL(valueChanged(int)), this, SLOT(sliderChanged()));
     connect(ui->buttonFwd, SIGNAL(clicked()), this, SLOT(forwardClicked()));
     connect(ui->buttonRev, SIGNAL(clicked()), this, SLOT(reverseClicked()));
     connect(ui->buttonBrake, SIGNAL(clicked()), this, SLOT(brakeClicked()));
@@ -66,7 +66,12 @@ void OutputDCMotorFrame::brakeClicked()
 
 void OutputDCMotorFrame::sliderChanged()
 {
-    m_hw->setOverrideSpeed(ui->slider->value());
+    // only apply new value if override is enabled
+    // If it is not, this is just a regular status update and should not update anything
+    if(m_hw->getOverride())
+    {
+        m_hw->setOverrideSpeed(ui->slider->value());
+    }
 }
 
 void OutputDCMotorFrame::onOutputChangedGUI()

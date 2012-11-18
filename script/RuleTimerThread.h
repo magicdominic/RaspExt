@@ -17,6 +17,8 @@ public:
     void start();
     void kill();
 
+    void clear();
+
     void addRule(Rule* rule, unsigned int start, unsigned int waitMs);
 
     void pauseTimer();

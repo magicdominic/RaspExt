@@ -9,7 +9,7 @@ public:
     static Action* load(QDomElement* root);
     virtual QDomElement save(QDomElement* root, QDomDocument* document);
 
-    virtual StepperType getStepperType() const { return RunVelocity;}
+    StepperType getStepperType() const { return RunVelocity;}
 
     bool execute(unsigned int step);
     std::string getDescription() const;

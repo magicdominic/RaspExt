@@ -28,6 +28,12 @@
         <type>Normal</type>
     </rule>
     <rule>
+        <condition>
+            <type>input</type>
+            <name>Button 1</name>
+            <subtype>Button</subtype>
+            <trigger>Pressed</trigger>
+        </condition>
         <action>
             <type>output</type>
             <name>Stepper 2</name>
@@ -39,6 +45,13 @@
             <name>Stepper 2</name>
             <subtype>Stepper</subtype>
             <StepperType>SoftStop</StepperType>
+        </action>
+        <action>
+            <type>output</type>
+            <name>Stepper 2</name>
+            <subtype>Stepper</subtype>
+            <StepperType>SetPosition</StepperType>
+            <Position>-32768</Position>
         </action>
         <name>fg</name>
         <type>Normal</type>

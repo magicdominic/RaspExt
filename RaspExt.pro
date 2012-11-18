@@ -63,7 +63,8 @@ SOURCES += main.cpp \
     hw/HWOutputStepperI2C.cpp \
     script/ActionOutputStepper.cpp \
     script/ActionOutputStepperSoftStop.cpp \
-    script/ActionOutputStepperRunVelocity.cpp
+    script/ActionOutputStepperRunVelocity.cpp \
+    script/ActionOutputStepperSetPosition.cpp
 HEADERS += ui/MainWindow.h \
     ui/OutputRelaisFrame.h \
     ui/InputFaderFrame.h \
@@ -130,7 +131,8 @@ HEADERS += ui/MainWindow.h \
     hw/HWOutputStepperI2C.h \
     script/ActionOutputStepperSoftStop.h \
     script/ActionOutputStepper.h \
-    script/ActionOutputStepperRunVelocity.h
+    script/ActionOutputStepperRunVelocity.h \
+    script/ActionOutputStepperSetPosition.h
 FORMS += ui/MainWindow.ui \
     ui/RuleDialog.ui \
     ui/ScriptDialog.ui \

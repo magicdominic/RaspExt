@@ -18,7 +18,7 @@ public:
 
 private slots:
     void overrideClicked();
-    void sliderMoved(int value);
+    void sliderChanged(int value);
     void onOutputChangedGUI();
 
 private:

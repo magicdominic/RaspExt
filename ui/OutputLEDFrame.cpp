@@ -14,7 +14,7 @@ OutputLEDFrame::OutputLEDFrame(HWOutputLED* hw) : OutputFrame(hw), ui(new Ui::Ou
     ui->slider->setEnabled(m_hw->getOverride());
 
     QObject::connect(ui->buttonOverride, SIGNAL(clicked()), this, SLOT(overrideClicked()));
-    QObject::connect(ui->slider, SIGNAL(sliderMoved(int)), this, SLOT(sliderMoved(int)));
+    QObject::connect(ui->slider, SIGNAL(valueChanged(int)), this, SLOT(sliderChanged(int)));
 }
 
 OutputLEDFrame::~OutputLEDFrame()
@@ -40,7 +40,7 @@ void OutputLEDFrame::overrideClicked()
     }
 }
 
-void OutputLEDFrame::sliderMoved(int value)
+void OutputLEDFrame::sliderChanged(int value)
 {
     if(m_hw->getOverride())
     {

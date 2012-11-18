@@ -18,7 +18,7 @@ ConfigManager::ConfigManager(MainWindow *win)
 
     m_gpioThread = NULL;
     m_i2cThread = NULL;
-    m_ruleTimer = NULL;
+    m_ruleTimer = new RuleTimerThread();
 }
 
 ConfigManager::~ConfigManager()
@@ -259,6 +259,10 @@ void ConfigManager::setActiveScript(Script *script)
     // first delete old script, if any
     this->stopActiveScript();
 
+    // start timer
+    // this must be done FIRST
+    m_ruleTimer->start();
+
     // set new script and initialize it
     m_activeScript = script;
 
@@ -274,10 +278,6 @@ void ConfigManager::setActiveScript(Script *script)
     // Initialize script, it will then acquire all resources it needs
     m_activeScript->init(this);
 
-    // start timer
-    if(m_ruleTimer != NULL)
-        m_ruleTimer->start();
-
     m_scriptState = Active;
 }
 
@@ -287,10 +287,10 @@ void ConfigManager::stopActiveScript()
     {
         if(m_scriptState == Active)
         {
-            // stop timer
+            // clear queue of timer
             // this must be done FIRST! Otherwise the process will crash
-            if(m_ruleTimer != NULL)
-                m_ruleTimer->kill();
+            m_ruleTimer->kill();
+            m_ruleTimer->clear();
 
             // deinitialize script, thus releasing all acquired resources
             m_activeScript->deinit();
@@ -313,10 +313,10 @@ void ConfigManager::pauseActiveScript()
     if(m_activeScript != NULL && m_scriptState == Active)
     {
         m_scriptState = Paused;
+
         // stop timer
         // this must be done FIRST! Otherwise the process will crash
-        if(m_ruleTimer != NULL)
-            m_ruleTimer->pauseTimer();
+        m_ruleTimer->pauseTimer();
 
         // deinitialize script, this will effectively stop events from being handled
         m_activeScript->deinit();
@@ -333,8 +333,7 @@ void ConfigManager::continueActiveScript()
 
         // start timer
         // this must be done as last
-        if(m_ruleTimer != NULL)
-            m_ruleTimer->continueTimer();
+        m_ruleTimer->continueTimer();
     }
 }
 
@@ -399,8 +398,5 @@ I2CThread* ConfigManager::getI2CThread()
 
 RuleTimerThread* ConfigManager::getRuleTimerThread()
 {
-    if(m_ruleTimer == NULL)
-        m_ruleTimer = new RuleTimerThread();
-
     return m_ruleTimer;
 }

@@ -9,6 +9,7 @@
 #include "script/ActionOutputStepper.h"
 #include "script/ActionOutputStepperSoftStop.h"
 #include "script/ActionOutputStepperRunVelocity.h"
+#include "script/ActionOutputStepperSetPosition.h"
 #include "script/ActionVariable.h"
 #include "script/ActionSleep.h"
 #include "script/ActionCallRule.h"
@@ -390,6 +391,7 @@ ActionOutputStepperWidget::ActionOutputStepperWidget(QWidget* parent, Script* sc
     m_combo = new QComboBox(this);
     m_combo->addItem("Soft stop");
     m_combo->addItem("RunVelocity");
+    m_combo->addItem("SetPosition");
 
     m_layout = new QGridLayout(this);
 
@@ -425,6 +427,9 @@ void ActionOutputStepperWidget::typeComboChanged(int index)
         break;
     case ActionOutputStepper::RunVelocity:
         m_baseWidget = new ActionOutputStepperRunVelocityWidget(this, NULL); // we do not need Script in this class, so we just take NULL
+        break;
+    case ActionOutputStepper::SetPosition:
+        m_baseWidget = new ActionOutputStepperSetPositionWidget(this, NULL); // we do not need Script in this class, so we just take NULL
         break;
     }
 
@@ -503,6 +508,41 @@ Action* ActionOutputStepperRunVelocityWidget::assemble()
 void ActionOutputStepperRunVelocityWidget::edit(Action* act)
 {
     // nothing to do
+}
+
+ActionOutputStepperSetPositionWidget::ActionOutputStepperSetPositionWidget(QWidget* parent, Script* script) : IActionWidget(parent)
+{
+    m_label = new QLabel("Set target position", this);
+    m_spinBox = new QSpinBox(this);
+    m_spinBox->setMinimum( SHRT_MIN );
+    m_spinBox->setMaximum( SHRT_MAX );
+
+    QGridLayout* layout = new QGridLayout(this);
+
+    // remove spacing around widget, it looks kind of odd otherwise
+    layout->setContentsMargins(0, 0, 0, 0);
+
+    // add our widgets to the layout
+    layout->addWidget(m_label, 0, 0);
+    layout->addWidget(m_spinBox, 0, 1);
+
+    this->setLayout(layout);
+}
+
+Action* ActionOutputStepperSetPositionWidget::assemble()
+{
+    ActionOutputStepperSetPosition* action =  new ActionOutputStepperSetPosition();
+
+    action->setPosition( m_spinBox->value() );
+
+    return action;
+}
+
+void ActionOutputStepperSetPositionWidget::edit(Action* act)
+{
+    ActionOutputStepperSetPosition* action = (ActionOutputStepperSetPosition*)act;
+
+    m_spinBox->setValue( action->getPosition() );
 }
 
 

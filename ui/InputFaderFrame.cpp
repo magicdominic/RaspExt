@@ -13,8 +13,8 @@ InputFaderFrame::InputFaderFrame(HWInputFader* hw) : InputFrame(hw) , ui(new Ui:
     ui->labelName->setText(QString(hw->getName().c_str()));
     ui->slider->setEnabled(m_hw->getOverride());
 
-    QObject::connect(ui->buttonOverride, SIGNAL(clicked()), this, SLOT(overrideClicked()));
-    QObject::connect(ui->slider, SIGNAL(sliderMoved(int)), this, SLOT(sliderMoved(int)));
+    connect(ui->buttonOverride, SIGNAL(clicked()), this, SLOT(overrideClicked()));
+    connect(ui->slider, SIGNAL(valueChanged(int)), this, SLOT(sliderChanged(int)));
 }
 
 InputFaderFrame::~InputFaderFrame()
@@ -40,15 +40,11 @@ InputFaderFrame::overrideClicked()
     }
 }
 
-void InputFaderFrame::sliderMoved(int value)
+void InputFaderFrame::sliderChanged(int value)
 {
     if(m_hw->getOverride())
     {
         m_hw->setOverrideValue((unsigned int)value);
-    }
-    else
-    {
-        pi_warn("Sliders has been moved, but override is not enabled! This should not be possible");
     }
 }
 

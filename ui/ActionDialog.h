@@ -166,6 +166,20 @@ private:
     QLabel* m_label;
 };
 
+class ActionOutputStepperSetPositionWidget : public IActionWidget
+{
+    Q_OBJECT
+public:
+    ActionOutputStepperSetPositionWidget(QWidget* parent, Script* script);
+
+    Action* assemble();
+    void edit(Action* action);
+
+private:
+    QLabel* m_label;
+    QSpinBox* m_spinBox;
+};
+
 // Variable Stuff
 
 class ActionVariableWidget : public IActionWidget
