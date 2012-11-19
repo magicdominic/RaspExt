@@ -391,7 +391,9 @@ ActionOutputStepperWidget::ActionOutputStepperWidget(QWidget* parent, Script* sc
     m_combo = new QComboBox(this);
     m_combo->addItem("Soft stop");
     m_combo->addItem("RunVelocity");
-    m_combo->addItem("SetPosition");
+    m_combo->addItem("Set position");
+    m_combo->addItem("Set stall parameters");
+    m_combo->addItem("Set motor parameters");
 
     m_layout = new QGridLayout(this);
 
@@ -430,6 +432,9 @@ void ActionOutputStepperWidget::typeComboChanged(int index)
         break;
     case ActionOutputStepper::SetPosition:
         m_baseWidget = new ActionOutputStepperSetPositionWidget(this, NULL); // we do not need Script in this class, so we just take NULL
+        break;
+    case ActionOutputStepper::SetStallParam:
+        m_baseWidget = new ActionOutputStepperSetStallParamWidget(this, NULL); // we do not need Script in this class, so we just take NULL
         break;
     }
 
@@ -543,6 +548,138 @@ void ActionOutputStepperSetPositionWidget::edit(Action* act)
     ActionOutputStepperSetPosition* action = (ActionOutputStepperSetPosition*)act;
 
     m_spinBox->setValue( action->getPosition() );
+}
+
+ActionOutputStepperSetStallParamWidget::ActionOutputStepperSetStallParamWidget(QWidget* parent, Script* script) : IActionWidget(parent)
+{
+    QLabel* m_labelIrun = new QLabel("Irun", this);
+    QComboBox* m_comboIrun = new QComboBox(this);
+    m_comboIrun->addItem("keep");
+    m_comboIrun->addItem("set");
+    QSpinBox* m_spinIrun = new QSpinBox(this);
+    m_spinIrun->setMinimum(0);
+
+    QLabel* m_labelIhold = new QLabel("Ihold", this);
+    QComboBox* m_comboIhold = new QComboBox(this);
+    m_comboIhold->addItem("keep");
+    m_comboIhold->addItem("set");
+    QSpinBox* m_spinIhold = new QSpinBox(this);
+    m_spinIhold->setMinimum(0);
+
+    QLabel* m_labelVmax = new QLabel("Vmax", this);
+    QComboBox* m_comboVmax = new QComboBox(this);
+    m_comboVmax->addItem("keep");
+    m_comboVmax->addItem("set");
+    QSpinBox* m_spinVmax = new QSpinBox(this);
+    m_spinVmax->setMinimum(0);
+
+    QLabel* m_labelVmin = new QLabel("Vmin", this);
+    QComboBox* m_comboVmin = new QComboBox(this);
+    m_comboVmin->addItem("keep");
+    m_comboVmin->addItem("set");
+    QSpinBox* m_spinVmin = new QSpinBox(this);
+    m_spinVmin->setMinimum(0);
+
+    QLabel* m_labelMinSamples = new QLabel("Min Samples", this);
+    QComboBox* m_comboMinSamples = new QComboBox(this);
+    m_comboMinSamples->addItem("keep");
+    m_comboMinSamples->addItem("set");
+    QSpinBox* m_spinMinSamples = new QSpinBox(this);
+    m_spinMinSamples->setMinimum(0);
+
+    QLabel* m_labelShaft = new QLabel("Shaft", this);
+    QComboBox* m_comboShaft = new QComboBox(this);
+    m_comboShaft->addItem("keep");
+    m_comboShaft->addItem("set");
+    QSpinBox* m_spinShaft = new QSpinBox(this);
+    m_spinShaft->setMinimum(0);
+
+    QLabel* m_labelAcc = new QLabel("Acceleration", this);
+    QComboBox* m_comboAcc = new QComboBox(this);
+    m_comboAcc->addItem("keep");
+    m_comboAcc->addItem("set");
+    QSpinBox* m_spinAcc = new QSpinBox(this);
+    m_spinAcc->setMinimum(0);
+
+    QLabel* m_labelAbsThr = new QLabel("Absolut Threshold", this);
+    QComboBox* m_comboAbsThr = new QComboBox(this);
+    m_comboAbsThr->addItem("keep");
+    m_comboAbsThr->addItem("set");
+    QSpinBox* m_spinAbsThr = new QSpinBox(this);
+    m_spinAbsThr->setMinimum(0);
+
+    QLabel* m_labelDelThr = new QLabel("Delta Threshold", this);
+    QComboBox* m_comboDelThr = new QComboBox(this);
+    m_comboDelThr->addItem("keep");
+    m_comboDelThr->addItem("set");
+    QSpinBox* m_spinDelThr = new QSpinBox(this);
+    m_spinDelThr->setMinimum(0);
+
+    QLabel* m_labelFS2StallEn = new QLabel("FS2 Stall Enabled", this);
+    QComboBox* m_comboFS2StallEn = new QComboBox(this);
+    m_comboFS2StallEn->addItem("keep");
+    m_comboFS2StallEn->addItem("set");
+    QSpinBox* m_spinFS2StallEn = new QSpinBox(this);
+    m_spinFS2StallEn->setMinimum(0);
+
+    // TODO: add more
+
+    QGridLayout* layout = new QGridLayout(this);
+
+    // remove spacing around widget, it looks kind of odd otherwise
+    layout->setContentsMargins(0, 0, 0, 0);
+
+    // add our widgets to the layout
+    layout->addWidget(m_labelIrun, 0, 0);
+    layout->addWidget(m_comboIrun, 0, 1);
+    layout->addWidget(m_spinIrun, 0, 2);
+
+    layout->addWidget(m_labelIhold, 1, 0);
+    layout->addWidget(m_comboIhold, 1, 1);
+    layout->addWidget(m_spinIhold, 1, 2);
+
+    layout->addWidget(m_labelVmax, 2, 0);
+    layout->addWidget(m_comboVmax, 2, 1);
+    layout->addWidget(m_spinVmax, 2, 2);
+
+    layout->addWidget(m_labelVmin, 3, 0);
+    layout->addWidget(m_comboVmin, 3, 1);
+    layout->addWidget(m_spinVmin, 3, 2);
+
+    layout->addWidget(m_labelMinSamples, 4, 0);
+    layout->addWidget(m_comboMinSamples, 4, 1);
+    layout->addWidget(m_spinMinSamples, 4, 2);
+
+    layout->addWidget(m_labelShaft, 5, 0);
+    layout->addWidget(m_comboShaft, 5, 1);
+    layout->addWidget(m_spinShaft, 5, 2);
+
+    layout->addWidget(m_labelAcc, 6, 0);
+    layout->addWidget(m_comboAcc, 6, 1);
+    layout->addWidget(m_spinAcc, 6, 2);
+
+    layout->addWidget(m_labelAbsThr, 7, 0);
+    layout->addWidget(m_comboAbsThr, 7, 1);
+    layout->addWidget(m_spinAbsThr, 7, 2);
+
+    layout->addWidget(m_labelDelThr, 8, 0);
+    layout->addWidget(m_comboDelThr, 8, 1);
+    layout->addWidget(m_spinDelThr, 8, 2);
+
+    layout->addWidget(m_labelFS2StallEn, 9, 0);
+    layout->addWidget(m_comboFS2StallEn, 9, 1);
+    layout->addWidget(m_spinFS2StallEn, 9, 2);
+
+    this->setLayout(layout);
+}
+
+Action* ActionOutputStepperSetStallParamWidget::assemble()
+{
+    return NULL;
+}
+
+void ActionOutputStepperSetStallParamWidget::edit(Action* act)
+{
 }
 
 

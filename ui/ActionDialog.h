@@ -180,6 +180,18 @@ private:
     QSpinBox* m_spinBox;
 };
 
+class ActionOutputStepperSetStallParamWidget : public IActionWidget
+{
+    Q_OBJECT
+public:
+    ActionOutputStepperSetStallParamWidget(QWidget* parent, Script* script);
+
+    Action* assemble();
+    void edit(Action* action);
+
+private:
+};
+
 // Variable Stuff
 
 class ActionVariableWidget : public IActionWidget

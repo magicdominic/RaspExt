@@ -12,6 +12,7 @@
 class MainWindow;
 class GPIOInterruptThread;
 class I2CThread;
+class BTThread;
 class RuleTimerThread;
 class Script;
 
@@ -22,7 +23,7 @@ public:
     {
         Inactive,
         Active,
-        Paused,
+        Paused
     };
 
     ConfigManager(MainWindow* win);
@@ -69,6 +70,7 @@ private:
     std::list<HWOutput*> m_listOutput;
     std::list<Variable*> m_listVariable;
 
+    std::list<BTThread*> m_listBTThread;
     GPIOInterruptThread* m_gpioThread;
     I2CThread* m_i2cThread;
     RuleTimerThread* m_ruleTimer;

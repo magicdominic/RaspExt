@@ -1,5 +1,6 @@
 
 #include "ConfigManager.h"
+#include "hw/BTThread.h"
 #include "hw/GPIOInterruptThread.h"
 #include "hw/I2CThread.h"
 #include "script/RuleTimerThread.h"
@@ -155,6 +156,14 @@ bool ConfigManager::load(std::string filename)
                 }
             }
         }
+        else if(elem.tagName().toLower().compare("bluetooth") == 0)
+        {
+            BTThread* bt = BTThread::load(&elem);
+            if(bt != NULL)
+            {
+                m_listBTThread.push_back(bt);
+            }
+        }
 
         elem = elem.nextSiblingElement();
     }
@@ -186,6 +195,12 @@ bool ConfigManager::save(std::string filename)
     }
 
     for(std::list<HWOutput*>::iterator it = m_listOutput.begin(); it != m_listOutput.end(); it++)
+    {
+        (*it)->save(&config, &document);
+    }
+
+    // save BT Parameters
+    for(std::list<BTThread*>::iterator it = m_listBTThread.begin(); it != m_listBTThread.end(); it++)
     {
         (*it)->save(&config, &document);
     }

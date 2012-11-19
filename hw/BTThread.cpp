@@ -103,7 +103,7 @@ QDomElement BTThread::save(QDomElement* root, QDomDocument* document)
 
 void BTThread::setBTAddr(std::string addr)
 {
-    // TODO: check format and only save it is correct
+    // TODO: check format and only save if it is correct
     m_btaddr = addr;
 }
 

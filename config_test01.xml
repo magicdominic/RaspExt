@@ -52,4 +52,8 @@
         <hwtype>I2C</hwtype>
         <SlaveAddress>23</SlaveAddress>
     </output>
+    <bluetooth>
+        <name>bla</name>
+        <BTAddress>11:22:33:44:55:66</BTAddress>
+    </bluetooth>
 </config>

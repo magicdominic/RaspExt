@@ -5,6 +5,10 @@
 #include <string.h>
 #include <stdlib.h>
 
+/**
+ * @brief getRPiRevision checks the revision of the raspberry pi board. There are some minor differences between revisions, e.g. I2C pin assignment
+ * @return
+ */
 RPiRevision getRPiRevision()
 {
 #ifdef RASPBERRY_PI
@@ -23,7 +27,7 @@ RPiRevision getRPiRevision()
     char line[128];
     while( fgets(line, sizeof line, file) != NULL)
     {
-        if(strcmp(line, "CPU revision") == 0)
+        if(strncmp(line, "CPU revision", 12) == 0)
         {
             const char* strRevision = strchr(line, ':') + 2;
 
