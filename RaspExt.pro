@@ -64,7 +64,8 @@ SOURCES += main.cpp \
     script/ActionOutputStepper.cpp \
     script/ActionOutputStepperSoftStop.cpp \
     script/ActionOutputStepperRunVelocity.cpp \
-    script/ActionOutputStepperSetPosition.cpp
+    script/ActionOutputStepperSetPosition.cpp \
+    util/Config.cpp
 HEADERS += ui/MainWindow.h \
     ui/OutputRelaisFrame.h \
     ui/InputFaderFrame.h \
@@ -93,7 +94,6 @@ HEADERS += ui/MainWindow.h \
     script/ActionOutputRelais.h \
     script/ActionOutput.h \
     hw/HWInputButtonGPIO.h \
-    rpi.h \
     ui/ScriptDialogTableModel.h \
     ui/ConditionDialog.h \
     script/ConditionInputFader.h \
@@ -132,7 +132,8 @@ HEADERS += ui/MainWindow.h \
     script/ActionOutputStepperSoftStop.h \
     script/ActionOutputStepper.h \
     script/ActionOutputStepperRunVelocity.h \
-    script/ActionOutputStepperSetPosition.h
+    script/ActionOutputStepperSetPosition.h \
+    util/Config.h
 FORMS += ui/MainWindow.ui \
     ui/RuleDialog.ui \
     ui/ScriptDialog.ui \

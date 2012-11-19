@@ -17,4 +17,13 @@
 
 #endif
 
+enum RPiRevision
+{
+    Revision1,
+    Revision2,
+    Unknown
+};
+
+RPiRevision getRPiRevision();
+
 #endif // RPI_H

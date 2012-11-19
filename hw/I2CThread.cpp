@@ -10,7 +10,7 @@
 #include <signal.h>
 #include <unistd.h>
 
-#include "rpi.h"
+#include "util/Config.h"
 
 static void dummy_handler(int)
 {
@@ -149,7 +149,21 @@ void I2CThread::removeInputPCF8575(HWInput* hw, int slaveAddress)
 void I2CThread::run()
 {
 #ifdef USE_I2C
-    m_handle = open("/dev/i2c-0", O_RDWR);
+    RPiRevision revision = getRPiRevision();
+
+    switch(revision)
+    {
+    case Revision1:
+        m_handle = open("/dev/i2c-0", O_RDWR);
+    break;
+    case Revision2:
+        m_handle = open("/dev/i2c-1", O_RDWR);
+        break;
+    default:
+        pi_warn("Unkown raspberry revision, aborting i2c");
+        return;
+    }
+
     if(m_handle < 0)
     {
         pi_warn("Could not open i2c-interface");

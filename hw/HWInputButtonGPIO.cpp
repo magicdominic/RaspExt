@@ -12,7 +12,7 @@
 #include <fcntl.h>
 #include <stdlib.h>
 
-#include "rpi.h"
+#include "util/Config.h"
 
 HWInputButtonGPIO::HWInputButtonGPIO()
 {

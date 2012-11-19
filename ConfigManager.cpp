@@ -23,8 +23,6 @@ ConfigManager::ConfigManager(MainWindow *win)
 
 ConfigManager::~ConfigManager()
 {
-    this->clear();
-
     if(m_gpioThread != NULL)
     {
         m_gpioThread->kill();
@@ -42,6 +40,9 @@ ConfigManager::~ConfigManager()
         m_ruleTimer->kill();
         delete m_ruleTimer;
     }
+
+    // clear after killing each thread, as otherwise there could be pending operations in their queues
+    this->clear();
 }
 
 void ConfigManager::init()
