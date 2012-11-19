@@ -6,7 +6,7 @@
 RPiRevision getRPiRevision()
 {
 #ifdef RASPBERRY_PI
-    static RPiRevision revision = -1;
+    static RPiRevision revision = (RPiRevision)-1;
     if(revision != -1)
         return revision;
 
