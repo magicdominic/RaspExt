@@ -53,14 +53,29 @@ void BTThread::kill()
 
 void BTThread::run()
 {
-    struct sockaddr_l2 addr = { 0 };
+    struct sockaddr_l2 addr;
 
     m_socket = socket(AF_BLUETOOTH, SOCK_SEQPACKET, BTPROTO_L2CAP);
+
+    if(m_socket == -1)
+    {
+        pi_warn("Could not open bluetooth socket");
+        return;
+    }
 
     // set the connection parameters (who to connect to)
     addr.l2_family = AF_BLUETOOTH;
     addr.l2_psm = htobs(0x1001);
     str2ba(m_btaddr, &addr.l2_bdaddr);
+
+
+    // maybe wo should do this in the run loop, as we may loose our connection to the board or it is not yet available
+    int status = connect(m_socket, (struct sockaddr*)&addr, sizeof(addr));
+    if(status == -1)
+    {
+        pi_warn("Could not connect to bt-board");
+        return;
+    }
 }
 
 void* BTThread::run_internal(void* arg)

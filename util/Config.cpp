@@ -2,6 +2,8 @@
 #include "util/Config.h"
 
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 
 RPiRevision getRPiRevision()
 {
@@ -23,8 +25,7 @@ RPiRevision getRPiRevision()
     {
         if(strcmp(line, "CPU revision") == 0)
         {
-            int start = strchr(line, ':');
-            const char* strRevision = line + start + 1;
+            const char* strRevision = strchr(line, ':') + start + 2;
 
             int rev = atoi(strRevision);
             switch(rev)
