@@ -25,7 +25,7 @@ RPiRevision getRPiRevision()
     {
         if(strcmp(line, "CPU revision") == 0)
         {
-            const char* strRevision = strchr(line, ':') + start + 2;
+            const char* strRevision = strchr(line, ':') + 2;
 
             int rev = atoi(strRevision);
             switch(rev)
@@ -37,6 +37,7 @@ RPiRevision getRPiRevision()
             case 4:
             case 5:
             case 6:
+            case 7:
                 revision = Revision2;
                 break;
             }

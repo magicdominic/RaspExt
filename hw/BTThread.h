@@ -11,6 +11,8 @@
 #include "util/PriorityQueue.h"
 
 class HWInput;
+class QDomElement;
+class QDomDocument;
 
 class BTThread
 {
@@ -19,6 +21,9 @@ public:
     ~BTThread();
 
     void kill();
+
+    static BTThread* load(QDomElement* root);
+    QDomElement save(QDomElement* root, QDomDocument* document);
 /*
     void addInput(I2CPolling* hw, unsigned int freq);
     void removeInput(I2CPolling* hw);
@@ -31,8 +36,8 @@ public:
 
     void setName(std::string name) { m_name = name;}
     std::string getName() const { return m_name;}
-    void setBTAddr(const char* addr);
-    const char* getBTAddr() const { return m_btaddr;}
+    void setBTAddr(std::string addr);
+    std::string getBTAddr() const { return m_btaddr;}
 
 private:
     struct InputElement
@@ -66,7 +71,7 @@ private:
     std::mutex m_mutex;
     bool m_bStop;
     std::string m_name;
-    char* m_btaddr;
+    std::string m_btaddr; // must be in format 11:22:33:44:55:66
 
     PriorityQueue<InputElement> m_inputQueue;
     std::queue<OutputElement> m_outputQueue;

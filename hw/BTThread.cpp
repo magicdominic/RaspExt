@@ -8,6 +8,8 @@
 #include <bluetooth/bluetooth.h>
 #include <bluetooth/l2cap.h>
 
+#include <QDomDocument>
+
 static void dummy_handler(int)
 {
     // nothing here
@@ -17,7 +19,6 @@ BTThread::BTThread()
 {
     m_bStop = false;
     m_thread = 0;
-    m_btaddr = NULL;
     m_socket = -1;
 
     // specify a dummy handler for SIGUSR1
@@ -51,6 +52,61 @@ void BTThread::kill()
     m_thread = 0;
 }
 
+BTThread* BTThread::load(QDomElement* root)
+{
+    BTThread* btthread = new BTThread();
+    QDomElement elem = root->firstChildElement();
+
+    while(!elem.isNull())
+    {
+        if(elem.tagName().toLower().compare("name") == 0)
+        {
+            btthread->setName( elem.text().toStdString() );
+        }
+        else if(elem.tagName().toLower().compare("btaddress") == 0)
+        {
+            btthread->setBTAddr( elem.text().toStdString() );
+        }
+
+        elem = elem.nextSiblingElement();
+    }
+
+    if(btthread->getName().empty() || btthread->getBTAddr().empty())
+    {
+        pi_warn("Could not load bluetooth, name and/or address for this module were empty");
+        delete btthread;
+    }
+
+    return btthread;
+}
+
+QDomElement BTThread::save(QDomElement* root, QDomDocument* document)
+{
+    QDomElement output = document->createElement("bluetooth");
+
+    QDomElement name = document->createElement("name");
+    QDomText nameText = document->createTextNode( QString::fromStdString( this->getName() ) );
+    name.appendChild(nameText);
+
+    output.appendChild(name);
+
+    QDomElement btaddr = document->createElement("BTAddress");
+    QDomText btaddrText = document->createTextNode( QString::fromStdString( this->getBTAddr() ) );
+    btaddr.appendChild(btaddrText);
+
+    output.appendChild(btaddr);
+
+    root->appendChild(output);
+
+    return output;
+}
+
+void BTThread::setBTAddr(std::string addr)
+{
+    // TODO: check format and only save it is correct
+    m_btaddr = addr;
+}
+
 void BTThread::run()
 {
     struct sockaddr_l2 addr;
@@ -66,7 +122,7 @@ void BTThread::run()
     // set the connection parameters (who to connect to)
     addr.l2_family = AF_BLUETOOTH;
     addr.l2_psm = htobs(0x1001);
-    str2ba(m_btaddr, &addr.l2_bdaddr);
+    str2ba(m_btaddr.c_str(), &addr.l2_bdaddr);
 
 
     // maybe wo should do this in the run loop, as we may loose our connection to the board or it is not yet available
