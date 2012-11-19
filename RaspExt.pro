@@ -3,6 +3,7 @@
 # -------------------------------------------------
 QMAKE_CXXFLAGS += -std=c++0x
 QT += xml
+LIBS += -lbluetooth
 TARGET = RaspExt
 TEMPLATE = app
 SOURCES += main.cpp \
@@ -65,7 +66,8 @@ SOURCES += main.cpp \
     script/ActionOutputStepperSoftStop.cpp \
     script/ActionOutputStepperRunVelocity.cpp \
     script/ActionOutputStepperSetPosition.cpp \
-    util/Config.cpp
+    util/Config.cpp \
+    hw/BTThread.cpp
 HEADERS += ui/MainWindow.h \
     ui/OutputRelaisFrame.h \
     ui/InputFaderFrame.h \
@@ -133,7 +135,8 @@ HEADERS += ui/MainWindow.h \
     script/ActionOutputStepper.h \
     script/ActionOutputStepperRunVelocity.h \
     script/ActionOutputStepperSetPosition.h \
-    util/Config.h
+    util/Config.h \
+    hw/BTThread.h
 FORMS += ui/MainWindow.ui \
     ui/RuleDialog.ui \
     ui/ScriptDialog.ui \

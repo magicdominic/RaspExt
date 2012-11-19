@@ -1,5 +1,5 @@
-#ifndef I2CTHREAD_H
-#define I2CTHREAD_H
+#ifndef BTTHREAD_H
+#define BTTHREAD_H
 
 #include <mutex>
 #include <pthread.h>
@@ -7,22 +7,19 @@
 #include <list>
 #include <functional>
 
-#include "hw/I2CPolling.h"
-#include "hw/I2COutput.h"
 #include "util/Time.h"
 #include "util/PriorityQueue.h"
 
 class HWInput;
-class PCF8575I2C;
 
-class I2CThread
+class BTThread
 {
 public:
-    I2CThread();
-    ~I2CThread();
+    BTThread();
+    ~BTThread();
 
     void kill();
-
+/*
     void addInput(I2CPolling* hw, unsigned int freq);
     void removeInput(I2CPolling* hw);
 
@@ -30,14 +27,19 @@ public:
     void addOutput(std::function<void(int)> func);
 
     void addInputPCF8575(HWInput* hw, int slaveAddress, unsigned int port);
-    void removeInputPCF8575(HWInput* hw, int slaveAddress);
+    void removeInputPCF8575(HWInput* hw, int slaveAddress);*/
+
+    void setName(std::string name) { m_name = name;}
+    std::string getName() const { return m_name;}
+    void setBTAddr(const char* addr);
+    const char* getBTAddr() const { return m_btaddr;}
 
 private:
     struct InputElement
     {
         unsigned int freq;
         timespec time;
-        I2CPolling* hw;
+        void* hw; // TODO
 
         bool operator< (const InputElement& rhs)
         {
@@ -59,15 +61,16 @@ private:
     static void* run_internal(void* arg);
     void run();
 
+    int m_socket;
     pthread_t m_thread;
     std::mutex m_mutex;
     bool m_bStop;
+    std::string m_name;
+    char* m_btaddr;
 
-    int m_handle;
     PriorityQueue<InputElement> m_inputQueue;
     std::queue<OutputElement> m_outputQueue;
 
-    std::list<PCF8575I2C*> m_listPCF8575;
+    //std::list<PCF8575I2C*> m_listPCF8575;
 };
-
-#endif // I2CTHREAD_H
+#endif // BTTHREAD_H

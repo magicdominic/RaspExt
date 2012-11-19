@@ -47,7 +47,9 @@ void I2CThread::kill()
     m_mutex.lock();
     m_bStop = true;
     m_mutex.unlock();
-    // TODO: think about sending a signal here, maybe this speeds the whole thing up
+
+    // deliver signal to thread to wake it up
+    pthread_kill(m_thread, SIGUSR1);
 
     pthread_join(m_thread, NULL);
     m_thread = 0;
