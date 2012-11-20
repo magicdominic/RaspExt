@@ -54,6 +54,6 @@
     </output>
     <bluetooth>
         <name>bla</name>
-        <BTAddress>11:22:33:44:55:66</BTAddress>
+        <BTAddress>00:15:E9:7C:0F:94</BTAddress>
     </bluetooth>
 </config>

@@ -11,3 +11,14 @@
 *.lai
 *.la
 *.a
+
+# Qt generated files
+moc_*.cpp
+ui_*.h
+
+# compiled binary
+RaspExt
+
+# some special project files
+Makefile
+RaspExt.pro.user

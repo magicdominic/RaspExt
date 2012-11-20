@@ -149,7 +149,8 @@ FORMS += ui/MainWindow.ui \
     ui/ActionDialog.ui \
     ui/OutputLEDFrame.ui \
     ui/OutputStepperFrame.ui \
-    ui/OutputStepperDetailsDialog.ui
+    ui/OutputStepperDetailsDialog.ui \
+    ui/VariableListDialog.ui
 
 OTHER_FILES += \
     TODO.txt

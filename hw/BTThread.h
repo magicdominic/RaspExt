@@ -20,6 +20,7 @@ public:
     BTThread();
     ~BTThread();
 
+    void start();
     void kill();
 
     static BTThread* load(QDomElement* root);
@@ -65,6 +66,8 @@ private:
 
     static void* run_internal(void* arg);
     void run();
+
+    bool readWait(timespec timeout);
 
     int m_socket;
     pthread_t m_thread;

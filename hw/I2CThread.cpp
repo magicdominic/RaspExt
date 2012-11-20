@@ -222,13 +222,6 @@ void I2CThread::run()
         // get element from inputQueue
         InputElement element = m_inputQueue.top();
 
-        if(element.freq == 0)
-        {
-            m_inputQueue.pop();
-            m_mutex.unlock();
-            continue;
-        }
-
         m_mutex.unlock();
 
         // get current time
@@ -277,12 +270,6 @@ void I2CThread::run()
         // modified element will replace original one
         // If the element is already removed from the list, the following call does nothing
         m_inputQueue.modify(element);
-
-        // todo: TEST and if it works, remove the following piece of code
-        // now we have to remove the current element from the heap
-        //m_inputQueue.pop();
-        // and push it back on with refreshed time
-        //m_inputQueue.push(element);
 
         m_mutex.unlock();
     }
