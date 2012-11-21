@@ -150,8 +150,7 @@ void BTThread::run()
         status = connect(m_socket, (struct sockaddr*)&addr, sizeof(addr));
         if(status == -1)
         {
-            perror("uh oh");
-            pi_warn("Could not connect to bt-board, retrying");
+            perror("Could not connect to bt-board, retrying");
 
             // wait for some time before trying to reconnect
             sleep(1);
@@ -191,6 +190,8 @@ void BTThread::run()
             char buffer[256];
             memset(buffer, 0, sizeof(buffer));
             int readBytes = recv(m_socket, buffer, sizeof(buffer), 0);
+
+            // we have to read data, now we have to parse the packet and call the apropriate functions
             printf("Received %d bytes: %s\n", readBytes, buffer);
         }
 
@@ -212,7 +213,7 @@ void BTThread::run()
             m_mutex.unlock();
 
             // run function
-            //element.func(m_handle);
+            element.func(m_socket);
             continue;
         }
 
@@ -223,7 +224,7 @@ void BTThread::run()
 
             // sleep for 100ms and wake up if we receive a signal
             timespec sleep;
-            sleep.tv_sec = 2;
+            sleep.tv_sec = 0;
             sleep.tv_nsec = 100000000;
 
             // check if there is pending data to read, and if not wait for waitTime
