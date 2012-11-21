@@ -14,6 +14,20 @@ class HWInput;
 class QDomElement;
 class QDomDocument;
 
+struct BTI2CPacket
+{
+    int slaveAddress; // I2C slave address
+    bool read; // true for read, false for write
+    bool request; // true if it is a request, false if it is a response
+    bool error; // true if an error occurred on sending the command sequence over I2C
+    unsigned char bufferLength; // buffer length for I2C read
+    char* buffer; // pointer to read buffer, should be != NULL for a response (who deletes this?!?)
+    unsigned char commandLength; // length of the command sequence
+    char* commandSequence; // pointer to buffer containing
+
+    bool assemble(unsigned int size, char* buf);
+};
+
 class BTThread
 {
 public:

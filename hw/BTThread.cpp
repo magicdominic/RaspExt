@@ -121,6 +121,7 @@ void BTThread::setBTAddr(std::string addr)
 
 void BTThread::run()
 {
+#ifdef USE_BLUETOOTH
     // connect to bluetooth board
     // try to connect until it succeeds
     int status;
@@ -213,7 +214,7 @@ void BTThread::run()
             m_mutex.unlock();
 
             // run function
-            element.func(m_socket);
+            //element.func(m_socket);
             continue;
         }
 
@@ -283,6 +284,7 @@ void BTThread::run()
     }
 
     close(m_socket);
+#endif
 }
 
 /**

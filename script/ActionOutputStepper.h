@@ -11,7 +11,7 @@ public:
         SoftStop = 0,
         RunVelocity = 1,
         SetPosition = 2,
-        SetStallParam = 3,
+        SetParam = 3,
         EINVALID
     };
 
