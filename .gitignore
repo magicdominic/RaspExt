@@ -22,3 +22,7 @@ RaspExt
 # some special project files
 Makefile
 RaspExt.pro.user
+
+# documentation
+Docs/html/
+Docs/latex/

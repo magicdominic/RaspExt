@@ -737,14 +737,12 @@ ActionOutputStepperSetParamWidget::ActionOutputStepperSetParamWidget(QWidget* pa
 
 
     QLabel* m_labelPWMfreq= new QLabel("PWM Frequency", this);
-    QComboBox* m_comboPWMfreq = new QComboBox(this);
-    m_comboPWMfreq->addItem("keep");
-    m_comboPWMfreq->addItem("set");
+    QLabel* m_labelPWMfreq2 = new QLabel("set");
     QSpinBox* m_spinPWMfreq = new QSpinBox(this);
     m_spinPWMfreq->setMinimum(0);
 
     layout->addWidget(m_labelPWMfreq, i, 0);
-    layout->addWidget(m_comboPWMfreq, i, 1);
+    layout->addWidget(m_labelPWMfreq2, i, 1);
     layout->addWidget(m_spinPWMfreq, i, 2);
     i++;
 

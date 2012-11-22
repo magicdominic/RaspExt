@@ -48,6 +48,29 @@ public:
         bool PWMJitterEnable;
     };
 
+    /** This structure is used to set specific parameters of the stepper device.
+     *  Each value has a corresponding boolean parameter, which specifies if the value on the device should be overwritten or kept
+     */
+    struct Params
+    {
+        unsigned char irun;
+        unsigned char ihold;
+        unsigned char vmax;
+        unsigned char vmin;
+        bool accShape;
+        unsigned char stepMode;
+        bool shaft;
+        unsigned char acc;
+        unsigned char absolutThreshold;
+        unsigned char deltaThreshold;
+
+        short securePosition;
+        unsigned char fs2StallEnabled;
+        unsigned char minSamples;
+        bool dc100StallEnable;
+        bool PWMJitterEnable;
+    };
+
     HWOutputStepper();
 
     static HWOutput* load(QDomElement* root);
