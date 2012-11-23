@@ -67,6 +67,24 @@ void HWOutputStepper::runVelocity()
 
 void HWOutputStepper::setParam(Param param)
 {
+    // update FullStatus
+    // we do this now to eliminate a gap between setting the values and displaying them
+    // If our new values are not accepted we have an inconsistency between displayed and real values, so we can only hope that this does not happen much
+    if(param.irunSet) m_fullStatus.irun = param.irun;
+    if(param.iholdSet) m_fullStatus.ihold = param.ihold;
+    if(param.vmaxSet) m_fullStatus.vmax = param.vmax;
+    if(param.vminSet) m_fullStatus.vmin = param.vmin;
+    if(param.accShapeSet) m_fullStatus.accShape = param.accShape;
+    if(param.stepModeSet) m_fullStatus.stepMode = param.stepMode;
+    if(param.shaftSet) m_fullStatus.shaft = param.shaft;
+    if(param.accSet) m_fullStatus.acc = param.acc;
+    if(param.absoluteThresholdSet) m_fullStatus.absoluteThreshold = param.absoluteThreshold;
+    if(param.deltaThresholdSet) m_fullStatus.deltaThreshold = param.deltaThreshold;
+    if(param.securePositionSet) m_fullStatus.securePosition = param.securePosition;
+    if(param.fs2StallEnabledSet) m_fullStatus.fs2StallEnabled = param.fs2StallEnabled;
+    if(param.minSamplesSet) m_fullStatus.minSamples = param.minSamples;
+    if(param.dc100StallEnableSet) m_fullStatus.dc100StallEnable = param.dc100StallEnable;
+    if(param.PWMJitterEnableSet) m_fullStatus.PWMJitterEnable = param.PWMJitterEnable;
 }
 
 

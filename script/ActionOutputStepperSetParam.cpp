@@ -56,7 +56,7 @@ Action* ActionOutputStepperSetParam::load(QDomElement* root)
         else if(elem.tagName().toLower().compare("absolutThreshold") == 0)
         {
             action->m_param.absoluteThresholdSet = true;
-            action->m_param.absolutThreshold = elem.text().toShort();
+            action->m_param.absoluteThreshold = elem.text().toShort();
         }
         else if(elem.tagName().toLower().compare("deltaThreshold") == 0)
         {
@@ -164,7 +164,7 @@ QDomElement ActionOutputStepperSetParam::save(QDomElement* root, QDomDocument* d
 
     if(m_param.absoluteThresholdSet)
     {
-        createXMLTextNode(document, &action, "absolutThreshold", std::to_string(m_param.absolutThreshold));
+        createXMLTextNode(document, &action, "absolutThreshold", std::to_string(m_param.absoluteThreshold));
     }
 
     if(m_param.deltaThresholdSet)

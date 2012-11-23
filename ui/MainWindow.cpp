@@ -32,8 +32,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->tableScripts->setModel(m_scriptsModel);
     ui->tableScripts->horizontalHeader()->setStretchLastSection(true);
+    ui->tableScripts->setColumnWidth(0, 200);
 
 
+    // connect all signals-slots
     connect(ui->buttonCreateScript, SIGNAL(clicked()), this, SLOT(createScript()));
     connect(ui->buttonSelectScript, SIGNAL(clicked()), this, SLOT(selectScript()));
     connect(ui->buttonEditScript, SIGNAL(clicked()), this, SLOT(editScript()));
@@ -42,6 +44,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->buttonStop, SIGNAL(clicked()), this, SLOT(stopScript()));
     connect(ui->buttonPlayPause, SIGNAL(clicked()), this, SLOT(startPauseScript()));
 
+    // load standard config
     m_config.load("config_test01.xml");
     m_config.init();
 }
@@ -50,7 +53,7 @@ MainWindow::~MainWindow()
 {
     m_config.save("config_test01.xml");
     m_config.deinit();
-    m_config.clear(); // has to be cleared before ui is deleted, otherwise ui widgets are no longer available
+    m_config.clear(); // has to be cleared before ui is deleted, otherwise ui widgets are no longer available and this would lead to a segfault
 
     delete m_scriptsModel;
     delete ui;

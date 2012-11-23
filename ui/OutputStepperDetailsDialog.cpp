@@ -43,7 +43,7 @@ void OutputStepperDetailsDialog::onOutputChangedGUI()
     ui->labelShaft->setText( QString::number( fullStatus.shaft ) );
     ui->labelAcc->setText( QString::number( fullStatus.acc ) );
     ui->labelStepmode->setText( QString::number( fullStatus.stepMode ) );
-    ui->labelAbsThr->setText( QString::number( fullStatus.absolutThreshold ) );
+    ui->labelAbsThr->setText( QString::number( fullStatus.absoluteThreshold ) );
     ui->labelDelThr->setText( QString::number( fullStatus.deltaThreshold ) );
     ui->labelFS2StEn->setText( QString::number( fullStatus.fs2StallEnabled ) );
     ui->labelMinSamples->setText( QString::number( fullStatus.minSamples ) );

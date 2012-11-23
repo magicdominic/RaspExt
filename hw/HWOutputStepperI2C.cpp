@@ -154,7 +154,7 @@ void HWOutputStepperI2C::poll(int fd)
     m_fullStatus.ovc2 = (buf[4] & 0x04) >> 2;
     m_fullStatus.stall = (buf[4] & 0x02) >> 1;
     m_fullStatus.cpfail = (buf[4] & 0x01);
-    m_fullStatus.absolutThreshold = (buf[7] & 0xF0) >> 4;
+    m_fullStatus.absoluteThreshold = (buf[7] & 0xF0) >> 4;
     m_fullStatus.deltaThreshold = (buf[7] & 0x0F);
 
     // write GetFullStatus2
@@ -220,6 +220,7 @@ void HWOutputStepperI2C::setPositionI2C(int fd, short position)
         pi_warn("Failed to talk to slave");
         return;
     }
+
     // send command byte (see page 44 of datasheet)
     buf[0] = 0x8B;
     buf[1] = 0xFF;
@@ -258,5 +259,67 @@ void HWOutputStepperI2C::runVelocityI2C(int fd)
 
 void HWOutputStepperI2C::setParamI2C(int fd, Param param)
 {
-    pi_warn("TODO");
+    // as we need to update EVERY value for these I2C commands,
+    // we take the current value from the last FullStatus update and change those specified in param
+
+    int ret;
+    unsigned char buf[8];
+
+    if( ioctl(fd, I2C_SLAVE, m_slaveAddress) < 0)
+    {
+        pi_warn("Failed to talk to slave");
+        return;
+    }
+
+    // send SetStallParam command (see page 49 of datasheet)
+    buf[0] = 0x96;
+    buf[1] = 0xFF;
+    buf[2] = 0xFF;
+    buf[3] = (param.irunSet ? param.irun : m_fullStatus.irun) << 4; // irun
+    buf[3] = buf[3] | (param.iholdSet ? param.ihold : m_fullStatus.ihold); // ihold
+    buf[4] = (param.vmaxSet ? param.vmax : m_fullStatus.vmax) << 4; // vmax
+    buf[4] = buf[4] | (param.vminSet ? param.vmin : m_fullStatus.vmin); // vmin
+    buf[5] = (param.minSamplesSet ? param.minSamples : m_fullStatus.minSamples) << 5; // minSamples
+    buf[5] = buf[5] | ( (param.shaftSet ? param.shaft : m_fullStatus.shaft) << 4 ); // shaft
+    buf[5] = buf[5] | (param.accSet ? param.acc : m_fullStatus.acc); // acc
+    buf[6] = (param.absoluteThresholdSet ? param.absoluteThreshold : m_fullStatus.absoluteThreshold) << 4; // absoluteThreshold
+    buf[6] = buf[6] | (param.deltaThresholdSet ? param.deltaThreshold : m_fullStatus.deltaThreshold); // deltaThreshold
+    buf[7] = (param.fs2StallEnabledSet ? param.fs2StallEnabled : m_fullStatus.fs2StallEnabled) << 5; // fs2StallEnabled
+    buf[7] = buf[7] | ( (param.accShapeSet ? param.accShape : m_fullStatus.accShape) << 4 ); // accShape
+    buf[7] = buf[7] | ( (param.stepModeSet ? param.stepMode : m_fullStatus.stepMode) << 2 ); // stepMode
+    buf[7] = buf[7] | ( (param.dc100StallEnableSet ? param.dc100StallEnable : m_fullStatus.dc100StallEnable) << 1 ); // dc100StallEnable
+    buf[7] = buf[7] | (param.PWMJitterEnableSet ? param.PWMJitterEnable : m_fullStatus.PWMJitterEnable); // PWMJitterEnable
+
+
+    ret = write(fd, buf, 8);
+    if(ret != 8)
+    {
+        pi_warn("Could not write to bus");
+        return;
+    }
+
+    // send SetMotorParam command (see page 49 of datasheet)
+    buf[0] = 0x89;
+    buf[1] = 0xFF;
+    buf[2] = 0xFF;
+    buf[3] = (param.irunSet ? param.irun : m_fullStatus.irun) << 4; // irun
+    buf[3] = buf[3] | (param.iholdSet ? param.ihold : m_fullStatus.ihold); // ihold
+    buf[4] = (param.vmaxSet ? param.vmax : m_fullStatus.vmax) << 4; // vmax
+    buf[4] = buf[4] | (param.vminSet ? param.vmin : m_fullStatus.vmin); // vmin
+    buf[5] = ( (param.securePositionSet ? param.securePosition : m_fullStatus.securePosition) & 0x0700) << 5; // securePosition[10:8]
+    buf[5] = buf[5] | ( (param.shaftSet ? param.shaft : m_fullStatus.shaft) << 4 ); // shaft
+    buf[5] = buf[5] | (param.accSet ? param.acc : m_fullStatus.acc); // acc
+    buf[6] = (param.securePositionSet ? param.securePosition : m_fullStatus.securePosition) & 0x00FF; // securePosition[7:0]
+    buf[7] = 1 << 7 | 1 << 5 | 1 << 1;
+    buf[7] = buf[7] | (param.PWMfreqSet ? param.PWMfreq : 0) << 6; // PWMfreq
+    buf[7] = buf[7] | ( (param.accShapeSet ? param.accShape : m_fullStatus.accShape) << 4 ); // accShape
+    buf[7] = buf[7] | ( (param.stepModeSet ? param.stepMode : m_fullStatus.stepMode) << 2 ); // stepMode
+    buf[7] = buf[7] | (param.PWMJitterEnableSet ? param.PWMJitterEnable : m_fullStatus.PWMJitterEnable); // PWMJitterEnable
+
+    ret = write(fd, buf, 8);
+    if(ret != 8)
+    {
+        pi_warn("Could not write to bus");
+        return;
+    }
 }

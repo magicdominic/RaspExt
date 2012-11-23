@@ -794,7 +794,7 @@ Action* ActionOutputStepperSetParamWidget::assemble()
     param.acc = m_spinAcc->value();
 
     param.absoluteThresholdSet = m_comboAbsThr->currentIndex();
-    param.absolutThreshold = m_spinAbsThr->value();
+    param.absoluteThreshold = m_spinAbsThr->value();
 
     param.deltaThresholdSet = m_comboDelThr->currentIndex();
     param.deltaThreshold = m_spinDelThr->value();
@@ -852,7 +852,7 @@ void ActionOutputStepperSetParamWidget::edit(Action* act)
     m_spinAcc->setValue( param.acc );
 
     m_comboAbsThr->setCurrentIndex( param.absoluteThresholdSet );
-    m_spinAbsThr->setValue( param.absolutThreshold );
+    m_spinAbsThr->setValue( param.absoluteThreshold );
 
     m_comboDelThr->setCurrentIndex( param.deltaThresholdSet );
     m_spinDelThr->setValue( param.deltaThreshold );

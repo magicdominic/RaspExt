@@ -35,7 +35,7 @@ public:
         bool ovc2;
         bool stall;
         bool cpfail;
-        unsigned char absolutThreshold;
+        unsigned char absoluteThreshold;
         unsigned char deltaThreshold;
 
         // Response to GetFullStatus2
@@ -83,7 +83,7 @@ public:
         unsigned char acc;
 
         bool absoluteThresholdSet;
-        unsigned char absolutThreshold;
+        unsigned char absoluteThreshold;
 
         bool deltaThresholdSet;
         unsigned char deltaThreshold;
