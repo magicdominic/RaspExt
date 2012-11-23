@@ -190,6 +190,52 @@ public:
     void edit(Action* action);
 
 private:
+    QComboBox* m_comboIrun;
+    QSpinBox* m_spinIrun;
+
+    QComboBox* m_comboIhold;
+    QSpinBox* m_spinIhold;
+
+    QComboBox* m_comboVmax;
+    QSpinBox* m_spinVmax;
+
+    QComboBox* m_comboVmin;
+    QSpinBox* m_spinVmin;
+
+    QComboBox* m_comboMinSamples;
+    QSpinBox* m_spinMinSamples;
+
+    QComboBox* m_comboShaft;
+    QSpinBox* m_spinShaft;
+
+    QComboBox* m_comboAcc;
+    QSpinBox* m_spinAcc;
+
+    QComboBox* m_comboAbsThr;
+    QSpinBox* m_spinAbsThr;
+
+    QComboBox* m_comboDelThr;
+    QSpinBox* m_spinDelThr;
+
+    QComboBox* m_comboFS2StallEn;
+    QSpinBox* m_spinFS2StallEn;
+
+    QComboBox* m_comboAccShape;
+    QSpinBox* m_spinAccShape;
+
+    QComboBox* m_comboStepMode;
+    QSpinBox* m_spinStepMode;
+
+    QComboBox* m_comboDC100StEn;
+    QSpinBox* m_spinDC100StEn;
+
+    QComboBox* m_comboPWMJEn;
+    QSpinBox* m_spinPWMJEn;
+
+    QSpinBox* m_spinPWMfreq;
+
+    QComboBox* m_comboSecPos;
+    QSpinBox* m_spinSecPos;
 };
 
 // Variable Stuff

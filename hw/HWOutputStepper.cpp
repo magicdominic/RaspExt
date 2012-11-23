@@ -56,12 +56,41 @@ void HWOutputStepper::softStop()
 
 void HWOutputStepper::setPosition(short position)
 {
-    // this is used internally to be transfered to the stepper
-    m_position = position;
+    m_fullStatus.actualPosition = position;
 
     this->outputChanged();
 }
 
 void HWOutputStepper::runVelocity()
 {
+}
+
+void HWOutputStepper::setParam(Param param)
+{
+}
+
+
+
+/**
+ * @brief HWOutputStepper::Param::Param This constructor is used only to initialize all the important variables to a defined value
+ */
+HWOutputStepper::Param::Param()
+{
+    // This could be replaced by memset for more performance
+    irunSet = false;
+    iholdSet = false;
+    vmaxSet = false;
+    vminSet = false;
+    accShapeSet = false;
+    stepModeSet = false;
+    shaftSet = false;
+    accSet = false;
+    absoluteThresholdSet = false;
+    deltaThresholdSet = false;
+    securePositionSet = false;
+    fs2StallEnabledSet = false;
+    minSamplesSet = false;
+    dc100StallEnableSet = false;
+    PWMJitterEnableSet = false;
+    PWMfreqSet = false;
 }

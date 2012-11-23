@@ -10,6 +10,7 @@
 #include "script/ActionOutputStepperSoftStop.h"
 #include "script/ActionOutputStepperRunVelocity.h"
 #include "script/ActionOutputStepperSetPosition.h"
+#include "script/ActionOutputStepperSetParam.h"
 #include "script/ActionVariable.h"
 #include "script/ActionSleep.h"
 #include "script/ActionCallRule.h"
@@ -559,10 +560,10 @@ ActionOutputStepperSetParamWidget::ActionOutputStepperSetParamWidget(QWidget* pa
     unsigned int i = 0;
 
     QLabel* m_labelIrun = new QLabel("Irun", this);
-    QComboBox* m_comboIrun = new QComboBox(this);
+    m_comboIrun = new QComboBox(this);
     m_comboIrun->addItem("keep");
     m_comboIrun->addItem("set");
-    QSpinBox* m_spinIrun = new QSpinBox(this);
+    m_spinIrun = new QSpinBox(this);
     m_spinIrun->setMinimum(0);
 
     layout->addWidget(m_labelIrun, i, 0);
@@ -572,10 +573,10 @@ ActionOutputStepperSetParamWidget::ActionOutputStepperSetParamWidget(QWidget* pa
 
 
     QLabel* m_labelIhold = new QLabel("Ihold", this);
-    QComboBox* m_comboIhold = new QComboBox(this);
+    m_comboIhold = new QComboBox(this);
     m_comboIhold->addItem("keep");
     m_comboIhold->addItem("set");
-    QSpinBox* m_spinIhold = new QSpinBox(this);
+    m_spinIhold = new QSpinBox(this);
     m_spinIhold->setMinimum(0);
 
     layout->addWidget(m_labelIhold, i, 0);
@@ -585,10 +586,10 @@ ActionOutputStepperSetParamWidget::ActionOutputStepperSetParamWidget(QWidget* pa
 
 
     QLabel* m_labelVmax = new QLabel("Vmax", this);
-    QComboBox* m_comboVmax = new QComboBox(this);
+    m_comboVmax = new QComboBox(this);
     m_comboVmax->addItem("keep");
     m_comboVmax->addItem("set");
-    QSpinBox* m_spinVmax = new QSpinBox(this);
+    m_spinVmax = new QSpinBox(this);
     m_spinVmax->setMinimum(0);
 
     layout->addWidget(m_labelVmax, i, 0);
@@ -598,10 +599,10 @@ ActionOutputStepperSetParamWidget::ActionOutputStepperSetParamWidget(QWidget* pa
 
 
     QLabel* m_labelVmin = new QLabel("Vmin", this);
-    QComboBox* m_comboVmin = new QComboBox(this);
+    m_comboVmin = new QComboBox(this);
     m_comboVmin->addItem("keep");
     m_comboVmin->addItem("set");
-    QSpinBox* m_spinVmin = new QSpinBox(this);
+    m_spinVmin = new QSpinBox(this);
     m_spinVmin->setMinimum(0);
 
     layout->addWidget(m_labelVmin, i, 0);
@@ -611,10 +612,10 @@ ActionOutputStepperSetParamWidget::ActionOutputStepperSetParamWidget(QWidget* pa
 
 
     QLabel* m_labelMinSamples = new QLabel("Min Samples", this);
-    QComboBox* m_comboMinSamples = new QComboBox(this);
+    m_comboMinSamples = new QComboBox(this);
     m_comboMinSamples->addItem("keep");
     m_comboMinSamples->addItem("set");
-    QSpinBox* m_spinMinSamples = new QSpinBox(this);
+    m_spinMinSamples = new QSpinBox(this);
     m_spinMinSamples->setMinimum(0);
 
     layout->addWidget(m_labelMinSamples, i, 0);
@@ -624,10 +625,10 @@ ActionOutputStepperSetParamWidget::ActionOutputStepperSetParamWidget(QWidget* pa
 
 
     QLabel* m_labelShaft = new QLabel("Shaft", this);
-    QComboBox* m_comboShaft = new QComboBox(this);
+    m_comboShaft = new QComboBox(this);
     m_comboShaft->addItem("keep");
     m_comboShaft->addItem("set");
-    QSpinBox* m_spinShaft = new QSpinBox(this);
+    m_spinShaft = new QSpinBox(this);
     m_spinShaft->setMinimum(0);
 
     layout->addWidget(m_labelShaft, i, 0);
@@ -637,10 +638,10 @@ ActionOutputStepperSetParamWidget::ActionOutputStepperSetParamWidget(QWidget* pa
 
 
     QLabel* m_labelAcc = new QLabel("Acceleration", this);
-    QComboBox* m_comboAcc = new QComboBox(this);
+    m_comboAcc = new QComboBox(this);
     m_comboAcc->addItem("keep");
     m_comboAcc->addItem("set");
-    QSpinBox* m_spinAcc = new QSpinBox(this);
+    m_spinAcc = new QSpinBox(this);
     m_spinAcc->setMinimum(0);
 
     layout->addWidget(m_labelAcc, i, 0);
@@ -650,10 +651,10 @@ ActionOutputStepperSetParamWidget::ActionOutputStepperSetParamWidget(QWidget* pa
 
 
     QLabel* m_labelAbsThr = new QLabel("Absolut Threshold", this);
-    QComboBox* m_comboAbsThr = new QComboBox(this);
+    m_comboAbsThr = new QComboBox(this);
     m_comboAbsThr->addItem("keep");
     m_comboAbsThr->addItem("set");
-    QSpinBox* m_spinAbsThr = new QSpinBox(this);
+    m_spinAbsThr = new QSpinBox(this);
     m_spinAbsThr->setMinimum(0);
 
     layout->addWidget(m_labelAbsThr, i, 0);
@@ -663,10 +664,10 @@ ActionOutputStepperSetParamWidget::ActionOutputStepperSetParamWidget(QWidget* pa
 
 
     QLabel* m_labelDelThr = new QLabel("Delta Threshold", this);
-    QComboBox* m_comboDelThr = new QComboBox(this);
+    m_comboDelThr = new QComboBox(this);
     m_comboDelThr->addItem("keep");
     m_comboDelThr->addItem("set");
-    QSpinBox* m_spinDelThr = new QSpinBox(this);
+    m_spinDelThr = new QSpinBox(this);
     m_spinDelThr->setMinimum(0);
 
     layout->addWidget(m_labelDelThr, i, 0);
@@ -675,10 +676,10 @@ ActionOutputStepperSetParamWidget::ActionOutputStepperSetParamWidget(QWidget* pa
     i++;
 
     QLabel* m_labelFS2StallEn = new QLabel("FS2 Stall Enabled", this);
-    QComboBox* m_comboFS2StallEn = new QComboBox(this);
+    m_comboFS2StallEn = new QComboBox(this);
     m_comboFS2StallEn->addItem("keep");
     m_comboFS2StallEn->addItem("set");
-    QSpinBox* m_spinFS2StallEn = new QSpinBox(this);
+    m_spinFS2StallEn = new QSpinBox(this);
     m_spinFS2StallEn->setMinimum(0);
 
     layout->addWidget(m_labelFS2StallEn, i, 0);
@@ -687,10 +688,10 @@ ActionOutputStepperSetParamWidget::ActionOutputStepperSetParamWidget(QWidget* pa
     i++;
 
     QLabel* m_labelAccShape = new QLabel("Acceleration Shape", this);
-    QComboBox* m_comboAccShape = new QComboBox(this);
+    m_comboAccShape = new QComboBox(this);
     m_comboAccShape->addItem("keep");
     m_comboAccShape->addItem("set");
-    QSpinBox* m_spinAccShape = new QSpinBox(this);
+    m_spinAccShape = new QSpinBox(this);
     m_spinAccShape->setMinimum(0);
 
     layout->addWidget(m_labelAccShape, i, 0);
@@ -699,10 +700,10 @@ ActionOutputStepperSetParamWidget::ActionOutputStepperSetParamWidget(QWidget* pa
     i++;
 
     QLabel* m_labelStepMode= new QLabel("Step Mode", this);
-    QComboBox* m_comboStepMode = new QComboBox(this);
+    m_comboStepMode = new QComboBox(this);
     m_comboStepMode->addItem("keep");
     m_comboStepMode->addItem("set");
-    QSpinBox* m_spinStepMode = new QSpinBox(this);
+    m_spinStepMode = new QSpinBox(this);
     m_spinStepMode->setMinimum(0);
 
     layout->addWidget(m_labelStepMode, i, 0);
@@ -711,10 +712,10 @@ ActionOutputStepperSetParamWidget::ActionOutputStepperSetParamWidget(QWidget* pa
     i++;
 
     QLabel* m_labelDC100StEn= new QLabel("DC100StEn", this);
-    QComboBox* m_comboDC100StEn = new QComboBox(this);
+    m_comboDC100StEn = new QComboBox(this);
     m_comboDC100StEn->addItem("keep");
     m_comboDC100StEn->addItem("set");
-    QSpinBox* m_spinDC100StEn = new QSpinBox(this);
+    m_spinDC100StEn = new QSpinBox(this);
     m_spinDC100StEn->setMinimum(0);
 
     layout->addWidget(m_labelDC100StEn, i, 0);
@@ -724,10 +725,10 @@ ActionOutputStepperSetParamWidget::ActionOutputStepperSetParamWidget(QWidget* pa
 
 
     QLabel* m_labelPWMJEn= new QLabel("PWM Jitter Enable", this);
-    QComboBox* m_comboPWMJEn = new QComboBox(this);
+    m_comboPWMJEn = new QComboBox(this);
     m_comboPWMJEn->addItem("keep");
     m_comboPWMJEn->addItem("set");
-    QSpinBox* m_spinPWMJEn = new QSpinBox(this);
+    m_spinPWMJEn = new QSpinBox(this);
     m_spinPWMJEn->setMinimum(0);
 
     layout->addWidget(m_labelPWMJEn, i, 0);
@@ -738,7 +739,7 @@ ActionOutputStepperSetParamWidget::ActionOutputStepperSetParamWidget(QWidget* pa
 
     QLabel* m_labelPWMfreq= new QLabel("PWM Frequency", this);
     QLabel* m_labelPWMfreq2 = new QLabel("set");
-    QSpinBox* m_spinPWMfreq = new QSpinBox(this);
+    m_spinPWMfreq = new QSpinBox(this);
     m_spinPWMfreq->setMinimum(0);
 
     layout->addWidget(m_labelPWMfreq, i, 0);
@@ -748,10 +749,10 @@ ActionOutputStepperSetParamWidget::ActionOutputStepperSetParamWidget(QWidget* pa
 
 
     QLabel* m_labelSecPos = new QLabel("Secure Position", this);
-    QComboBox* m_comboSecPos = new QComboBox(this);
+    m_comboSecPos = new QComboBox(this);
     m_comboSecPos->addItem("keep");
     m_comboSecPos->addItem("set");
-    QSpinBox* m_spinSecPos = new QSpinBox(this);
+    m_spinSecPos = new QSpinBox(this);
     m_spinSecPos->setMinimum(0);
 
     layout->addWidget(m_labelSecPos, i, 0);
@@ -764,11 +765,114 @@ ActionOutputStepperSetParamWidget::ActionOutputStepperSetParamWidget(QWidget* pa
 
 Action* ActionOutputStepperSetParamWidget::assemble()
 {
-    return NULL;
+    ActionOutputStepperSetParam* action = new ActionOutputStepperSetParam();
+
+    HWOutputStepper::Param param;
+
+    param.irunSet = m_comboIrun->currentIndex();
+    param.irun = m_spinIrun->value();
+
+    param.iholdSet = m_comboIhold->currentIndex();
+    param.ihold = m_spinIhold->value();
+
+    param.vmaxSet = m_comboVmax->currentIndex();
+    param.vmax = m_spinVmax->value();
+
+    param.vminSet = m_comboVmin->currentIndex();
+    param.vmin = m_spinVmin->value();
+
+    param.accShapeSet = m_comboAccShape->currentIndex();
+    param.accShape = m_spinAccShape->value();
+
+    param.stepModeSet = m_comboStepMode->currentIndex();
+    param.stepMode = m_spinStepMode->value();
+
+    param.shaftSet = m_comboShaft->currentIndex();
+    param.shaft = m_spinShaft->value();
+
+    param.accSet = m_comboAcc->currentIndex();
+    param.acc = m_spinAcc->value();
+
+    param.absoluteThresholdSet = m_comboAbsThr->currentIndex();
+    param.absolutThreshold = m_spinAbsThr->value();
+
+    param.deltaThresholdSet = m_comboDelThr->currentIndex();
+    param.deltaThreshold = m_spinDelThr->value();
+
+    param.securePositionSet = m_comboSecPos->currentIndex();
+    param.securePosition = m_spinSecPos->value();
+
+    param.fs2StallEnabledSet = m_comboFS2StallEn->currentIndex();
+    param.fs2StallEnabled = m_spinFS2StallEn->value();
+
+    param.minSamplesSet = m_comboMinSamples->currentIndex();
+    param.minSamples = m_spinMinSamples->value();
+
+    param.dc100StallEnableSet = m_comboDC100StEn->currentIndex();
+    param.dc100StallEnable = m_spinDC100StEn->value();
+
+    param.PWMJitterEnableSet = m_comboPWMJEn->currentIndex();
+    param.PWMJitterEnable = m_spinPWMJEn->value();
+
+    param.PWMfreqSet = true; // TODO: Make this adjustable
+    param.PWMfreq = m_spinPWMfreq->value();
+
+    action->setParam(param);
+
+    return action;
 }
 
 void ActionOutputStepperSetParamWidget::edit(Action* act)
 {
+    ActionOutputStepperSetParam* action = (ActionOutputStepperSetParam*)act;
+    HWOutputStepper::Param param = action->getParam();
+
+    m_comboIrun->setCurrentIndex( param.irunSet );
+    m_spinIrun->setValue( param.irun );
+
+    m_comboIhold->setCurrentIndex( param.iholdSet );
+    m_spinIhold->setValue( param.ihold );
+
+    m_comboVmax->setCurrentIndex( param.vmaxSet );
+    m_spinVmax->setValue( param.vmax );
+
+    m_comboVmin->setCurrentIndex( param.vminSet );
+    m_spinVmin->setValue( param.vmin );
+
+    m_comboAccShape->setCurrentIndex( param.accShapeSet );
+    m_spinAccShape->setValue( param.accShape );
+
+    m_comboStepMode->setCurrentIndex( param.stepModeSet );
+    m_spinStepMode->setValue( param.stepMode );
+
+    m_comboShaft->setCurrentIndex( param.shaftSet );
+    m_spinShaft->setValue( param.shaft );
+
+    m_comboAcc->setCurrentIndex( param.accSet );
+    m_spinAcc->setValue( param.acc );
+
+    m_comboAbsThr->setCurrentIndex( param.absoluteThresholdSet );
+    m_spinAbsThr->setValue( param.absolutThreshold );
+
+    m_comboDelThr->setCurrentIndex( param.deltaThresholdSet );
+    m_spinDelThr->setValue( param.deltaThreshold );
+
+    m_comboSecPos->setCurrentIndex( param.securePositionSet );
+    m_spinSecPos->setValue( param.securePosition );
+
+    m_comboFS2StallEn->setCurrentIndex( param.fs2StallEnabledSet );
+    m_spinFS2StallEn->setValue( param.fs2StallEnabled );
+
+    m_comboMinSamples->setCurrentIndex( param.minSamplesSet );
+    m_spinMinSamples->setValue( param.minSamples );
+
+    m_comboDC100StEn->setCurrentIndex( param.dc100StallEnableSet );
+    m_spinDC100StEn->setValue( param.dc100StallEnable );
+
+    m_comboPWMJEn->setCurrentIndex( param.PWMJitterEnableSet );
+    m_spinPWMJEn->setValue( param.PWMJitterEnable );
+
+    m_spinPWMfreq->setValue( param.PWMfreq );
 }
 
 

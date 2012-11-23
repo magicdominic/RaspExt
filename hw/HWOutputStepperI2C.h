@@ -24,10 +24,12 @@ public:
     void softStop();
     void runVelocity();
     void refreshFullStatus();
+    void setParam(Param param);
 private:
     void softStopI2C(int fd);
-    void setPositionI2C(int fd);
+    void setPositionI2C(int fd, short position);
     void runVelocityI2C(int fd);
+    void setParamI2C(int fd, Param param);
 
     int m_slaveAddress;
     I2CThread* m_i2cThread;

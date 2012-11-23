@@ -79,7 +79,7 @@ void HWOutputStepperI2C::setPosition(short position)
 {
     HWOutputStepper::setPosition(position);
 
-    m_i2cThread->addOutput(std::bind(&HWOutputStepperI2C::setPositionI2C, this, std::placeholders::_1));
+    m_i2cThread->addOutput(std::bind(&HWOutputStepperI2C::setPositionI2C, this, std::placeholders::_1, position));
 }
 
 void HWOutputStepperI2C::runVelocity()
@@ -87,6 +87,13 @@ void HWOutputStepperI2C::runVelocity()
     HWOutputStepper::runVelocity();
 
     m_i2cThread->addOutput(std::bind(&HWOutputStepperI2C::runVelocityI2C, this, std::placeholders::_1));
+}
+
+void HWOutputStepperI2C::setParam(Param param)
+{
+    HWOutputStepper::setParam(param);
+
+    m_i2cThread->addOutput(std::bind(&HWOutputStepperI2C::setParamI2C, this, std::placeholders::_1, param));
 }
 
 void HWOutputStepperI2C::refreshFullStatus()
@@ -203,7 +210,7 @@ void HWOutputStepperI2C::softStopI2C(int fd)
     }
 }
 
-void HWOutputStepperI2C::setPositionI2C(int fd)
+void HWOutputStepperI2C::setPositionI2C(int fd, short position)
 {
     int ret;
     unsigned char buf[5];
@@ -217,8 +224,8 @@ void HWOutputStepperI2C::setPositionI2C(int fd)
     buf[0] = 0x8B;
     buf[1] = 0xFF;
     buf[2] = 0xFF;
-    buf[3] = (m_position & 0xFF00) >> 8;
-    buf[4] = (m_position & 0x00FF);
+    buf[3] = (position & 0xFF00) >> 8;
+    buf[4] = (position & 0x00FF);
 
     ret = write(fd, buf, 5);
     if(ret != 5)
@@ -247,4 +254,9 @@ void HWOutputStepperI2C::runVelocityI2C(int fd)
         pi_warn("Could not write to bus");
         return;
     }
+}
+
+void HWOutputStepperI2C::setParamI2C(int fd, Param param)
+{
+    pi_warn("TODO");
 }
