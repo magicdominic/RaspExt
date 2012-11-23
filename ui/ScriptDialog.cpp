@@ -3,6 +3,7 @@
 #include "ui_ScriptDialog.h"
 
 #include "ui/RuleDialog.h"
+#include "ui/VariableListDialog.h"
 
 
 ScriptDialog::ScriptDialog(QWidget *parent, Script *script, ConfigManager* config) :
@@ -20,9 +21,12 @@ ScriptDialog::ScriptDialog(QWidget *parent, Script *script, ConfigManager* confi
     ui->editName->setText(QString::fromStdString(script->getName()));
     ui->editDesc->setText(QString::fromStdString(script->getDescription()));
 
+    // connect all signals - slots
     connect(ui->buttonAdd, SIGNAL(clicked()), this, SLOT(addRule()));
     connect(ui->buttonEdit, SIGNAL(clicked()), this, SLOT(editRule()));
     connect(ui->buttonDelete, SIGNAL(clicked()), this, SLOT(deleteRule()));
+
+    connect(ui->buttonEditVariables, SIGNAL(clicked()), this, SLOT(editVariables()));
 
     connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(okPressed()));
 }
@@ -80,4 +84,11 @@ void ScriptDialog::deleteRule()
     {
         m_model.removeRow(indices.front().row());
     }
+}
+
+void ScriptDialog::editVariables()
+{
+    VariableListDialog* dialog = new VariableListDialog(this, m_script);
+
+    dialog->exec();
 }

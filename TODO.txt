@@ -5,6 +5,7 @@
 * Check existence of script Inputs, Outputs, Variables on select
 * Script Editing should not be live
 * Relais Support is missing
-* Stepper is missing
+* Stepper must be tested
 * Documentation
-
+* Stepper can be improved
+* Bluetooth stuff

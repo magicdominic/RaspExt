@@ -22,6 +22,8 @@ protected slots:
     void editRule();
     void deleteRule();
 
+    void editVariables();
+
     void okPressed();
 
 private:

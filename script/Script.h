@@ -26,6 +26,7 @@ public:
 
     void addRule(Rule* rule);
     void addVariable(Variable* var);
+    void clearVariables();
 
     void setConfig(ConfigManager* config); // used for Input and Output List
     std::list<HWInput*> getInputList() const;

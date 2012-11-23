@@ -58,27 +58,3 @@ RPiRevision getRPiRevision()
 #endif
 }
 
-/*
-// TODO: rename and move this to a better place
-// and think about enum instead of integer values
-int getRevision()
-{
-#ifdef RASPBERRY_PI
-    static int revision = -2;
-    if(revision != -2)
-        return revision;
-
-    // only update if it is needed
-    int fCpuInfo = open("/proc/cpuinfo", O_RDONLY);
-    if(fCpuInfo < 0)
-    {
-        revision = -1;
-        return revision;
-    }
-
-
-#else
-    return -1;
-#endif
-}
-*/

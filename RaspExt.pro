@@ -68,7 +68,9 @@ SOURCES += main.cpp \
     script/ActionOutputStepperSetPosition.cpp \
     util/Config.cpp \
     hw/BTThread.cpp \
-    script/ActionOutputStepperSetParam.cpp
+    script/ActionOutputStepperSetParam.cpp \
+    ui/VariableListDialog.cpp \
+    ui/VariableTableModel.cpp
 HEADERS += ui/MainWindow.h \
     ui/OutputRelaisFrame.h \
     ui/InputFaderFrame.h \
@@ -138,7 +140,9 @@ HEADERS += ui/MainWindow.h \
     script/ActionOutputStepperSetPosition.h \
     util/Config.h \
     hw/BTThread.h \
-    script/ActionOutputStepperSetParam.h
+    script/ActionOutputStepperSetParam.h \
+    ui/VariableListDialog.h \
+    ui/VariableTableModel.h
 FORMS += ui/MainWindow.ui \
     ui/RuleDialog.ui \
     ui/ScriptDialog.ui \

@@ -1,11 +1,28 @@
 
 #include "script/Variable.h"
 #include "script/VariableListener.h"
+#include "util/Debug.h"
 
 Variable::Variable()
 {
     m_value = 0;
     m_defaultValue = 0;
+}
+
+/**
+ * @brief Variable::clone This method clones this object. If there are listeners registered, this function cannot be used as this is dangerous
+ * @return clone of the given object
+ */
+Variable* Variable::clone()
+{
+    pi_assert(m_listListeners.empty());
+
+    Variable* var = new Variable();
+    var->m_name = m_name;
+    var->m_value = m_value;
+    var->m_defaultValue = m_defaultValue;
+
+    return var;
 }
 
 Variable* Variable::load(QDomElement* root)

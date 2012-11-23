@@ -18,10 +18,7 @@ Script::~Script()
         delete (*ruleIt);
     }
 
-    for(std::list<Variable*>::iterator varIt = m_listVars.begin(); varIt != m_listVars.end(); varIt++)
-    {
-        delete (*varIt);
-    }
+    this->clearVariables();
 }
 
 Script* Script::load(std::string name)
@@ -141,6 +138,19 @@ void Script::addRule(Rule* rule)
 void Script::addVariable(Variable *var)
 {
     m_listVars.push_back(var);
+}
+
+/**
+ * @brief Script::clearVariables This method deletes all variables in this script
+ */
+void Script::clearVariables()
+{
+    for(std::list<Variable*>::iterator varIt = m_listVars.begin(); varIt != m_listVars.end(); varIt++)
+    {
+        delete (*varIt);
+    }
+
+    m_listVars.clear();
 }
 
 void Script::init(ConfigManager *config)
