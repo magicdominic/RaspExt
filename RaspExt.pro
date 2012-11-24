@@ -70,7 +70,8 @@ SOURCES += main.cpp \
     hw/BTThread.cpp \
     script/ActionOutputStepperSetParam.cpp \
     ui/VariableListDialog.cpp \
-    ui/VariableTableModel.cpp
+    ui/VariableTableModel.cpp \
+    ui/VariableEditDialog.cpp
 HEADERS += ui/MainWindow.h \
     ui/OutputRelaisFrame.h \
     ui/InputFaderFrame.h \
@@ -142,7 +143,8 @@ HEADERS += ui/MainWindow.h \
     hw/BTThread.h \
     script/ActionOutputStepperSetParam.h \
     ui/VariableListDialog.h \
-    ui/VariableTableModel.h
+    ui/VariableTableModel.h \
+    ui/VariableEditDialog.h
 FORMS += ui/MainWindow.ui \
     ui/RuleDialog.ui \
     ui/ScriptDialog.ui \
@@ -156,7 +158,8 @@ FORMS += ui/MainWindow.ui \
     ui/OutputLEDFrame.ui \
     ui/OutputStepperFrame.ui \
     ui/OutputStepperDetailsDialog.ui \
-    ui/VariableListDialog.ui
+    ui/VariableListDialog.ui \
+    ui/VariableEditDialog.ui
 
 OTHER_FILES += \
     TODO.txt

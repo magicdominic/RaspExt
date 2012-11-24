@@ -1,7 +1,9 @@
 
 #include "ui/VariableListDialog.h"
 #include "script/Script.h"
+#include "ui/VariableEditDialog.h"
 #include "ui_VariableListDialog.h"
+#include "util/Debug.h"
 
 VariableListDialog::VariableListDialog(QWidget *parent, Script *script) :
     QDialog(parent),
@@ -38,7 +40,7 @@ void VariableListDialog::okPressed()
 {
     // update variables in script
     m_script->clearVariables();
-    for(unsigned int i = 0; i < m_model.rowCount(); i++)
+    for(int i = 0; i < m_model.rowCount(); i++)
     {
         // clone the variables as the ones in the list will be deleted by the list
         m_script->addVariable( m_model.getVariable(i)->clone() );
@@ -49,12 +51,48 @@ void VariableListDialog::okPressed()
 
 void VariableListDialog::addVariable()
 {
-    pi_warn("TODO");
+    Variable* variable = new Variable();
+
+    VariableEditDialog* dialog = new VariableEditDialog(this, variable);
+
+    // Check if the user clicked ok
+    // If yes, then add the variable to our script, otherwise discard it
+    if( dialog->exec() == Accepted)
+    {
+        m_model.addVariable(variable);
+    }
+    else
+    {
+        delete variable;
+    }
+
+    delete dialog;
 }
 
 void VariableListDialog::editVariable()
 {
-    pi_warn("TODO");
+    QModelIndexList indices = ui->listVariables->selectionModel()->selection().indexes();
+
+    if(indices.size() != 0)
+    {
+        Variable* variable = m_model.getVariable(indices.front().row())->clone();
+
+        VariableEditDialog* dialog = new VariableEditDialog(this, variable);
+
+        // Check if the user clicked ok
+        // If yes, then add the variable to our script, otherwise discard it
+        if( dialog->exec() == Accepted)
+        {
+            m_model.removeRow(indices.front().row());
+            m_model.addVariable(variable);
+        }
+        else
+        {
+            delete variable;
+        }
+
+        delete dialog;
+    }
 }
 
 void VariableListDialog::deleteVariable()
