@@ -72,11 +72,11 @@ private:
     IActionWidget* m_baseWidget;
 };
 
-class ActionOutputRelaisWidget : public IActionWidget
+class ActionOutputRelayWidget : public IActionWidget
 {
     Q_OBJECT
 public:
-    ActionOutputRelaisWidget(QWidget* parent, Script* script);
+    ActionOutputRelayWidget(QWidget* parent, Script* script);
 
     Action* assemble();
     void edit(Action* action);

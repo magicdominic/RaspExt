@@ -5,7 +5,7 @@
 #include "script/ActionOutput.h"
 #include "script/ActionOutputLED.h"
 #include "script/ActionOutputDCMotor.h"
-#include "script/ActionOutputRelais.h"
+#include "script/ActionOutputRelay.h"
 #include "script/ActionOutputStepper.h"
 #include "script/ActionOutputStepperSoftStop.h"
 #include "script/ActionOutputStepperRunVelocity.h"
@@ -160,8 +160,8 @@ void ActionOutputWidget::outputChanged(int index)
 
     switch(type)
     {
-    case HWOutput::Relais:
-        m_baseWidget = new ActionOutputRelaisWidget(this, m_script);
+    case HWOutput::Relay:
+        m_baseWidget = new ActionOutputRelayWidget(this, m_script);
         break;
     case HWOutput::DCMotor:
         m_baseWidget = new ActionOutputDCMotorWidget(this, m_script);
@@ -191,7 +191,7 @@ void ActionOutputWidget::edit(Action* act)
 
     QString str = QString::fromStdString( action->getHWName() );
 
-    for(unsigned int i = 0; i < m_comboOutput->count(); i++)
+    for(int i = 0; i < m_comboOutput->count(); i++)
     {
         if( m_comboOutput->itemText(i).compare(str, Qt::CaseInsensitive) == 0 )
         {
@@ -218,7 +218,7 @@ Action* ActionOutputWidget::assemble()
 }
 
 
-ActionOutputRelaisWidget::ActionOutputRelaisWidget(QWidget* parent, Script *script) : IActionWidget(parent)
+ActionOutputRelayWidget::ActionOutputRelayWidget(QWidget* parent, Script *script) : IActionWidget(parent)
 {
     // create comboBox and add items
     m_combo = new QComboBox(this);
@@ -226,7 +226,7 @@ ActionOutputRelaisWidget::ActionOutputRelaisWidget(QWidget* parent, Script *scri
     m_combo->addItem("On");
     m_combo->addItem("Toggle");
 
-    m_label = new QLabel("Set relais to", this);
+    m_label = new QLabel("Set relay to", this);
 
     QGridLayout* layout = new QGridLayout(this);
 
@@ -240,18 +240,18 @@ ActionOutputRelaisWidget::ActionOutputRelaisWidget(QWidget* parent, Script *scri
     this->setLayout(layout);
 }
 
-Action* ActionOutputRelaisWidget::assemble()
+Action* ActionOutputRelayWidget::assemble()
 {
-    ActionOutputRelais* action = new ActionOutputRelais();
+    ActionOutputRelay* action = new ActionOutputRelay();
 
-    action->setState( (ActionOutputRelais::State)m_combo->currentIndex() );
+    action->setState( (ActionOutputRelay::State)m_combo->currentIndex() );
 
     return action;
 }
 
-void ActionOutputRelaisWidget::edit(Action* act)
+void ActionOutputRelayWidget::edit(Action* act)
 {
-    ActionOutputRelais* action = (ActionOutputRelais*)act;
+    ActionOutputRelay* action = (ActionOutputRelay*)act;
     m_combo->setCurrentIndex( action->getState());
 }
 
@@ -371,7 +371,7 @@ void ActionOutputDCMotorWidget::edit(Action* act)
     {
         QString str = QString::fromStdString( action->getInputName() );
 
-        for(unsigned int i = 0; i < m_comboSpeed->count(); i++)
+        for(int i = 0; i < m_comboSpeed->count(); i++)
         {
             if( m_comboSpeed->itemText(i).compare(str, Qt::CaseInsensitive) == 0 )
             {
@@ -565,6 +565,7 @@ ActionOutputStepperSetParamWidget::ActionOutputStepperSetParamWidget(QWidget* pa
     m_comboIrun->addItem("set");
     m_spinIrun = new QSpinBox(this);
     m_spinIrun->setMinimum(0);
+    m_spinIrun->setMaximum(0xF);
 
     layout->addWidget(m_labelIrun, i, 0);
     layout->addWidget(m_comboIrun, i, 1);
@@ -578,6 +579,7 @@ ActionOutputStepperSetParamWidget::ActionOutputStepperSetParamWidget(QWidget* pa
     m_comboIhold->addItem("set");
     m_spinIhold = new QSpinBox(this);
     m_spinIhold->setMinimum(0);
+    m_spinIhold->setMaximum(0xF);
 
     layout->addWidget(m_labelIhold, i, 0);
     layout->addWidget(m_comboIhold, i, 1);
@@ -591,6 +593,7 @@ ActionOutputStepperSetParamWidget::ActionOutputStepperSetParamWidget(QWidget* pa
     m_comboVmax->addItem("set");
     m_spinVmax = new QSpinBox(this);
     m_spinVmax->setMinimum(0);
+    m_spinVmax->setMaximum(0xF);
 
     layout->addWidget(m_labelVmax, i, 0);
     layout->addWidget(m_comboVmax, i, 1);
@@ -604,6 +607,7 @@ ActionOutputStepperSetParamWidget::ActionOutputStepperSetParamWidget(QWidget* pa
     m_comboVmin->addItem("set");
     m_spinVmin = new QSpinBox(this);
     m_spinVmin->setMinimum(0);
+    m_spinVmin->setMaximum(0xF);
 
     layout->addWidget(m_labelVmin, i, 0);
     layout->addWidget(m_comboVmin, i, 1);
@@ -617,6 +621,7 @@ ActionOutputStepperSetParamWidget::ActionOutputStepperSetParamWidget(QWidget* pa
     m_comboMinSamples->addItem("set");
     m_spinMinSamples = new QSpinBox(this);
     m_spinMinSamples->setMinimum(0);
+    m_spinMinSamples->setMaximum(0x7);
 
     layout->addWidget(m_labelMinSamples, i, 0);
     layout->addWidget(m_comboMinSamples, i, 1);
@@ -630,6 +635,7 @@ ActionOutputStepperSetParamWidget::ActionOutputStepperSetParamWidget(QWidget* pa
     m_comboShaft->addItem("set");
     m_spinShaft = new QSpinBox(this);
     m_spinShaft->setMinimum(0);
+    m_spinShaft->setMaximum(1);
 
     layout->addWidget(m_labelShaft, i, 0);
     layout->addWidget(m_comboShaft, i, 1);
@@ -643,6 +649,7 @@ ActionOutputStepperSetParamWidget::ActionOutputStepperSetParamWidget(QWidget* pa
     m_comboAcc->addItem("set");
     m_spinAcc = new QSpinBox(this);
     m_spinAcc->setMinimum(0);
+    m_spinAcc->setMaximum(0xF);
 
     layout->addWidget(m_labelAcc, i, 0);
     layout->addWidget(m_comboAcc, i, 1);
@@ -656,6 +663,7 @@ ActionOutputStepperSetParamWidget::ActionOutputStepperSetParamWidget(QWidget* pa
     m_comboAbsThr->addItem("set");
     m_spinAbsThr = new QSpinBox(this);
     m_spinAbsThr->setMinimum(0);
+    m_spinAbsThr->setMaximum(0xF);
 
     layout->addWidget(m_labelAbsThr, i, 0);
     layout->addWidget(m_comboAbsThr, i, 1);
@@ -669,6 +677,7 @@ ActionOutputStepperSetParamWidget::ActionOutputStepperSetParamWidget(QWidget* pa
     m_comboDelThr->addItem("set");
     m_spinDelThr = new QSpinBox(this);
     m_spinDelThr->setMinimum(0);
+    m_spinDelThr->setMaximum(0xF);
 
     layout->addWidget(m_labelDelThr, i, 0);
     layout->addWidget(m_comboDelThr, i, 1);
@@ -681,6 +690,7 @@ ActionOutputStepperSetParamWidget::ActionOutputStepperSetParamWidget(QWidget* pa
     m_comboFS2StallEn->addItem("set");
     m_spinFS2StallEn = new QSpinBox(this);
     m_spinFS2StallEn->setMinimum(0);
+    m_spinFS2StallEn->setMaximum(0x7);
 
     layout->addWidget(m_labelFS2StallEn, i, 0);
     layout->addWidget(m_comboFS2StallEn, i, 1);
@@ -693,6 +703,7 @@ ActionOutputStepperSetParamWidget::ActionOutputStepperSetParamWidget(QWidget* pa
     m_comboAccShape->addItem("set");
     m_spinAccShape = new QSpinBox(this);
     m_spinAccShape->setMinimum(0);
+    m_spinAccShape->setMaximum(1);
 
     layout->addWidget(m_labelAccShape, i, 0);
     layout->addWidget(m_comboAccShape, i, 1);
@@ -705,6 +716,7 @@ ActionOutputStepperSetParamWidget::ActionOutputStepperSetParamWidget(QWidget* pa
     m_comboStepMode->addItem("set");
     m_spinStepMode = new QSpinBox(this);
     m_spinStepMode->setMinimum(0);
+    m_spinStepMode->setMaximum(3);
 
     layout->addWidget(m_labelStepMode, i, 0);
     layout->addWidget(m_comboStepMode, i, 1);
@@ -717,6 +729,7 @@ ActionOutputStepperSetParamWidget::ActionOutputStepperSetParamWidget(QWidget* pa
     m_comboDC100StEn->addItem("set");
     m_spinDC100StEn = new QSpinBox(this);
     m_spinDC100StEn->setMinimum(0);
+    m_spinDC100StEn->setMaximum(1);
 
     layout->addWidget(m_labelDC100StEn, i, 0);
     layout->addWidget(m_comboDC100StEn, i, 1);
@@ -730,6 +743,7 @@ ActionOutputStepperSetParamWidget::ActionOutputStepperSetParamWidget(QWidget* pa
     m_comboPWMJEn->addItem("set");
     m_spinPWMJEn = new QSpinBox(this);
     m_spinPWMJEn->setMinimum(0);
+    m_spinPWMJEn->setMaximum(1);
 
     layout->addWidget(m_labelPWMJEn, i, 0);
     layout->addWidget(m_comboPWMJEn, i, 1);
@@ -741,6 +755,7 @@ ActionOutputStepperSetParamWidget::ActionOutputStepperSetParamWidget(QWidget* pa
     QLabel* m_labelPWMfreq2 = new QLabel("set");
     m_spinPWMfreq = new QSpinBox(this);
     m_spinPWMfreq->setMinimum(0);
+    m_spinPWMfreq->setMaximum(1);
 
     layout->addWidget(m_labelPWMfreq, i, 0);
     layout->addWidget(m_labelPWMfreq2, i, 1);
@@ -754,6 +769,7 @@ ActionOutputStepperSetParamWidget::ActionOutputStepperSetParamWidget(QWidget* pa
     m_comboSecPos->addItem("set");
     m_spinSecPos = new QSpinBox(this);
     m_spinSecPos->setMinimum(0);
+    m_spinSecPos->setMaximum(0x03FF);
 
     layout->addWidget(m_labelSecPos, i, 0);
     layout->addWidget(m_comboSecPos, i, 1);
@@ -921,7 +937,7 @@ void ActionVariableWidget::edit(Action* act)
 
     QString str = QString::fromStdString( action->getVarName() );
 
-    for(unsigned int i = 0; i < m_combo->count(); i++)
+    for(int i = 0; i < m_combo->count(); i++)
     {
         if( m_combo->itemText(i).compare(str, Qt::CaseInsensitive) == 0 )
         {
@@ -1017,7 +1033,7 @@ void ActionCallRuleWidget::edit(Action* act)
 
     QString str = QString::fromStdString( action->getRuleName() );
 
-    for(unsigned int i = 0; i < m_comboRule->count(); i++)
+    for(int i = 0; i < m_comboRule->count(); i++)
     {
         if( m_comboRule->itemText(i).compare(str, Qt::CaseInsensitive) == 0 )
         {

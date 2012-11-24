@@ -1,29 +1,29 @@
 
-#include "hw/HWOutputRelais.h"
+#include "hw/HWOutputRelay.h"
 
 #include "util/Debug.h"
 
 #include <QDomElement>
 
-HWOutputRelais::HWOutputRelais()
+HWOutputRelay::HWOutputRelay()
 {
-    m_type = Relais;
+    m_type = Relay;
     m_value = false;
 }
 
-HWOutput* HWOutputRelais::load(QDomElement* root)
+HWOutput* HWOutputRelay::load(QDomElement* root)
 {
-    HWOutputRelais* hw = new HWOutputRelais();
+    HWOutputRelay* hw = new HWOutputRelay();
 
     return hw;
 }
 
-QDomElement HWOutputRelais::save(QDomElement *root, QDomDocument *document)
+QDomElement HWOutputRelay::save(QDomElement *root, QDomDocument *document)
 {
     QDomElement output = HWOutput::save(root, document);
 
     QDomElement type = document->createElement("type");
-    QDomText typeText = document->createTextNode("Relais");
+    QDomText typeText = document->createTextNode("Relay");
     type.appendChild(typeText);
 
     output.appendChild(type);
@@ -31,12 +31,12 @@ QDomElement HWOutputRelais::save(QDomElement *root, QDomDocument *document)
     return output;
 }
 
-bool HWOutputRelais::getValue() const
+bool HWOutputRelay::getValue() const
 {
     return m_value;
 }
 
-void HWOutputRelais::setValue(bool v)
+void HWOutputRelay::setValue(bool v)
 {
     // if we are in override mode, just return
     if(m_bOverride)
@@ -49,7 +49,7 @@ void HWOutputRelais::setValue(bool v)
     }
 }
 
-bool HWOutputRelais::setOverrideValue(bool v)
+bool HWOutputRelay::setOverrideValue(bool v)
 {
     if(!m_bOverride)
         return false;

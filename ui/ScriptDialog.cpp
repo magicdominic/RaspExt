@@ -5,6 +5,8 @@
 #include "ui/RuleDialog.h"
 #include "ui/VariableListDialog.h"
 
+#include <QMessageBox>
+
 
 ScriptDialog::ScriptDialog(QWidget *parent, Script *script, ConfigManager* config) :
     QDialog(parent),
@@ -40,7 +42,15 @@ void ScriptDialog::okPressed()
 {
     m_script->setName( ui->editName->text().toStdString() );
     m_script->setDescription( ui->editDesc->text().toStdString() );
-    // TODO: check m_name and m_desc
+
+    if(m_script->getName().empty())
+    {
+        // name is empty, we cannot save a script with an empty name
+        QMessageBox(QMessageBox::Warning, "Empty Name", "The name of a script cannot be empty! Please fill in a name", QMessageBox::Ok, this).exec();
+        return;
+    }
+
+    // TODO: check if a file with this name already exists, and if yes, abort
 
     this->done(Accepted);
 }

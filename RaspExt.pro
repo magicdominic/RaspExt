@@ -8,7 +8,6 @@ TARGET = RaspExt
 TEMPLATE = app
 SOURCES += main.cpp \
     ui/MainWindow.cpp \
-    ui/OutputRelaisFrame.cpp \
     ui/InputFaderFrame.cpp \
     ui/ScriptsTableModel.cpp \
     ui/ActionTableModel.cpp \
@@ -20,13 +19,11 @@ SOURCES += main.cpp \
     hw/HWInputButton.cpp \
     hw/HWOutput.cpp \
     util/Debug.cpp \
-    hw/HWOutputRelais.cpp \
     ConfigManager.cpp \
     script/ConditionInputButton.cpp \
     script/Script.cpp \
     script/Rule.cpp \
     script/ConditionInput.cpp \
-    script/ActionOutputRelais.cpp \
     script/ActionOutput.cpp \
     script/Action.cpp \
     script/Condition.cpp \
@@ -71,9 +68,11 @@ SOURCES += main.cpp \
     script/ActionOutputStepperSetParam.cpp \
     ui/VariableListDialog.cpp \
     ui/VariableTableModel.cpp \
-    ui/VariableEditDialog.cpp
+    ui/VariableEditDialog.cpp \
+    script/ActionOutputRelay.cpp \
+    hw/HWOutputRelay.cpp \
+    ui/OutputRelayFrame.cpp
 HEADERS += ui/MainWindow.h \
-    ui/OutputRelaisFrame.h \
     ui/InputFaderFrame.h \
     ui/ScriptsTableModel.h \
     ui/ActionTableModel.h \
@@ -97,7 +96,6 @@ HEADERS += ui/MainWindow.h \
     script/Condition.h \
     script/ConditionInputButton.h \
     script/Action.h \
-    script/ActionOutputRelais.h \
     script/ActionOutput.h \
     hw/HWInputButtonGPIO.h \
     ui/ScriptDialogTableModel.h \
@@ -126,7 +124,6 @@ HEADERS += ui/MainWindow.h \
     script/ActionOutputDCMotor.h \
     hw/PCF8575I2C.h \
     hw/HWInputButtonI2C.h \
-    hw/HWOutputRelais.h \
     hw/HWOutputLED.h \
     script/ActionOutputLED.h \
     ui/OutputLEDFrame.h \
@@ -144,12 +141,14 @@ HEADERS += ui/MainWindow.h \
     script/ActionOutputStepperSetParam.h \
     ui/VariableListDialog.h \
     ui/VariableTableModel.h \
-    ui/VariableEditDialog.h
+    ui/VariableEditDialog.h \
+    script/ActionOutputRelay.h \
+    hw/HWOutputRelay.h \
+    ui/OutputRelayFrame.h
 FORMS += ui/MainWindow.ui \
     ui/RuleDialog.ui \
     ui/ScriptDialog.ui \
     ui/InputFaderFrame.ui \
-    ui/OutputRelaisFrame.ui \
     ui/InputButtonFrame.ui \
     ui/ConditionDialog.ui \
     ui/VariableFrame.ui \
@@ -159,7 +158,8 @@ FORMS += ui/MainWindow.ui \
     ui/OutputStepperFrame.ui \
     ui/OutputStepperDetailsDialog.ui \
     ui/VariableListDialog.ui \
-    ui/VariableEditDialog.ui
+    ui/VariableEditDialog.ui \
+    ui/OutputRelayFrame.ui
 
 OTHER_FILES += \
     TODO.txt

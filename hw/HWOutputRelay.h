@@ -1,12 +1,12 @@
-#ifndef HWOUTPUTRELAIS_H
-#define HWOUTPUTRELAIS_H
+#ifndef HWOUTPUTRELAY_H
+#define HWOUTPUTRELAY_H
 
 #include "hw/HWOutput.h"
 
-class HWOutputRelais : public HWOutput
+class HWOutputRelay : public HWOutput
 {
 public:
-    HWOutputRelais();
+    HWOutputRelay();
 
     static HWOutput* load(QDomElement* root);
     virtual QDomElement save(QDomElement* root, QDomDocument* document);
@@ -21,4 +21,4 @@ private:
 
 // TODO: copy I2C Implementation from HWOutputLEDI2C
 
-#endif // HWOUTPUTRELAIS_H
+#endif // HWOUTPUTRELAY_H

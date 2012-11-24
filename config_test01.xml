@@ -22,16 +22,16 @@
         <Channel>0</Channel>
     </input>
     <output>
-        <name>Relais 2</name>
-        <type>Relais</type>
+        <name>Relay 2</name>
+        <type>Relay</type>
     </output>
     <output>
-        <name>Relais 1</name>
-        <type>Relais</type>
+        <name>Relay 1</name>
+        <type>Relay</type>
     </output>
     <output>
-        <name>Relais 4</name>
-        <type>Relais</type>
+        <name>Relay 4</name>
+        <type>Relay</type>
     </output>
     <output>
         <name>Motor 1</name>

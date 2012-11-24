@@ -1,18 +1,18 @@
 
-#include "script/ActionOutputRelais.h"
-#include "hw/HWOutputRelais.h"
+#include "script/ActionOutputRelay.h"
+#include "hw/HWOutputRelay.h"
 #include "util/Debug.h"
 
-ActionOutputRelais::ActionOutputRelais()
+ActionOutputRelay::ActionOutputRelay()
 {
     m_state = Off;
 }
 
-Action* ActionOutputRelais::load(QDomElement* root)
+Action* ActionOutputRelay::load(QDomElement* root)
 {
     QDomElement elem = root->firstChildElement();
 
-    ActionOutputRelais* action = new ActionOutputRelais();
+    ActionOutputRelay* action = new ActionOutputRelay();
 
     while(!elem.isNull())
     {
@@ -32,12 +32,12 @@ Action* ActionOutputRelais::load(QDomElement* root)
     return action;
 }
 
-QDomElement ActionOutputRelais::save(QDomElement* root, QDomDocument* document)
+QDomElement ActionOutputRelay::save(QDomElement* root, QDomDocument* document)
 {
     QDomElement action = ActionOutput::save(root, document);
 
     QDomElement subtype = document->createElement("subtype");
-    QDomText subtypeText = document->createTextNode("Relais");
+    QDomText subtypeText = document->createTextNode("Relay");
     subtype.appendChild(subtypeText);
 
     action.appendChild(subtype);
@@ -65,7 +65,7 @@ QDomElement ActionOutputRelais::save(QDomElement* root, QDomDocument* document)
     return action;
 }
 
-bool ActionOutputRelais::execute(unsigned int)
+bool ActionOutputRelay::execute(unsigned int)
 {
     pi_assert(m_hw != NULL);
 
@@ -79,27 +79,27 @@ bool ActionOutputRelais::execute(unsigned int)
         outputState = false;
         break;
     case Toggle:
-        outputState = !((HWOutputRelais*)m_hw)->getValue();
+        outputState = !((HWOutputRelay*)m_hw)->getValue();
         break;
     }
-    ((HWOutputRelais*)m_hw)->setValue(outputState);
+    ((HWOutputRelay*)m_hw)->setValue(outputState);
 
     return true;
 }
 
-std::string ActionOutputRelais::getDescription() const
+std::string ActionOutputRelay::getDescription() const
 {
     std::string str = std::string("Set ").append(m_HWName).append(" to ");
     switch(m_state)
     {
     case On:
-        str.append("ON");
+        str.append("On");
         break;
     case Off:
-        str.append("OFF");
+        str.append("Off");
         break;
     case Toggle:
-        str.append("Toggle"); // TODO: find better description
+        str.append("Toggle");
         break;
     }
 

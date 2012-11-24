@@ -6,7 +6,7 @@
 #include "ui/InputButtonFrame.h"
 
 #include "ui/OutputLEDFrame.h"
-#include "ui/OutputRelaisFrame.h"
+#include "ui/OutputRelayFrame.h"
 #include "ui/OutputDCMotorFrame.h"
 #include "ui/OutputStepperFrame.h"
 
@@ -214,8 +214,8 @@ void MainWindow::addOutput(HWOutput* hw)
 
     switch(hw->getType())
     {
-    case HWOutput::Relais:
-        frame = new OutputRelaisFrame((HWOutputRelais*)hw);
+    case HWOutput::Relay:
+        frame = new OutputRelayFrame((HWOutputRelay*)hw);
         break;
     case HWOutput::DCMotor:
         frame = new OutputDCMotorFrame((HWOutputDCMotor*)hw);

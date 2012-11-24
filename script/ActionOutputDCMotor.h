@@ -35,6 +35,4 @@ private:
     HWInput* m_hwInput;
 };
 
-// TODO: it should be possible to set speed based on fader value
-
 #endif // ACTIONOUTPUTDCMOTOR_H

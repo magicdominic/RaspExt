@@ -213,8 +213,7 @@ void I2CThread::run()
 
             if(nanosleep(&sleep, NULL)  == -1)
             {
-                // todo: remove
-                pi_warn("Interrupted by signal");
+                // Interrupted by signal, normally this happens to wake this thread
             }
             continue;
         }
@@ -237,8 +236,6 @@ void I2CThread::run()
             if( nanosleep(&waitTime, NULL) < 0)
             {
                 // we have been interrupted by a signal, normally this happens to wake this thread
-                // todo: remove
-                pi_warn("Interrupted by signal");
 
                 // go back to start and check input and output queues
                 continue;

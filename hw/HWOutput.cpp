@@ -3,7 +3,7 @@
 #include "hw/HWOutputListener.h"
 
 #include "hw/HWOutputLED.h"
-#include "hw/HWOutputRelais.h"
+#include "hw/HWOutputRelay.h"
 #include "hw/HWOutputDCMotor.h"
 #include "hw/HWOutputStepper.h"
 
@@ -47,8 +47,8 @@ HWOutput* HWOutput::load(QDomElement *root)
             HWOutputType type = StringToHWOutputType(elem.text().toStdString());
             switch(type)
             {
-            case Relais:
-                hw = HWOutputRelais::load(root);
+            case Relay:
+                hw = HWOutputRelay::load(root);
                 break;
             case DCMotor:
                 hw = HWOutputDCMotor::load(root);
@@ -58,6 +58,9 @@ HWOutput* HWOutput::load(QDomElement *root)
                 break;
             case Stepper:
                 hw = HWOutputStepper::load(root);
+                break;
+            default:
+                pi_warn("Unsupported output type");
                 break;
             }
         }
@@ -148,8 +151,8 @@ std::string HWOutput::HWOutputTypeToString(HWOutputType type)
 {
     switch(type)
     {
-    case Relais:
-        return "Relais";
+    case Relay:
+        return "Relay";
     case DCMotor:
         return "DCMotor";
     case LED:
@@ -165,8 +168,8 @@ std::string HWOutput::HWOutputTypeToString(HWOutputType type)
 HWOutput::HWOutputType HWOutput::StringToHWOutputType(std::string str)
 {
     const char* cstr = str.c_str();
-    if( strcasecmp(cstr, "relais") == 0)
-        return Relais;
+    if( strcasecmp(cstr, "relay") == 0)
+        return Relay;
     else if( strcasecmp(cstr, "dcmotor") == 0)
         return DCMotor;
     else if( strcasecmp(cstr, "led") == 0)

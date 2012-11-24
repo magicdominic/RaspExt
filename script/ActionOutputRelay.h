@@ -1,9 +1,9 @@
-#ifndef ACTIONOUTPUTRELAIS_H
-#define ACTIONOUTPUTRELAIS_H
+#ifndef ACTIONOUTPUTRELAY_H
+#define ACTIONOUTPUTRELAY_H
 
 #include "script/ActionOutput.h"
 
-class ActionOutputRelais : public ActionOutput
+class ActionOutputRelay : public ActionOutput
 {
 public:
     enum State
@@ -13,7 +13,7 @@ public:
         Toggle = 2,
     };
 
-    ActionOutputRelais();
+    ActionOutputRelay();
     static Action* load(QDomElement* root);
     virtual QDomElement save(QDomElement* root, QDomDocument* document);
 
@@ -29,4 +29,4 @@ private:
 
 };
 
-#endif // ACTIONOUTPUTRELAIS_H
+#endif // ACTIONOUTPUTRELAY_H

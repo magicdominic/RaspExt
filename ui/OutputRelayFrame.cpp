@@ -1,10 +1,10 @@
 
-#include "ui/OutputRelaisFrame.h"
+#include "ui/OutputRelayFrame.h"
 #include "util/Debug.h"
 
-#include "ui_OutputRelaisFrame.h"
+#include "ui_OutputRelayFrame.h"
 
-OutputRelaisFrame::OutputRelaisFrame(HWOutputRelais* hw) : OutputFrame(hw), ui(new Ui::OutputRelaisFrame())
+OutputRelayFrame::OutputRelayFrame(HWOutputRelay* hw) : OutputFrame(hw), ui(new Ui::OutputRelayFrame())
 {
     ui->setupUi(this);
     m_hw = hw;
@@ -17,7 +17,7 @@ OutputRelaisFrame::OutputRelaisFrame(HWOutputRelais* hw) : OutputFrame(hw), ui(n
     QObject::connect(ui->buttonToggle, SIGNAL(clicked()), this, SLOT(toggleClicked()));
 }
 
-OutputRelaisFrame::~OutputRelaisFrame()
+OutputRelayFrame::~OutputRelayFrame()
 {
     m_hw->unregisterOutputListener(this);
 
@@ -25,7 +25,7 @@ OutputRelaisFrame::~OutputRelaisFrame()
 }
 
 void
-OutputRelaisFrame::overrideClicked()
+OutputRelayFrame::overrideClicked()
 {
     m_hw->setOverride(!m_hw->getOverride());
 
@@ -42,12 +42,12 @@ OutputRelaisFrame::overrideClicked()
 }
 
 void
-OutputRelaisFrame::toggleClicked()
+OutputRelayFrame::toggleClicked()
 {
     m_hw->setOverrideValue(!m_hw->getValue());
 }
 
-void OutputRelaisFrame::onOutputChangedGUI()
+void OutputRelayFrame::onOutputChangedGUI()
 {
     if(m_hw->getValue())
     {

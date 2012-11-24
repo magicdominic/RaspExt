@@ -151,6 +151,9 @@ void ConditionInputWidget::inputChanged(int index)
         m_baseWidget = new ConditionInputFaderWidget(this);
         m_layout->addWidget(m_baseWidget, 2, 0, 1, 2);
         break;
+    default:
+        pi_warn("Unsupported input type");
+        break;
     }
 }
 
@@ -324,7 +327,7 @@ void ConditionVariableWidget::edit(Condition* cond)
 
     QString str = QString::fromStdString( condition->getVarName() );
 
-    for(unsigned int i = 0; i < m_combo->count(); i++)
+    for(int i = 0; i < m_combo->count(); i++)
     {
         if( m_combo->itemText(i).compare(str, Qt::CaseInsensitive) == 0 )
         {

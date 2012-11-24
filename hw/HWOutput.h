@@ -15,7 +15,7 @@ class HWOutput
 public:
     enum HWOutputType
     {
-        Relais = 0,
+        Relay = 0,
         DCMotor = 1,
         LED = 2,
         Stepper = 3,

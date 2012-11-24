@@ -210,7 +210,7 @@ std::vector<Rule*> Script::getRuleList() const
 Rule* Script::getRuleByName(std::string name) const
 {
     const char* cstr = name.c_str();
-    for(int i = 0; i < m_listRules.size(); i++)
+    for(unsigned int i = 0; i < m_listRules.size(); i++)
     {
         if(strcasecmp( m_listRules[i]->getName().c_str(), cstr) == 0)
             return m_listRules[i];

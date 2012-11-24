@@ -13,7 +13,6 @@ Condition* ConditionInput::load(QDomElement* root)
     {
         if(elem.tagName().toLower().compare("subtype") == 0)
         {
-            // todo: use function
             if(elem.text().toLower().compare("button") == 0)
                 return ConditionInputButton::load(root);
             else if(elem.text().toLower().compare("fader") == 0)
