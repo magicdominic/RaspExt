@@ -157,7 +157,7 @@ void I2CThread::run()
     {
     case Revision1:
         m_handle = open("/dev/i2c-0", O_RDWR);
-    break;
+        break;
     case Revision2:
         m_handle = open("/dev/i2c-1", O_RDWR);
         break;

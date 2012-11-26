@@ -27,7 +27,7 @@ RPiRevision getRPiRevision()
     char line[128];
     while( fgets(line, sizeof line, file) != NULL)
     {
-        if(strncmp(line, "CPU revision", 12) == 0)
+        if(strncmp(line, "Revision", 8) == 0)
         {
             const char* strRevision = strchr(line, ':') + 2;
 

@@ -48,6 +48,7 @@ QDomElement HWOutputStepper::save(QDomElement *root, QDomDocument *document)
 
 void HWOutputStepper::refreshFullStatus()
 {
+    this->outputChanged();
 }
 
 void HWOutputStepper::softStop()

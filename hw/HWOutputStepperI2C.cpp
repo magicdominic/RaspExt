@@ -98,8 +98,6 @@ void HWOutputStepperI2C::setParam(Param param)
 
 void HWOutputStepperI2C::refreshFullStatus()
 {
-    HWOutputStepper::refreshFullStatus();
-
     m_i2cThread->addOutput(std::bind(&HWOutputStepperI2C::poll, this, std::placeholders::_1));
 }
 
@@ -126,7 +124,7 @@ void HWOutputStepperI2C::poll(int fd)
 
     // read back value
     ret = read(fd, buf, 8);
-    if(ret != 1)
+    if(ret != 8)
     {
         pi_warn("Could not read from bus");
         return;
@@ -169,7 +167,7 @@ void HWOutputStepperI2C::poll(int fd)
 
     // read back value
     ret = read(fd, buf, 8);
-    if(ret != 1)
+    if(ret != 8)
     {
         pi_warn("Could not read from bus");
         return;
@@ -187,6 +185,8 @@ void HWOutputStepperI2C::poll(int fd)
     m_fullStatus.minSamples = (buf[7] & 0x1C) >> 2;
     m_fullStatus.dc100StallEnable = (buf[7] & 0x02) >> 1;
     m_fullStatus.PWMJitterEnable = (buf[7] & 0x01);
+
+    HWOutputStepper::refreshFullStatus();
 }
 
 void HWOutputStepperI2C::softStopI2C(int fd)
