@@ -14,7 +14,6 @@ HWOutputLED::HWOutputLED()
 
 HWOutput* HWOutputLED::load(QDomElement* root)
 {
-
     HWOutputLED* hw = NULL;
     QDomElement elem = root->firstChildElement();
 

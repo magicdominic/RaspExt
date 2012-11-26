@@ -1,7 +1,6 @@
 #ifndef HWOUTPUTLEDI2C_H
 #define HWOUTPUTLEDI2C_H
 
-
 #include "hw/HWOutputLED.h"
 #include "hw/I2COutput.h"
 

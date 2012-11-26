@@ -1,5 +1,6 @@
 
 #include "hw/HWOutputRelay.h"
+#include "hw/HWOutputRelayI2C.h"
 
 #include "util/Debug.h"
 
@@ -13,7 +14,23 @@ HWOutputRelay::HWOutputRelay()
 
 HWOutput* HWOutputRelay::load(QDomElement* root)
 {
-    HWOutputRelay* hw = new HWOutputRelay();
+    HWOutputRelay* hw = NULL;
+    QDomElement elem = root->firstChildElement();
+
+    while(!elem.isNull())
+    {
+        if(elem.tagName().toLower().compare("hwtype") == 0)
+        {
+            if(elem.text().toLower().compare("i2c") == 0)
+            {
+                hw = (HWOutputRelay*)HWOutputRelayI2C::load(root);
+            }
+        }
+        elem = elem.nextSiblingElement();
+    }
+
+    if(hw == NULL)
+        hw =  new HWOutputRelay();
 
     return hw;
 }

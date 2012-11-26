@@ -15,7 +15,7 @@ public:
     void setValue(bool v);
     bool setOverrideValue(bool v);
 
-private:
+protected:
     bool m_value;
 };
 

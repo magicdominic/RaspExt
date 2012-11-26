@@ -24,6 +24,10 @@ ConfigManager::ConfigManager(MainWindow *win)
 
 ConfigManager::~ConfigManager()
 {
+    // stop active script before killing and deleting all the threads, otherwise there could be a race condition leading to a segfault
+    this->stopActiveScript();
+
+    // TODO: is it a good idea to kill the threads before clearing all inputs and ouputs?
     if(m_gpioThread != NULL)
     {
         m_gpioThread->kill();
@@ -42,7 +46,6 @@ ConfigManager::~ConfigManager()
         delete m_ruleTimer;
     }
 
-    // clear after killing each thread, as otherwise there could be pending operations in their queues
     this->clear();
 }
 
