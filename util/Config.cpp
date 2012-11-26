@@ -46,6 +46,9 @@ RPiRevision getRPiRevision()
                 break;
             }
 
+            // TODO: revision is 000f
+            revision = Revision2;
+
             break;
         }
     }

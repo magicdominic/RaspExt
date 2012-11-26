@@ -103,7 +103,8 @@ void PCF8575I2C::poll(int fd)
     for(std::list<InputElement>::iterator it = m_listInput.begin(); it != m_listInput.end(); it++)
     {
         // call every HW Element to check, if its input has changed
-        it->hw->onInputPolled((portState & (1 << it->port)) != 0 );
+        // Ugly hack to invert the button state here
+        it->hw->onInputPolled( !( (portState & (1 << it->port)) != 0 ) );
         // TODO: think about optimization here
     }
 }
