@@ -65,6 +65,21 @@ QDomElement ActionOutputRelay::save(QDomElement* root, QDomDocument* document)
     return action;
 }
 
+
+void ActionOutputRelay::getRequiredList(std::list<Rule::RequiredInput>* listInput,
+                                     std::list<Rule::RequiredOutput>* listOutput,
+                                     std::list<Rule::RequiredVariable>* listVariable) const
+{
+    if(listOutput != NULL)
+    {
+        Rule::RequiredOutput req;
+        req.name = m_HWName;
+        req.type = HWOutput::Relay;
+        listOutput->push_back(req);
+    }
+}
+
+
 bool ActionOutputRelay::execute(unsigned int)
 {
     pi_assert(m_hw != NULL);

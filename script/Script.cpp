@@ -130,6 +130,72 @@ bool Script::save()
     return true;
 }
 
+int RequiredInputCmp(const Rule::RequiredInput& lhs, const Rule::RequiredInput& rhs)
+{
+    return lhs.name.compare(rhs.name);
+}
+
+bool RequiredInputEq(const Rule::RequiredInput& lhs, const Rule::RequiredInput& rhs)
+{
+    return lhs.name.compare(rhs.name) == 0 && lhs.type == rhs.type;
+}
+
+int RequiredOutputCmp(const Rule::RequiredOutput& lhs, const Rule::RequiredOutput& rhs)
+{
+    return lhs.name.compare(rhs.name);
+}
+
+bool RequiredOutputEq(const Rule::RequiredOutput& lhs, const Rule::RequiredOutput& rhs)
+{
+    return lhs.name.compare(rhs.name) == 0 && lhs.type == rhs.type;
+}
+
+int RequiredVariableCmp(const Rule::RequiredVariable& lhs, const Rule::RequiredVariable& rhs)
+{
+    return lhs.name.compare(rhs.name);
+}
+
+bool RequiredVariableEq(const Rule::RequiredVariable& lhs, const Rule::RequiredVariable& rhs)
+{
+    return lhs.name.compare(rhs.name) == 0;
+}
+
+/**
+ * @brief Script::getRequiredList This method fills the given lists with all inputs, outputs and variables which are required by this script.
+ * This method also removes duplicates which are introduced as an input/output/variable can be used several times.
+ * @param listInput
+ * @param listOutput
+ * @param listVariable
+ */
+void Script::getRequiredList(std::list<Rule::RequiredInput>* listInput,
+                             std::list<Rule::RequiredOutput>* listOutput,
+                             std::list<Rule::RequiredVariable>* listVariable)
+{
+    for(std::vector<Rule*>::iterator ruleIt = m_listRules.begin(); ruleIt != m_listRules.end(); ruleIt++)
+    {
+        (*ruleIt)->getRequiredList(listInput, listOutput, listVariable);
+    }
+
+    // we have the lists, now we have to remove all duplicates in the list
+    if(listInput != NULL)
+    {
+        listInput->sort( RequiredInputCmp );
+        listInput->unique( RequiredInputEq );
+    }
+
+    if(listOutput != NULL)
+    {
+        listOutput->sort( RequiredOutputCmp );
+        listOutput->unique( RequiredOutputEq );
+    }
+
+    if(listVariable != NULL)
+    {
+        listVariable->sort( RequiredVariableCmp );
+        listVariable->unique( RequiredVariableEq );
+    }
+}
+
 void Script::addRule(Rule* rule)
 {
     m_listRules.push_back(rule);

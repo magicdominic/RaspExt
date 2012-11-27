@@ -89,11 +89,21 @@ QDomElement ConditionVariable::save(QDomElement* root, QDomDocument* document)
     return condition;
 }
 
+void ConditionVariable::getRequiredList(std::list<Rule::RequiredInput>* listInput,
+                                     std::list<Rule::RequiredOutput>* listOutput,
+                                     std::list<Rule::RequiredVariable>* listVariable) const
+{
+    if(listVariable != NULL)
+    {
+        Rule::RequiredVariable req;
+        req.name = m_varName;
+        listVariable->push_back(req);
+    }
+}
+
 void ConditionVariable::init(ConfigManager *config)
 {
     m_var = config->getVariableByName(m_varName);
-
-    pi_assert(m_var != NULL);
 
     if(m_var != NULL)
         m_var->registerVariableListener(this);

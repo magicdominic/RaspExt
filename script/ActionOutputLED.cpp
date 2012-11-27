@@ -46,6 +46,19 @@ QDomElement ActionOutputLED::save(QDomElement* root, QDomDocument* document)
     return action;
 }
 
+void ActionOutputLED::getRequiredList(std::list<Rule::RequiredInput>* listInput,
+                                     std::list<Rule::RequiredOutput>* listOutput,
+                                     std::list<Rule::RequiredVariable>* listVariable) const
+{
+    if(listOutput != NULL)
+    {
+        Rule::RequiredOutput req;
+        req.name = m_HWName;
+        req.type = HWOutput::LED;
+        listOutput->push_back(req);
+    }
+}
+
 bool ActionOutputLED::execute(unsigned int)
 {
     pi_assert(m_hw != NULL);

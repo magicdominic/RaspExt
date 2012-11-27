@@ -93,6 +93,12 @@ void MainWindow::editScript()
             return;
         }
 
+        // check if all required stuff exists
+        // if not and the user decides that this is not acceptable, we stop immediatly
+        if( !this->checkScript(script) )
+            return;
+
+        // now we can create the dialog an start editing this script
         ScriptDialog* dialog = new ScriptDialog(this, script, &m_config);
 
         if( dialog->exec() == QDialog::Accepted)
@@ -131,7 +137,15 @@ void MainWindow::selectScript()
 
     if(indices.size() != 0)
     {
-        m_config.setActiveScript( m_scriptsModel->getScript(indices.front().row()) );
+        Script* script = m_scriptsModel->getScript(indices.front().row());
+
+        // check if all required stuff exists
+        // if not and the user decides that this is not acceptable, we stop immediatly
+        if( !this->checkScript(script) )
+            return;
+
+
+        m_config.setActiveScript( script );
 
         this->updateScriptState();
     }
@@ -180,6 +194,100 @@ void MainWindow::updateScriptState()
         ui->labelScript->setText( QString::fromStdString( script->getName() ) );
     else
         ui->labelScript->setText("");
+}
+
+/**
+ * @brief MainWindow::checkScript This function checks all prerequisits of a script (e.g. inputs, outputs, variables).
+ * If it finds unmet prerequisits, it asks the user what to do.
+ * If everything looks good or the user accepts the unmet dependencies, we return true, false otherwise
+ * @param script
+ * @return
+ */
+bool MainWindow::checkScript(Script *script)
+{
+    std::list<Rule::RequiredInput> listInput;
+    std::list<Rule::RequiredOutput> listOutput;
+    std::list<Rule::RequiredVariable> listVariable;
+
+    script->getRequiredList(&listInput, &listOutput, &listVariable);
+
+    // Now we have the list of requirements, we now go through each list and delete all items which are present
+    // In the end we have lists containing only the unmet dependencies
+    for(std::list<Rule::RequiredInput>::iterator it = listInput.begin(); it != listInput.end(); it++)
+    {
+        HWInput* input = m_config.getInputByName((*it).name);
+        if(input != NULL && input->getType() == (*it).type)
+        {
+            listInput.erase(it--);
+        }
+    }
+
+    for(std::list<Rule::RequiredOutput>::iterator it = listOutput.begin(); it != listOutput.end(); it++)
+    {
+        HWOutput* output = m_config.getOutputByName((*it).name);
+        if(output != NULL && output->getType() == (*it).type)
+        {
+            listOutput.erase(it--);
+        }
+    }
+
+    // now the tricky part, variables
+    std::list<Variable*> listVariableScript = script->getVariableList();
+    for(std::list<Rule::RequiredVariable>::iterator it = listVariable.begin(); it != listVariable.end(); it++)
+    {
+        for(std::list<Variable*>::iterator varIt = listVariableScript.begin(); varIt != listVariableScript.end(); varIt++)
+        {
+            if( (*it).name.compare( (*varIt)->getName() ) == 0 )
+            {
+                listVariable.erase(it--);
+                break;
+            }
+        }
+    }
+
+
+    if( !listInput.empty() || !listOutput.empty() || !listVariable.empty())
+    {
+        QString message = "Not all required inputs, outputs or variables are present. The following parts are missing:\n\n";
+
+        for(std::list<Rule::RequiredInput>::iterator it = listInput.begin(); it != listInput.end(); it++)
+        {
+            message.append( "Input ");
+            message.append( QString::fromStdString((*it).name) );
+            message.append( " with type ");
+            message.append( QString::fromStdString( HWInput::HWInputTypeToString((*it).type) ) );
+            message.append( "\n" );
+        }
+
+        for(std::list<Rule::RequiredOutput>::iterator it = listOutput.begin(); it != listOutput.end(); it++)
+        {
+            message.append( "Output ");
+            message.append( QString::fromStdString((*it).name) );
+            message.append( " with type ");
+            message.append( QString::fromStdString( HWOutput::HWOutputTypeToString((*it).type) ) );
+            message.append( "\n" );
+        }
+
+        for(std::list<Rule::RequiredVariable>::iterator it = listVariable.begin(); it != listVariable.end(); it++)
+        {
+            message.append( "Variable " );
+            message.append( QString::fromStdString((*it).name) );
+            message.append( "\n" );
+        }
+
+        message.append("\nDo you want to continue without these parts?");
+
+        QMessageBox messageBox(QMessageBox::Warning, "Error",
+                               message,
+                               QMessageBox::Yes|QMessageBox::No, this);
+
+        if( messageBox.exec() == QMessageBox::Yes )
+            return true;
+        else
+            return false;
+    }
+
+    return true;
 }
 
 void MainWindow::addInput(HWInput* hw)

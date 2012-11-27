@@ -1,11 +1,12 @@
 #ifndef ACTION_H
 #define ACTION_H
 
+#include "script/Rule.h"
+
 #include <QDomElement>
 #include <string>
 
 class ConfigManager;
-class Rule;
 
 class Action
 {
@@ -22,6 +23,10 @@ public:
 
     static Action* load(QDomElement* root);
     virtual QDomElement save(QDomElement* root, QDomDocument* document);
+
+    virtual void getRequiredList(std::list<Rule::RequiredInput>* listInput,
+                                 std::list<Rule::RequiredOutput>* listOutput,
+                                 std::list<Rule::RequiredVariable>* listVariable) const {};
 
     virtual bool execute(__attribute__((unused)) unsigned int step) = 0; // return value specifies if Rule should continue executing
     virtual std::string getDescription() const = 0;

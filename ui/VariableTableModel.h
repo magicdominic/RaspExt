@@ -4,7 +4,7 @@
 #include <QAbstractTableModel>
 #include <vector>
 
-#include "script/Script.h"
+#include "script/Variable.h"
 
 class VariableTableModel : public QAbstractTableModel
 {

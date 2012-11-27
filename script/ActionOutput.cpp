@@ -66,8 +66,6 @@ QDomElement ActionOutput::save(QDomElement* root, QDomDocument* document)
 void ActionOutput::init(ConfigManager *config)
 {
     m_hw = config->getOutputByName(m_HWName);
-
-    pi_assert(m_hw != NULL);
 }
 
 void ActionOutput::deinit()

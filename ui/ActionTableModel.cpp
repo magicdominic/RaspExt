@@ -1,6 +1,6 @@
 
 #include "ui/ActionTableModel.h"
-
+#include "script/Action.h"
 
 ActionTableModel::ActionTableModel(QObject* parent, Rule* rule) : QAbstractTableModel(parent)
 {

@@ -1,8 +1,9 @@
 #ifndef CONDITION_H
 #define CONDITION_H
 
-#include <string>
 #include "script/Rule.h"
+
+#include <string>
 
 class Condition
 {
@@ -17,6 +18,10 @@ public:
 
     static Condition* load(QDomElement* root);
     virtual QDomElement save(QDomElement* root, QDomDocument* document);
+
+    virtual void getRequiredList(std::list<Rule::RequiredInput>* listInput,
+                                 std::list<Rule::RequiredOutput>* listOutput,
+                                 std::list<Rule::RequiredVariable>* listVariable) const {};
 
     virtual void init(ConfigManager* config) = 0;
     virtual void deinit() = 0;

@@ -64,6 +64,19 @@ QDomElement ConditionInputFader::save(QDomElement* root, QDomDocument* document)
     return condition;
 }
 
+void ConditionInputFader::getRequiredList(std::list<Rule::RequiredInput>* listInput,
+                                     std::list<Rule::RequiredOutput>* listOutput,
+                                     std::list<Rule::RequiredVariable>* listVariable) const
+{
+    if(listInput != NULL)
+    {
+        Rule::RequiredInput req;
+        req.name = m_HWName;
+        req.type = HWInput::Fader;
+        listInput->push_back(req);
+    }
+}
+
 void ConditionInputFader::onInputChanged(HWInput* hw)
 {
     pi_assert(m_hw == hw && m_hw->getType() == HWInput::Fader);

@@ -366,6 +366,11 @@ std::list<HWOutput*> ConfigManager::getOutputList() const
     return m_listOutput;
 }
 
+/**
+ * @brief ConfigManager::getInputByName Returns the HWInput object if there exists one with this name, NULL otherwise
+ * @param str
+ * @return
+ */
 HWInput* ConfigManager::getInputByName(std::string str)
 {
     for(std::list<HWInput*>::iterator it = m_listInput.begin(); it != m_listInput.end(); it++)
@@ -377,6 +382,11 @@ HWInput* ConfigManager::getInputByName(std::string str)
     return NULL;
 }
 
+/**
+ * @brief ConfigManager::getOutputByName Returns the HWOutput object if there exists one with this name, NULL otherwise
+ * @param str
+ * @return
+ */
 HWOutput* ConfigManager::getOutputByName(std::string str)
 {
     for(std::list<HWOutput*>::iterator it = m_listOutput.begin(); it != m_listOutput.end(); it++)

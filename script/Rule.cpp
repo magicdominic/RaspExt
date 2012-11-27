@@ -1,6 +1,7 @@
 
 #include "script/Rule.h"
-#include "script/ConditionInput.h"
+#include "script/Action.h"
+#include "script/Condition.h"
 #include "util/Debug.h"
 
 Rule::Rule()
@@ -108,6 +109,26 @@ void Rule::addAction(Action *action)
 {
     action->setRule(this);
     m_listActions.push_back(action);
+}
+
+/**
+ * @brief Rule::getRequiredList This function is used to get a list of all required inputs, outputs and variables.
+ * If a pointer to a list is NULL, this list will be ignored.
+ * @param listInput
+ * @param listOutput
+ * @param listVariable
+ */
+void Rule::getRequiredList(std::list<RequiredInput>* listInput, std::list<RequiredOutput>* listOutput, std::list<RequiredVariable>* listVariable)
+{
+    for(std::vector<Condition*>::iterator it = m_listConditions.begin(); it != m_listConditions.end(); it++)
+    {
+        (*it)->getRequiredList(listInput, listOutput, listVariable);
+    }
+
+    for(std::vector<Action*>::iterator it = m_listActions.begin(); it != m_listActions.end(); it++)
+    {
+        (*it)->getRequiredList(listInput, listOutput, listVariable);
+    }
 }
 
 void Rule::conditionChanged(Condition *cond)

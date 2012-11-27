@@ -18,6 +18,10 @@ public:
     static Action* load(QDomElement* root);
     virtual QDomElement save(QDomElement* root, QDomDocument* document);
 
+    void getRequiredList(std::list<Rule::RequiredInput>* listInput,
+                                 std::list<Rule::RequiredOutput>* listOutput,
+                                 std::list<Rule::RequiredVariable>* listVariable) const;
+
     void setVarName(std::string str) { m_varName = str;}
     std::string getVarName() const { return m_varName;}
 

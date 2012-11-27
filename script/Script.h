@@ -18,6 +18,10 @@ public:
 
     static Script* load(std::string name);
     bool save();
+
+    void getRequiredList(std::list<Rule::RequiredInput>* listInput,
+                         std::list<Rule::RequiredOutput>* listOutput,
+                         std::list<Rule::RequiredVariable>* listVariable);
     
     void setName(std::string str) { m_name = str;}
     std::string getName() const { return m_name;}

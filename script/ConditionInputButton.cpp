@@ -52,6 +52,19 @@ QDomElement ConditionInputButton::save(QDomElement* root, QDomDocument* document
     return condition;
 }
 
+void ConditionInputButton::getRequiredList(std::list<Rule::RequiredInput>* listInput,
+                                     std::list<Rule::RequiredOutput>* listOutput,
+                                     std::list<Rule::RequiredVariable>* listVariable) const
+{
+    if(listInput != NULL)
+    {
+        Rule::RequiredInput req;
+        req.name = m_HWName;
+        req.type = HWInput::Button;
+        listInput->push_back(req);
+    }
+}
+
 void ConditionInputButton::onInputChanged(HWInput* hw)
 {
     pi_assert(m_hw == hw && m_hw->getType() == HWInput::Button);

@@ -43,3 +43,17 @@ QDomElement ActionOutputStepper::save(QDomElement* root, QDomDocument* document)
 
     return action;
 }
+
+
+void ActionOutputStepper::getRequiredList(std::list<Rule::RequiredInput>* listInput,
+                                     std::list<Rule::RequiredOutput>* listOutput,
+                                     std::list<Rule::RequiredVariable>* listVariable) const
+{
+    if(listOutput != NULL)
+    {
+        Rule::RequiredOutput req;
+        req.name = m_HWName;
+        req.type = HWOutput::Stepper;
+        listOutput->push_back(req);
+    }
+}

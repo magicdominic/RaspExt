@@ -48,8 +48,6 @@ void ConditionInput::init(ConfigManager *config)
 {
     m_hw = config->getInputByName(m_HWName);
 
-    pi_assert(m_hw != NULL);
-
     if(m_hw != NULL)
         m_hw->registerInputListener(this);
 }

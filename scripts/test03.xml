@@ -2,14 +2,14 @@
     <rule>
         <condition>
             <type>input</type>
-            <name>Fader 1</name>
+            <name>Fader 4</name>
             <subtype>Fader</subtype>
             <trigger>changed</trigger>
             <TriggerValue>0</TriggerValue>
         </condition>
         <action>
             <type>output</type>
-            <name>Motor 1</name>
+            <name>Motor 2</name>
             <subtype>DCMotor</subtype>
             <InputName>Fader 1</InputName>
             <state>Forward</state>
@@ -30,7 +30,7 @@
     <rule>
         <condition>
             <type>input</type>
-            <name>Button 1</name>
+            <name>Button 5</name>
             <subtype>Button</subtype>
             <trigger>Pressed</trigger>
         </condition>

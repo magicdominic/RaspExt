@@ -23,6 +23,10 @@ public:
     static Condition* load(QDomElement* root);
     virtual QDomElement save(QDomElement* root, QDomDocument* document);
 
+    void getRequiredList(std::list<Rule::RequiredInput>* listInput,
+                                 std::list<Rule::RequiredOutput>* listOutput,
+                                 std::list<Rule::RequiredVariable>* listVariable) const;
+
     void onInputChanged(HWInput *hw);
     void onInputDestroy(HWInput *hw);
 

@@ -19,6 +19,9 @@ public:
     static Condition* load(QDomElement* root);
     virtual QDomElement save(QDomElement* root, QDomDocument* document);
 
+    virtual void getRequiredList(std::list<Rule::RequiredInput>* listInput,
+                                 std::list<Rule::RequiredOutput>* listOutput,
+                                 std::list<Rule::RequiredVariable>* listVariable) const;
 
     void init(ConfigManager* config);
     void deinit();

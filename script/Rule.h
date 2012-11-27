@@ -1,12 +1,14 @@
 #ifndef RULE_H
 #define RULE_H
 
-#include "script/Action.h"
-
 #include <QDomElement>
 #include <vector>
 
+#include "hw/HWInput.h"
+#include "hw/HWOutput.h"
+
 class Condition;
+class Action;
 class ConfigManager;
 
 class Rule
@@ -21,6 +23,38 @@ public:
     static Type StringToType(std::string str);
     static std::string TypeToString(Type type);
 
+    /**
+     * @brief The RequiredInput struct
+     * This struct is used to get a list of required inputs from every Condition / Action.
+     * Every input is specified using its name and its type. For correct operation both fields have to match the config.
+     */
+    struct RequiredInput
+    {
+        std::string name;
+        HWInput::HWInputType type;
+    };
+
+    /**
+     * @brief The RequiredOutput struct
+     * This struct is used to get a list of required ouputs from every Condition / Action.
+     * Every outputs is specified using its name and its type. For correct operation both fields have to match the config.
+     */
+    struct RequiredOutput
+    {
+        std::string name;
+        HWOutput::HWOutputType type;
+    };
+
+    /**
+     * @brief The RequiredVariable struct
+     * This struct is used to get a list of required variables from every Condition / Action.
+     * Every variables is matched using its name
+     */
+    struct RequiredVariable
+    {
+        std::string name;
+    };
+
     Rule();
     ~Rule();
 
@@ -32,6 +66,8 @@ public:
     void removeCondition(Condition* cond);
     // action will be deleted by this class
     void addAction(Action* action);
+
+    void getRequiredList(std::list<RequiredInput>* listInput, std::list<RequiredOutput>* listOutput, std::list<RequiredVariable>* listVariable);
 
     void conditionChanged(Condition* cond);
 

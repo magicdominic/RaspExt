@@ -41,6 +41,7 @@ protected slots:
 
 private:
     void updateScriptState();
+    bool checkScript(Script* script);
 
     Ui::MainWindow *ui;
     ScriptsTableModel* m_scriptsModel;
