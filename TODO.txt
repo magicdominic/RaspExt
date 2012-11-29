@@ -2,7 +2,6 @@
 * Config GUI
 * Add Sound Support
 * Script editing should not be live
-* Relay has to be tested
 * Stepper has be tested
 * Documentation
 * Stepper can be improved

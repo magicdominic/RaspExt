@@ -12,6 +12,7 @@
 #include "ui/OutputFrame.h"
 #include "ui/VariableFrame.h"
 #include "ui/ScriptsTableModel.h"
+#include "ui/ScriptConfigTableModel.h"
 
 namespace Ui {
     class MainWindow;
@@ -31,6 +32,8 @@ public:
     void removeVariable(Variable* var);
 
 protected slots:
+    void updateScriptConfig();
+
     void createScript();
     void editScript();
     void selectScript();
@@ -44,7 +47,10 @@ private:
     bool checkScript(Script* script);
 
     Ui::MainWindow *ui;
-    ScriptsTableModel* m_scriptsModel;
+    ScriptsTableModel m_scriptsModel;
+    ScriptInputTableModel m_scriptInputModel;
+    ScriptOutputTableModel m_scriptOutputModel;
+    ScriptVariableTableModel m_scriptVariableModel;
 
     ConfigManager m_config;
 

@@ -90,6 +90,14 @@ void ActionOutputDCMotor::getRequiredList(std::list<Rule::RequiredInput>* listIn
         req.type = HWOutput::DCMotor;
         listOutput->push_back(req);
     }
+
+    if(listInput != NULL && !m_inputName.empty())
+    {
+        Rule::RequiredInput req;
+        req.name = m_inputName;
+        req.type = HWInput::Fader;
+        listInput->push_back(req);
+    }
 }
 
 void ActionOutputDCMotor::init(ConfigManager *config)

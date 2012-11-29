@@ -72,7 +72,8 @@ SOURCES += main.cpp \
     script/ActionOutputRelay.cpp \
     hw/HWOutputRelay.cpp \
     ui/OutputRelayFrame.cpp \
-    hw/HWOutputRelayI2C.cpp
+    hw/HWOutputRelayI2C.cpp \
+    ui/ScriptConfigTableModel.cpp
 HEADERS += ui/MainWindow.h \
     ui/InputFaderFrame.h \
     ui/ScriptsTableModel.h \
@@ -146,7 +147,8 @@ HEADERS += ui/MainWindow.h \
     script/ActionOutputRelay.h \
     hw/HWOutputRelay.h \
     ui/OutputRelayFrame.h \
-    hw/HWOutputRelayI2C.h
+    hw/HWOutputRelayI2C.h \
+    ui/ScriptConfigTableModel.h
 FORMS += ui/MainWindow.ui \
     ui/RuleDialog.ui \
     ui/ScriptDialog.ui \

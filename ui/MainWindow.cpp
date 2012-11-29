@@ -1,6 +1,7 @@
 #include "ui/MainWindow.h"
 #include "ui_MainWindow.h"
 #include "ui/ScriptsTableModel.h"
+#include "ui/ScriptConfigTableModel.h"
 
 #include "ui/InputFaderFrame.h"
 #include "ui/InputButtonFrame.h"
@@ -23,16 +24,29 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    // Overview page
     ui->layoutInput->setAlignment(Qt::AlignTop);
     ui->layoutOutput->setAlignment(Qt::AlignTop);
     ui->layoutVariable->setAlignment(Qt::AlignTop);
 
 
-    m_scriptsModel = new ScriptsTableModel(ui->tableScripts);
-
-    ui->tableScripts->setModel(m_scriptsModel);
+    // Script page
+    ui->tableScripts->setModel(&m_scriptsModel);
     ui->tableScripts->horizontalHeader()->setStretchLastSection(true);
     ui->tableScripts->setColumnWidth(0, 200);
+
+
+    ui->tableScriptInput->setModel(&m_scriptInputModel);
+    ui->tableScriptInput->horizontalHeader()->setStretchLastSection(true);
+    ui->tableScriptInput->setColumnWidth(0, 150);
+
+    ui->tableScriptOutput->setModel(&m_scriptOutputModel);
+    ui->tableScriptOutput->horizontalHeader()->setStretchLastSection(true);
+    ui->tableScriptOutput->setColumnWidth(0, 150);
+
+    ui->tableScriptVariable->setModel(&m_scriptVariableModel);
+    ui->tableScriptVariable->horizontalHeader()->setStretchLastSection(true);
+    ui->tableScriptVariable->setColumnWidth(0, 150);
 
 
     // connect all signals-slots
@@ -40,6 +54,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->buttonSelectScript, SIGNAL(clicked()), this, SLOT(selectScript()));
     connect(ui->buttonEditScript, SIGNAL(clicked()), this, SLOT(editScript()));
     connect(ui->buttonDeleteScript, SIGNAL(clicked()), this, SLOT(deleteScript()));
+
+    connect(ui->tableScripts->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)), this, SLOT(updateScriptConfig()));
 
     connect(ui->buttonStop, SIGNAL(clicked()), this, SLOT(stopScript()));
     connect(ui->buttonPlayPause, SIGNAL(clicked()), this, SLOT(startPauseScript()));
@@ -55,10 +71,19 @@ MainWindow::~MainWindow()
     m_config.deinit();
     m_config.clear(); // has to be cleared before ui is deleted, otherwise ui widgets are no longer available and this would lead to a segfault
 
-    delete m_scriptsModel;
     delete ui;
 }
 
+void MainWindow::updateScriptConfig()
+{
+    QModelIndexList indices = ui->tableScripts->selectionModel()->selection().indexes();
+
+    QModelIndex index = indices.front();
+
+    m_scriptInputModel.setScript( m_scriptsModel.getScript( index.row() ) );
+    m_scriptOutputModel.setScript( m_scriptsModel.getScript( index.row() ) );
+    m_scriptVariableModel.setScript( m_scriptsModel.getScript( index.row() ) );
+}
 
 void MainWindow::createScript()
 {
@@ -71,7 +96,7 @@ void MainWindow::createScript()
         script->save();
 
         // add it to the gui
-        m_scriptsModel->addScript(script);
+        m_scriptsModel.addScript(script);
     }
 
     delete dialog;
@@ -84,7 +109,7 @@ void MainWindow::editScript()
 
     if(indices.size() != 0)
     {
-        Script* script = m_scriptsModel->getScript(indices.front().row());
+        Script* script = m_scriptsModel.getScript(indices.front().row());
 
         // check if script is selected, if yes, then display a warning and don't do anything
         if(script == m_config.getActiveScript())
@@ -107,7 +132,7 @@ void MainWindow::editScript()
             script->save();
 
             // this updates the description (and name) of a script in the ui
-            m_scriptsModel->changed();
+            m_scriptsModel.changed();
         }
 
         delete dialog;
@@ -121,13 +146,13 @@ void MainWindow::deleteScript()
     if(indices.size() != 0)
     {
         // check if script is selected, if yes, then display a warning and don't do anything
-        if(m_config.getActiveScript() == m_scriptsModel->getScript(indices.front().row()))
+        if(m_config.getActiveScript() == m_scriptsModel.getScript(indices.front().row()))
         {
             QMessageBox(QMessageBox::Warning, "Warning", "Cannot delete script because it is selected.\nPlease stop the script first", QMessageBox::Ok, this).exec();
             return;
         }
 
-        m_scriptsModel->removeRow(indices.front().row());
+        m_scriptsModel.removeRow(indices.front().row());
     }
 }
 
@@ -137,7 +162,7 @@ void MainWindow::selectScript()
 
     if(indices.size() != 0)
     {
-        Script* script = m_scriptsModel->getScript(indices.front().row());
+        Script* script = m_scriptsModel.getScript(indices.front().row());
 
         // check if all required stuff exists
         // if not and the user decides that this is not acceptable, we stop immediatly

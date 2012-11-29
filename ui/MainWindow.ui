@@ -55,7 +55,7 @@
       <item row="0" column="1" colspan="10">
        <widget class="QTabWidget" name="tabWidget">
         <property name="currentIndex">
-         <number>0</number>
+         <number>1</number>
         </property>
         <widget class="QWidget" name="tabOverview">
          <attribute name="title">
@@ -86,8 +86,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>419</width>
-                 <height>633</height>
+                 <width>98</width>
+                 <height>28</height>
                 </rect>
                </property>
                <property name="sizePolicy">
@@ -120,8 +120,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>420</width>
-                 <height>633</height>
+                 <width>98</width>
+                 <height>28</height>
                 </rect>
                </property>
                <property name="sizePolicy">
@@ -155,8 +155,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>419</width>
-                 <height>633</height>
+                 <width>98</width>
+                 <height>28</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -188,33 +188,37 @@
             <property name="sizeConstraint">
              <enum>QLayout::SetDefaultConstraint</enum>
             </property>
-            <item row="1" column="3">
-             <widget class="QPushButton" name="buttonEditScript">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
+            <item row="0" column="0" colspan="6">
+             <widget class="QTableView" name="tableScripts">
+              <property name="selectionMode">
+               <enum>QAbstractItemView::SingleSelection</enum>
               </property>
-              <property name="text">
-               <string>Edit</string>
+              <property name="selectionBehavior">
+               <enum>QAbstractItemView::SelectRows</enum>
               </property>
              </widget>
             </item>
-            <item row="1" column="2">
-             <widget class="QPushButton" name="buttonSelectScript">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
+            <item row="4" column="5">
+             <spacer name="horizontalSpacer_2">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
               </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item row="4" column="4">
+             <widget class="QPushButton" name="buttonDeleteScript">
               <property name="text">
-               <string>Select</string>
+               <string>Delete</string>
               </property>
              </widget>
             </item>
-            <item row="1" column="0">
+            <item row="4" column="0">
              <spacer name="horizontalSpacer">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
@@ -230,41 +234,75 @@
               </property>
              </spacer>
             </item>
-            <item row="0" column="0" colspan="6">
-             <widget class="QTableView" name="tableScripts">
-              <property name="selectionMode">
-               <enum>QAbstractItemView::SingleSelection</enum>
+            <item row="4" column="3">
+             <widget class="QPushButton" name="buttonEditScript">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
               </property>
-              <property name="selectionBehavior">
-               <enum>QAbstractItemView::SelectRows</enum>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="5">
-             <spacer name="horizontalSpacer_2">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item row="1" column="4">
-             <widget class="QPushButton" name="buttonDeleteScript">
               <property name="text">
-               <string>Delete</string>
+               <string>Edit</string>
               </property>
              </widget>
             </item>
-            <item row="1" column="1">
+            <item row="4" column="2">
+             <widget class="QPushButton" name="buttonSelectScript">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Select</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="1">
              <widget class="QPushButton" name="buttonCreateScript">
               <property name="text">
                <string>Create</string>
               </property>
+             </widget>
+            </item>
+            <item row="2" column="0" colspan="6">
+             <widget class="QFrame" name="frame">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="frameShape">
+               <enum>QFrame::StyledPanel</enum>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Raised</enum>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout_7">
+               <item>
+                <layout class="QGridLayout" name="gridLayout_2">
+                 <item row="1" column="0">
+                  <widget class="QTableView" name="tableScriptInput"/>
+                 </item>
+                 <item row="1" column="1">
+                  <widget class="QTableView" name="tableScriptOutput"/>
+                 </item>
+                 <item row="1" column="2">
+                  <widget class="QTableView" name="tableScriptVariable"/>
+                 </item>
+                 <item row="0" column="0" colspan="3">
+                  <widget class="QLabel" name="label_3">
+                   <property name="text">
+                    <string>Inputs, Outputs and Variables used by selected script</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
              </widget>
             </item>
            </layout>
