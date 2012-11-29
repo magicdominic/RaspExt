@@ -13,7 +13,10 @@ OutputStepperFrame::OutputStepperFrame(HWOutputStepper* hw) : OutputFrame(hw), u
 
     ui->labelName->setText(QString(hw->getName().c_str()));
 
+    // connect all signals - slots
     connect(ui->buttonDetails, SIGNAL(clicked()), this, SLOT(detailsClicked()));
+    connect(ui->buttonRunVelocity, SIGNAL(clicked()), this, SLOT(runVelocityClicked()));
+    connect(ui->buttonSoftStop, SIGNAL(clicked()), this, SLOT(softStopClicked()));
 }
 
 OutputStepperFrame::~OutputStepperFrame()
@@ -30,6 +33,16 @@ void OutputStepperFrame::detailsClicked()
     dialog->exec();
 
     delete dialog;
+}
+
+void OutputStepperFrame::runVelocityClicked()
+{
+    m_hw->runVelocity();
+}
+
+void OutputStepperFrame::softStopClicked()
+{
+    m_hw->softStop();
 }
 
 void OutputStepperFrame::onOutputChangedGUI()

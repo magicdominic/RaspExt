@@ -18,6 +18,8 @@ public:
 
 private slots:
     void detailsClicked();
+    void runVelocityClicked();
+    void softStopClicked();
     void onOutputChangedGUI();
 
 private:
