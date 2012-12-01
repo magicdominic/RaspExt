@@ -17,6 +17,7 @@ public:
         Var = 1, // cannot be named Variable as this leads to conflict with the class
         Sleep = 2,
         CallRule = 3,
+        Music = 4
     };
 
     void setRule(Rule* rule) { m_rule = rule;}

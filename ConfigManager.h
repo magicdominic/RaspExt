@@ -5,7 +5,6 @@
 #include "hw/HWOutput.h"
 #include "script/Variable.h"
 
-
 #include <list>
 #include <QFrame>
 
@@ -15,6 +14,7 @@ class I2CThread;
 class BTThread;
 class RuleTimerThread;
 class Script;
+class SoundManager;
 
 class ConfigManager
 {
@@ -60,6 +60,7 @@ public:
     GPIOInterruptThread* getGPIOThread();
     I2CThread* getI2CThread();
     RuleTimerThread* getRuleTimerThread();
+    SoundManager* getSoundManager() const { return m_soundManager;}
 
 private:
     ScriptState m_scriptState;
@@ -74,6 +75,8 @@ private:
     GPIOInterruptThread* m_gpioThread;
     I2CThread* m_i2cThread;
     RuleTimerThread* m_ruleTimer;
+
+    SoundManager* m_soundManager;
 };
 
 #endif // CONFIGMANAGER_H

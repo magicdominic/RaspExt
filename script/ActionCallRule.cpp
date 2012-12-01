@@ -72,7 +72,7 @@ bool ActionCallRule::execute(unsigned int start)
 
     m_rule->call();
 
-    return false;
+    return true;
 }
 
 std::string ActionCallRule::getDescription() const

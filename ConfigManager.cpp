@@ -10,6 +10,9 @@
 #include <QDomDocument>
 #include <QFile>
 
+// TEST CODE
+#include "SoundManager.h"
+
 ConfigManager::ConfigManager(MainWindow *win)
 {
     m_scriptState = Inactive;
@@ -20,6 +23,8 @@ ConfigManager::ConfigManager(MainWindow *win)
     m_gpioThread = NULL;
     m_i2cThread = NULL;
     m_ruleTimer = new RuleTimerThread();
+
+    m_soundManager = new SoundManager();
 }
 
 ConfigManager::~ConfigManager()
@@ -47,6 +52,8 @@ ConfigManager::~ConfigManager()
     }
 
     this->clear();
+
+    delete m_soundManager;
 }
 
 void ConfigManager::init()

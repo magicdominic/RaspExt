@@ -4,6 +4,7 @@
 QMAKE_CXXFLAGS += -std=c++0x
 QT += xml
 LIBS += -lbluetooth
+LIBS += -lSDL_mixer
 TARGET = RaspExt
 TEMPLATE = app
 SOURCES += main.cpp \
@@ -76,7 +77,9 @@ SOURCES += main.cpp \
     ui/ScriptConfigTableModel.cpp \
     hw/HWOutputGPO.cpp \
     ui/OutputGPOFrame.cpp \
-    hw/HWOutputGPOI2C.cpp
+    hw/HWOutputGPOI2C.cpp \
+    SoundManager.cpp \
+    script/ActionMusic.cpp
 HEADERS += ui/MainWindow.h \
     ui/InputFaderFrame.h \
     ui/ScriptsTableModel.h \
@@ -154,7 +157,9 @@ HEADERS += ui/MainWindow.h \
     ui/ScriptConfigTableModel.h \
     hw/HWOutputGPO.h \
     ui/OutputGPOFrame.h \
-    hw/HWOutputGPOI2C.h
+    hw/HWOutputGPOI2C.h \
+    SoundManager.h \
+    script/ActionMusic.h
 FORMS += ui/MainWindow.ui \
     ui/RuleDialog.ui \
     ui/ScriptDialog.ui \

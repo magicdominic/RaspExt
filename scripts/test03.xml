@@ -2,58 +2,31 @@
     <rule>
         <condition>
             <type>input</type>
-            <name>Fader 4</name>
-            <subtype>Fader</subtype>
-            <trigger>changed</trigger>
-            <TriggerValue>0</TriggerValue>
-        </condition>
-        <action>
-            <type>output</type>
-            <name>Motor 2</name>
-            <subtype>DCMotor</subtype>
-            <InputName>Fader 1</InputName>
-            <state>Forward</state>
-        </action>
-        <name>hjk</name>
-        <type>Normal</type>
-    </rule>
-    <rule>
-        <condition>
-            <type>input</type>
             <name>Button 1</name>
             <subtype>Button</subtype>
             <trigger>Pressed</trigger>
         </condition>
-        <name>hhjkl</name>
+        <action>
+            <type>Music</type>
+            <Filename>sound.mp3</Filename>
+            <MusicAction>Play</MusicAction>
+        </action>
+        <name>Sff</name>
         <type>Normal</type>
     </rule>
     <rule>
         <condition>
             <type>input</type>
-            <name>Button 5</name>
+            <name>Button 2</name>
             <subtype>Button</subtype>
             <trigger>Pressed</trigger>
         </condition>
         <action>
-            <type>output</type>
-            <name>Stepper 2</name>
-            <subtype>Stepper</subtype>
-            <StepperType>RunVelocity</StepperType>
+            <type>Music</type>
+            <Filename></Filename>
+            <MusicAction>Stop</MusicAction>
         </action>
-        <action>
-            <type>output</type>
-            <name>Stepper 2</name>
-            <subtype>Stepper</subtype>
-            <StepperType>SoftStop</StepperType>
-        </action>
-        <action>
-            <type>output</type>
-            <name>Stepper 2</name>
-            <subtype>Stepper</subtype>
-            <StepperType>SetPosition</StepperType>
-            <Position>-32768</Position>
-        </action>
-        <name>fg</name>
+        <name>Sff</name>
         <type>Normal</type>
     </rule>
     <description></description>

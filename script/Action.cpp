@@ -4,6 +4,7 @@
 #include "script/ActionVariable.h"
 #include "script/ActionSleep.h"
 #include "script/ActionCallRule.h"
+#include "script/ActionMusic.h"
 
 Action* Action::load(QDomElement* root)
 {
@@ -21,6 +22,8 @@ Action* Action::load(QDomElement* root)
                 return ActionSleep::load(root);
             else if(elem.text().toLower().compare("callrule") == 0)
                 return ActionCallRule::load(root);
+            else if(elem.text().toLower().compare("music") == 0)
+                return ActionMusic::load(root);
         }
 
         elem = elem.nextSiblingElement();
