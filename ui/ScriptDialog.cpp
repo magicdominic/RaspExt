@@ -31,6 +31,7 @@ ScriptDialog::ScriptDialog(QWidget *parent, Script *script, ConfigManager* confi
     connect(ui->buttonEditVariables, SIGNAL(clicked()), this, SLOT(editVariables()));
 
     connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(okPressed()));
+    connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
 }
 
 ScriptDialog::~ScriptDialog()

@@ -1,8 +1,10 @@
 
 #include "hw/PCF8575I2C.h"
 #include "hw/HWInputButtonI2C.h"
+#include "hw/HWOutputGPOI2C.h"
 #include "hw/I2CThread.h"
 #include "ConfigManager.h"
+#include "util/Debug.h"
 
 #include <unistd.h>
 #include <sys/ioctl.h>
@@ -47,15 +49,30 @@ void PCF8575I2C::removeInput(HWInputButtonI2C *hw)
     }
 }
 
-void PCF8575I2C::addOutput(HWInputButtonI2C *hw, unsigned int port)
+void PCF8575I2C::addOutput(HWOutputGPO *hw, unsigned int port)
 {
     OutputElement el;
     el.hw = hw;
     el.port = port;
 
     m_listOutput.push_back(el);
+
+    hw->registerOutputListener(this);
 }
 
+void PCF8575I2C::removeOutput(HWOutputGPO *hw)
+{
+    for(std::list<OutputElement>::iterator it = m_listOutput.begin(); it != m_listOutput.end(); it++)
+    {
+        if(it->hw == hw)
+        {
+            hw->unregisterOutputListener(this);
+
+            m_listOutput.erase(it);
+            break;
+        }
+    }
+}
 
 void PCF8575I2C::setI2C(int fd)
 {
@@ -103,8 +120,7 @@ void PCF8575I2C::poll(int fd)
     for(std::list<InputElement>::iterator it = m_listInput.begin(); it != m_listInput.end(); it++)
     {
         // call every HW Element to check, if its input has changed
-        // Ugly hack to invert the button state here
-        it->hw->onInputPolled( !( (portState & (1 << it->port)) != 0 ) );
+        it->hw->onInputPolled( (portState & (1 << it->port)) == 0 );
         // TODO: think about optimization here
     }
 }
@@ -127,4 +143,20 @@ void PCF8575I2C::deinit()
 {
     m_i2cThread->removeInput(this);
     m_i2cThread = NULL;
+}
+
+void PCF8575I2C::onOutputChanged(HWOutput *hw)
+{
+    HWOutputGPOI2C* hw_i2c = (HWOutputGPOI2C*)hw;
+
+    unsigned int port =  hw_i2c->getPort();
+    m_portMask = (m_portMask & ~(1 << port)) | (hw_i2c->getValue() ? 1 << port : 0);
+
+    // after we have set the new port mask, we have to update the device as well
+    this->updateI2C();
+}
+
+void PCF8575I2C::onOutputDestroy(HWOutput *hw)
+{
+    pi_warn("Output was destroyed while this object still was registered to it");
 }

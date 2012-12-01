@@ -8,6 +8,7 @@
 
 #include "ui/OutputLEDFrame.h"
 #include "ui/OutputRelayFrame.h"
+#include "ui/OutputGPOFrame.h"
 #include "ui/OutputDCMotorFrame.h"
 #include "ui/OutputStepperFrame.h"
 
@@ -78,11 +79,11 @@ void MainWindow::updateScriptConfig()
 {
     QModelIndexList indices = ui->tableScripts->selectionModel()->selection().indexes();
 
-    QModelIndex index = indices.front();
+    int row = indices.front().row();
 
-    m_scriptInputModel.setScript( m_scriptsModel.getScript( index.row() ) );
-    m_scriptOutputModel.setScript( m_scriptsModel.getScript( index.row() ) );
-    m_scriptVariableModel.setScript( m_scriptsModel.getScript( index.row() ) );
+    m_scriptInputModel.setScript( m_scriptsModel.getScript( row ) );
+    m_scriptOutputModel.setScript( m_scriptsModel.getScript( row ) );
+    m_scriptVariableModel.setScript( m_scriptsModel.getScript( row ) );
 }
 
 void MainWindow::createScript()
@@ -98,6 +99,11 @@ void MainWindow::createScript()
         // add it to the gui
         m_scriptsModel.addScript(script);
     }
+    else
+    {
+        // the user did not accept. The created script is no longer needed, so delete it
+        delete script;
+    }
 
     delete dialog;
 }
@@ -109,7 +115,9 @@ void MainWindow::editScript()
 
     if(indices.size() != 0)
     {
-        Script* script = m_scriptsModel.getScript(indices.front().row());
+        int row = indices.front().row();
+
+        Script* script = m_scriptsModel.getScript(row);
 
         // check if script is selected, if yes, then display a warning and don't do anything
         if(script == m_config.getActiveScript())
@@ -119,7 +127,7 @@ void MainWindow::editScript()
         }
 
         // check if all required stuff exists
-        // if not and the user decides that this is not acceptable, we stop immediatly
+        // if not and the user decides that this is not acceptable, we stop immediately
         if( !this->checkScript(script) )
             return;
 
@@ -132,7 +140,12 @@ void MainWindow::editScript()
             script->save();
 
             // this updates the description (and name) of a script in the ui
-            m_scriptsModel.changed();
+            m_scriptsModel.modifyRow(row, script);
+        }
+        else
+        {
+            // Modified script was not accepted. As we do not want to have an invalid script (as it may be modified), we reload it
+            m_scriptsModel.modifyRow(row, script->load(script->getName()));
         }
 
         delete dialog;
@@ -358,6 +371,9 @@ void MainWindow::addOutput(HWOutput* hw)
         break;
     case HWOutput::Stepper:
         frame = new OutputStepperFrame((HWOutputStepper*)hw);
+        break;
+    case HWOutput::GPO:
+        frame = new OutputGPOFrame((HWOutputGPO*)hw);
         break;
     default:
         pi_warn("Requested GUI-object for unknown output type");

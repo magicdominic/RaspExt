@@ -19,6 +19,7 @@ public:
         DCMotor = 1,
         LED = 2,
         Stepper = 3,
+        GPO = 4,
         EINVALID
     };
 

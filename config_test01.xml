@@ -52,6 +52,13 @@
         <hwtype>I2C</hwtype>
         <SlaveAddress>23</SlaveAddress>
     </output>
+    <output>
+        <name>GPO 1</name>
+        <type>GPO</type>
+        <hwtype>I2C</hwtype>
+        <SlaveAddress>2</SlaveAddress>
+        <Port>1</Port>
+    </output>
     <bluetooth>
         <name>bla</name>
         <BTAddress>00:09:DD:50:88:B6</BTAddress>

@@ -4,6 +4,7 @@
 
 #include "hw/HWOutputLED.h"
 #include "hw/HWOutputRelay.h"
+#include "hw/HWOutputGPO.h"
 #include "hw/HWOutputDCMotor.h"
 #include "hw/HWOutputStepper.h"
 
@@ -58,6 +59,9 @@ HWOutput* HWOutput::load(QDomElement *root)
                 break;
             case Stepper:
                 hw = HWOutputStepper::load(root);
+                break;
+            case GPO:
+                hw = HWOutputGPO::load(root);
                 break;
             default:
                 pi_warn("Unsupported output type");
@@ -159,6 +163,8 @@ std::string HWOutput::HWOutputTypeToString(HWOutputType type)
         return "LED";
     case Stepper:
         return "Stepper";
+    case GPO:
+        return "GPO";
     default:
         pi_warn("Invalid type");
         return "";
@@ -176,6 +182,8 @@ HWOutput::HWOutputType HWOutput::StringToHWOutputType(std::string str)
         return LED;
     else if( strcasecmp(cstr, "stepper") == 0)
         return Stepper;
+    else if( strcasecmp(cstr, "gpo") == 0)
+        return GPO;
     else
         return EINVALID;
 }

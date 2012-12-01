@@ -148,6 +148,54 @@ void I2CThread::removeInputPCF8575(HWInput* hw, int slaveAddress)
     }
 }
 
+PCF8575I2C* I2CThread::addOutputPCF8575(HWOutput* hw, int slaveAddress, unsigned int port)
+{
+    // first check if we already have an Object for this slave address
+    for(std::list<PCF8575I2C*>::iterator it = m_listPCF8575.begin(); it != m_listPCF8575.end(); it++)
+    {
+        if( (*it)->getSlaveAddress() == slaveAddress )
+        {
+            // we found it
+            (*it)->addOutput((HWOutputGPO*)hw, port);
+            return (*it);
+        }
+    }
+
+    // we did not found an object for this slave address, so create a new one
+    PCF8575I2C* pcf = new PCF8575I2C(slaveAddress);
+    m_listPCF8575.push_back(pcf);
+
+    pcf->init(this);
+
+    pcf->addOutput((HWOutputGPO*)hw, port);
+
+    return pcf;
+}
+
+void I2CThread::removeOutputPCF8575(HWOutput* hw, int slaveAddress)
+{
+    // search for the corresponding pcf object
+    for(std::list<PCF8575I2C*>::iterator it = m_listPCF8575.begin(); it != m_listPCF8575.end(); it++)
+    {
+        if( (*it)->getSlaveAddress() == slaveAddress )
+        {
+            // we found it
+            (*it)->removeOutput((HWOutputGPO*)hw);
+
+            // check if the pcf object is empty now
+            if((*it)->empty())
+            {
+                (*it)->deinit();
+                delete *it;
+
+                m_listPCF8575.erase(it);
+            }
+
+            return;
+        }
+    }
+}
+
 void I2CThread::run()
 {
 #ifdef USE_I2C

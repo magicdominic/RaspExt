@@ -120,7 +120,22 @@ bool ScriptsTableModel::removeRow(int row, const QModelIndex &parent)
     return true;
 }
 
-void ScriptsTableModel::changed()
+/**
+ * @brief ScriptsTableModel::modifyRow
+ * This method modifies the row given by the parameter row and sets its content to script.
+ * If the given script is not equal to the "old" script in this row, the old script gets deleted.
+ * If it is equal, the row content gets updated
+ * @param row
+ * @param script
+ */
+void ScriptsTableModel::modifyRow(int row, Script *script)
 {
-    emit layoutChanged();
+    Script* oldScript = m_vecScripts.at(row);
+
+    if(oldScript != script)
+        delete oldScript;
+
+    m_vecScripts[row] = script;
+
+    emit dataChanged(this->index(row, 0), this->index(row, this->columnCount()));
 }

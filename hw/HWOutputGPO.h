@@ -1,12 +1,12 @@
-#ifndef HWOUTPUTRELAY_H
-#define HWOUTPUTRELAY_H
+#ifndef HWOUTPUTGPO_H
+#define HWOUTPUTGPO_H
 
 #include "hw/HWOutput.h"
 
-class HWOutputRelay : public HWOutput
+class HWOutputGPO : public HWOutput
 {
 public:
-    HWOutputRelay();
+    HWOutputGPO();
 
     static HWOutput* load(QDomElement* root);
     virtual QDomElement save(QDomElement* root, QDomDocument* document);
@@ -19,4 +19,4 @@ protected:
     bool m_value;
 };
 
-#endif // HWOUTPUTRELAY_H
+#endif // HWOUTPUTGPO_H

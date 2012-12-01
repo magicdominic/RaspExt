@@ -13,6 +13,7 @@
 #include "util/PriorityQueue.h"
 
 class HWInput;
+class HWOutput;
 class PCF8575I2C;
 
 class I2CThread
@@ -31,6 +32,8 @@ public:
 
     void addInputPCF8575(HWInput* hw, int slaveAddress, unsigned int port);
     void removeInputPCF8575(HWInput* hw, int slaveAddress);
+    PCF8575I2C* addOutputPCF8575(HWOutput* hw, int slaveAddress, unsigned int port);
+    void removeOutputPCF8575(HWOutput* hw, int slaveAddress);
 
 private:
     struct InputElement

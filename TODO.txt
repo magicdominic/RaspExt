@@ -6,3 +6,5 @@
 * Documentation
 * Stepper can be improved
 * Bluetooth stuff
+
+* Move all event stuff (onInput, onOutput, ...) to private
