@@ -22,38 +22,14 @@ ConfigManager::ConfigManager(MainWindow *win)
 
     m_gpioThread = NULL;
     m_i2cThread = NULL;
-    m_ruleTimer = new RuleTimerThread();
-
-    m_soundManager = new SoundManager();
+    m_ruleTimer = NULL;
+    m_soundManager = NULL;
 }
 
 ConfigManager::~ConfigManager()
 {
-    // stop active script before killing and deleting all the threads, otherwise there could be a race condition leading to a segfault
-    this->stopActiveScript();
-
-    // TODO: is it a good idea to kill the threads before clearing all inputs and ouputs?
-    if(m_gpioThread != NULL)
-    {
-        m_gpioThread->kill();
-        delete m_gpioThread;
-    }
-
-    if(m_i2cThread != NULL)
-    {
-        m_i2cThread->kill();
-        delete m_i2cThread;
-    }
-
-    if(m_ruleTimer != NULL)
-    {
-        m_ruleTimer->kill();
-        delete m_ruleTimer;
-    }
-
+    // TODO: ensure Config is deinitialized
     this->clear();
-
-    delete m_soundManager;
 }
 
 void ConfigManager::init()
@@ -67,13 +43,34 @@ void ConfigManager::init()
     {
         (*it)->init(this);
     }
+
+    m_ruleTimer = new RuleTimerThread();
+
+    m_soundManager = new SoundManager();
 }
 
 void ConfigManager::deinit()
 {
+    // stop active script before killing and deleting all the threads,
+    // otherwise there could be a race condition leading to a segfault
     if(m_activeScript != NULL)
     {
         this->stopActiveScript();
+    }
+
+    if(m_gpioThread != NULL)
+    {
+        m_gpioThread->kill();
+    }
+
+    if(m_i2cThread != NULL)
+    {
+        m_i2cThread->kill();
+    }
+
+    if(m_ruleTimer != NULL)
+    {
+        m_ruleTimer->kill();
     }
 
     for(std::list<HWInput*>::iterator it = m_listInput.begin(); it != m_listInput.end(); it++)
@@ -85,6 +82,18 @@ void ConfigManager::deinit()
     {
         (*it)->deinit();
     }
+
+    delete m_gpioThread;
+    m_gpioThread = NULL;
+
+    delete m_i2cThread;
+    m_i2cThread = NULL;
+
+    delete m_ruleTimer;
+    m_ruleTimer = NULL;
+
+    delete m_soundManager;
+    m_soundManager = NULL;
 }
 
 void ConfigManager::clear()
