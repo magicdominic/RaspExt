@@ -61,6 +61,8 @@ void ConditionInputButton::getRequiredList(std::list<Rule::RequiredInput>* listI
         Rule::RequiredInput req;
         req.name = m_HWName;
         req.type = HWInput::Button;
+        req.exists = false;
+
         listInput->push_back(req);
     }
 }

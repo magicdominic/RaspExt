@@ -73,6 +73,8 @@ void ConditionInputFader::getRequiredList(std::list<Rule::RequiredInput>* listIn
         Rule::RequiredInput req;
         req.name = m_HWName;
         req.type = HWInput::Fader;
+        req.exists = false;
+
         listInput->push_back(req);
     }
 }

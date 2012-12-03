@@ -57,6 +57,9 @@ void SoundManager::play(std::string filename, int loop)
     }
 }
 
+/**
+ * @brief SoundManager::stop This method stops the currently playing sound (if any)
+ */
 void SoundManager::stop()
 {
     if(m_music != NULL)

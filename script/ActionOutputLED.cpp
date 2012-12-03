@@ -55,6 +55,8 @@ void ActionOutputLED::getRequiredList(std::list<Rule::RequiredInput>* listInput,
         Rule::RequiredOutput req;
         req.name = m_HWName;
         req.type = HWOutput::LED;
+        req.exists = false;
+
         listOutput->push_back(req);
     }
 }

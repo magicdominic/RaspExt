@@ -16,6 +16,12 @@ class RuleTimerThread;
 class Script;
 class SoundManager;
 
+/**
+ * @brief The ConfigManager class manages the configuration and hardware related stuff.
+ * In addition, it controlls the currently selected script.
+ * The ConfigManager class is deeply linked with MainWindow, as for example MainWindow gets called every time, an input, output or variable gets added.
+ * MainWindow then creates the corresponding GUI-object and links it to the HW-object.
+ */
 class ConfigManager
 {
 public:

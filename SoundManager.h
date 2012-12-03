@@ -5,6 +5,10 @@
 #include <SDL/SDL_mixer.h>
 #include <string>
 
+/**
+ * @brief The SoundManager class implements a simple interface for playing music.
+ * It uses sdl_mixer as underlying library, therefore sdl_mixer is a dependency of this project.
+ */
 class SoundManager
 {
 public:

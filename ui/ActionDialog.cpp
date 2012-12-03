@@ -14,8 +14,11 @@
 #include "script/ActionVariable.h"
 #include "script/ActionSleep.h"
 #include "script/ActionCallRule.h"
+#include "script/ActionMusic.h"
 #include "hw/HWInput.h"
 #include "util/Debug.h"
+
+#include <QFileDialog>
 
 ActionDialog::ActionDialog(QWidget *parent, Script *script) :
     QDialog(parent),
@@ -65,6 +68,9 @@ void ActionDialog::actionChanged(int index)
 
     case Action::CallRule:
         m_baseWidget = new ActionCallRuleWidget(this, m_script);
+        break;
+    case Action::Music:
+        m_baseWidget = new ActionMusicWidget(this, m_script);
         break;
     }
 
@@ -1048,6 +1054,78 @@ Action* ActionCallRuleWidget::assemble()
     ActionCallRule* action = new ActionCallRule();
 
     action->setRuleName( m_comboRule->currentText().toStdString() );
+
+    return action;
+}
+
+
+ActionMusicWidget::ActionMusicWidget(QWidget* parent, Script *script) : IActionWidget(parent)
+{
+    QLabel* label = new QLabel("Select type", this);
+
+    m_combo = new QComboBox(this);
+    m_combo->addItem( "Play music" );
+    m_combo->addItem( "Stop music" );
+
+    m_labelMusic = new QLabel(this);
+    m_buttonSelect = new QPushButton("Select", this);
+
+    QGridLayout* layout = new QGridLayout(this);
+
+    // remove spacing around widget, it looks kind of odd otherwise
+    layout->setContentsMargins(0, 0, 0, 0);
+
+    // add our widgets to the layout
+    layout->addWidget(label, 0, 0);
+    layout->addWidget(m_combo, 0, 1);
+    layout->addWidget(m_labelMusic, 1, 0, 1, 2);
+    layout->addWidget(m_buttonSelect, 2, 1);
+
+    this->setLayout(layout);
+
+    // connect all signals-slots
+    connect(m_buttonSelect, SIGNAL(clicked()), this, SLOT(selectMusic()));
+    connect(m_combo, SIGNAL(currentIndexChanged(int)), this, SLOT(comboChanged(int)));
+}
+
+void ActionMusicWidget::selectMusic()
+{
+    QFileDialog dialog;
+
+    dialog.setNameFilter("*.mp3 *.wav *.ogg *.flac");
+
+    if( dialog.exec() == QDialog::Accepted )
+        m_labelMusic->setText( dialog.selectedFiles().front() );
+}
+
+void ActionMusicWidget::comboChanged(int index)
+{
+    if(index == ActionMusic::Play)
+    {
+        m_labelMusic->show();
+        m_buttonSelect->show();
+    }
+    else
+    {
+        m_labelMusic->hide();
+        m_buttonSelect->hide();
+    }
+}
+
+void ActionMusicWidget::edit(Action* act)
+{
+    ActionMusic* action = (ActionMusic*)act;
+
+    m_combo->setCurrentIndex( action->getMusicAction() );
+    m_labelMusic->setText( QString::fromStdString( action->getFilename() ) );
+}
+
+Action* ActionMusicWidget::assemble()
+{
+    ActionMusic* action = new ActionMusic();
+
+    action->setMusicAction( (ActionMusic::MusicAction)m_combo->currentIndex() );
+    action->setFilename( m_labelMusic->text().toStdString() );
 
     return action;
 }

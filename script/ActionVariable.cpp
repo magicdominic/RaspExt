@@ -76,6 +76,8 @@ void ActionVariable::getRequiredList(std::list<Rule::RequiredInput>* listInput,
     {
         Rule::RequiredVariable req;
         req.name = m_varName;
+        req.exists = false;
+
         listVariable->push_back(req);
     }
 }

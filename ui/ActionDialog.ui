@@ -56,6 +56,11 @@
               <string>Call Rule</string>
              </property>
             </item>
+            <item>
+             <property name="text">
+              <string>Music</string>
+             </property>
+            </item>
            </widget>
           </item>
           <item row="4" column="0" colspan="2">

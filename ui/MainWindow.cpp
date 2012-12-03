@@ -79,11 +79,17 @@ void MainWindow::updateScriptConfig()
 {
     QModelIndexList indices = ui->tableScripts->selectionModel()->selection().indexes();
 
-    int row = indices.front().row();
+    Script* script = m_scriptsModel.getScript(indices.front().row());
 
-    m_scriptInputModel.setScript( m_scriptsModel.getScript( row ) );
-    m_scriptOutputModel.setScript( m_scriptsModel.getScript( row ) );
-    m_scriptVariableModel.setScript( m_scriptsModel.getScript( row ) );
+    std::list<Rule::RequiredInput> listInput;
+    std::list<Rule::RequiredOutput> listOutput;
+    std::list<Rule::RequiredVariable> listVariable;
+
+    this->getRequiredList(&listInput, &listOutput, &listVariable, script);
+
+    m_scriptInputModel.set( listInput );
+    m_scriptOutputModel.set( listOutput );
+    m_scriptVariableModel.set( listVariable );
 }
 
 void MainWindow::createScript()
@@ -141,6 +147,9 @@ void MainWindow::editScript()
 
             // this updates the description (and name) of a script in the ui
             m_scriptsModel.modifyRow(row, script);
+
+            // this updates the displayed configuration
+            this->updateScriptConfig();
         }
         else
         {
@@ -247,71 +256,49 @@ bool MainWindow::checkScript(Script *script)
     std::list<Rule::RequiredOutput> listOutput;
     std::list<Rule::RequiredVariable> listVariable;
 
-    script->getRequiredList(&listInput, &listOutput, &listVariable);
+    this->getRequiredList(&listInput, &listOutput, &listVariable, script);
 
-    // Now we have the list of requirements, we now go through each list and delete all items which are present
-    // In the end we have lists containing only the unmet dependencies
+    QString strDep;
+
     for(std::list<Rule::RequiredInput>::iterator it = listInput.begin(); it != listInput.end(); it++)
     {
-        HWInput* input = m_config.getInputByName((*it).name);
-        if(input != NULL && input->getType() == (*it).type)
+        if(!it->exists)
         {
-            listInput.erase(it--);
+            strDep.append( "Input ");
+            strDep.append( QString::fromStdString((*it).name) );
+            strDep.append( " with type ");
+            strDep.append( QString::fromStdString( HWInput::HWInputTypeToString((*it).type) ) );
+            strDep.append( "\n" );
         }
     }
 
     for(std::list<Rule::RequiredOutput>::iterator it = listOutput.begin(); it != listOutput.end(); it++)
     {
-        HWOutput* output = m_config.getOutputByName((*it).name);
-        if(output != NULL && output->getType() == (*it).type)
+        if(!it->exists)
         {
-            listOutput.erase(it--);
+            strDep.append( "Output ");
+            strDep.append( QString::fromStdString((*it).name) );
+            strDep.append( " with type ");
+            strDep.append( QString::fromStdString( HWOutput::HWOutputTypeToString((*it).type) ) );
+            strDep.append( "\n" );
         }
     }
 
-    // now the tricky part, variables
-    std::list<Variable*> listVariableScript = script->getVariableList();
     for(std::list<Rule::RequiredVariable>::iterator it = listVariable.begin(); it != listVariable.end(); it++)
     {
-        for(std::list<Variable*>::iterator varIt = listVariableScript.begin(); varIt != listVariableScript.end(); varIt++)
+        if(!it->exists)
         {
-            if( (*it).name.compare( (*varIt)->getName() ) == 0 )
-            {
-                listVariable.erase(it--);
-                break;
-            }
+            strDep.append( "Variable " );
+            strDep.append( QString::fromStdString((*it).name) );
+            strDep.append( "\n" );
         }
     }
 
-
-    if( !listInput.empty() || !listOutput.empty() || !listVariable.empty())
+    if( strDep.size() != 0 )
     {
         QString message = "Not all required inputs, outputs or variables are present. The following parts are missing:\n\n";
 
-        for(std::list<Rule::RequiredInput>::iterator it = listInput.begin(); it != listInput.end(); it++)
-        {
-            message.append( "Input ");
-            message.append( QString::fromStdString((*it).name) );
-            message.append( " with type ");
-            message.append( QString::fromStdString( HWInput::HWInputTypeToString((*it).type) ) );
-            message.append( "\n" );
-        }
-
-        for(std::list<Rule::RequiredOutput>::iterator it = listOutput.begin(); it != listOutput.end(); it++)
-        {
-            message.append( "Output ");
-            message.append( QString::fromStdString((*it).name) );
-            message.append( " with type ");
-            message.append( QString::fromStdString( HWOutput::HWOutputTypeToString((*it).type) ) );
-            message.append( "\n" );
-        }
-
-        for(std::list<Rule::RequiredVariable>::iterator it = listVariable.begin(); it != listVariable.end(); it++)
-        {
-            message.append( "Variable " );
-            message.append( QString::fromStdString((*it).name) );
-            message.append( "\n" );
-        }
+        message.append(strDep);
 
         message.append("\nDo you want to continue without these parts?");
 
@@ -326,6 +313,39 @@ bool MainWindow::checkScript(Script *script)
     }
 
     return true;
+}
+
+/**
+ * @brief MainWindow::getRequiredList checks the given script for missing objects. It sets every exists field to the corresponding value.
+ * @param listInput
+ * @param listOutput
+ * @param listVariable
+ * @param script
+ */
+void MainWindow::getRequiredList(std::list<Rule::RequiredInput>* listInput,
+                                 std::list<Rule::RequiredOutput>* listOutput,
+                                 std::list<Rule::RequiredVariable>* listVariable, Script* script)
+{
+    script->getRequiredList(listInput, listOutput, listVariable);
+
+    // Now we have the list of requirements, we now go through each list and set all exist fields to true for which the objects are present
+    for(std::list<Rule::RequiredInput>::iterator it = listInput->begin(); it != listInput->end(); it++)
+    {
+        HWInput* input = m_config.getInputByName((*it).name);
+        if(input != NULL && input->getType() == (*it).type)
+            it->exists = true;
+        else
+            it->exists = false;
+    }
+
+    for(std::list<Rule::RequiredOutput>::iterator it = listOutput->begin(); it != listOutput->end(); it++)
+    {
+        HWOutput* output = m_config.getOutputByName((*it).name);
+        if(output != NULL && output->getType() == (*it).type)
+            it->exists = true;
+        else
+            it->exists = false;
+    }
 }
 
 void MainWindow::addInput(HWInput* hw)

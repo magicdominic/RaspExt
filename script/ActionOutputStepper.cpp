@@ -54,6 +54,8 @@ void ActionOutputStepper::getRequiredList(std::list<Rule::RequiredInput>* listIn
         Rule::RequiredOutput req;
         req.name = m_HWName;
         req.type = HWOutput::Stepper;
+        req.exists = false;
+
         listOutput->push_back(req);
     }
 }

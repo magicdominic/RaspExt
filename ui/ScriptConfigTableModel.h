@@ -19,11 +19,9 @@ public:
     QVariant data(const QModelIndex &index, int role) const;
     QVariant headerData(int section, Qt::Orientation orientation, int role) const;
 
-    void setScript(Script* script);
+    void set(std::list<Rule::RequiredInput> &listInput);
 
 private:
-    Script* m_script;
-
     std::list<Rule::RequiredInput> m_listInput;
 };
 
@@ -40,11 +38,9 @@ public:
     QVariant data(const QModelIndex &index, int role) const;
     QVariant headerData(int section, Qt::Orientation orientation, int role) const;
 
-    void setScript(Script* script);
+    void set(std::list<Rule::RequiredOutput> &listOutput);
 
 private:
-    Script* m_script;
-
     std::list<Rule::RequiredOutput> m_listOutput;
 };
 
@@ -61,11 +57,9 @@ public:
     QVariant data(const QModelIndex &index, int role) const;
     QVariant headerData(int section, Qt::Orientation orientation, int role) const;
 
-    void setScript(Script* script);
+    void set(std::list<Rule::RequiredVariable> &listVariable);
 
 private:
-    Script* m_script;
-
     std::list<Rule::RequiredVariable> m_listVariable;
 };
 

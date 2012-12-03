@@ -88,6 +88,8 @@ void ActionOutputDCMotor::getRequiredList(std::list<Rule::RequiredInput>* listIn
         Rule::RequiredOutput req;
         req.name = m_HWName;
         req.type = HWOutput::DCMotor;
+        req.exists = false;
+
         listOutput->push_back(req);
     }
 
@@ -96,6 +98,8 @@ void ActionOutputDCMotor::getRequiredList(std::list<Rule::RequiredInput>* listIn
         Rule::RequiredInput req;
         req.name = m_inputName;
         req.type = HWInput::Fader;
+        req.exists = false;
+
         listInput->push_back(req);
     }
 }

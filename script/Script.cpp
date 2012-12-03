@@ -163,6 +163,7 @@ bool RequiredVariableEq(const Rule::RequiredVariable& lhs, const Rule::RequiredV
 /**
  * @brief Script::getRequiredList This method fills the given lists with all inputs, outputs and variables which are required by this script.
  * This method also removes duplicates which are introduced as an input/output/variable can be used several times.
+ * For variables it checks, if they exist and sets the correspoding field to true.
  * @param listInput
  * @param listOutput
  * @param listVariable
@@ -193,6 +194,19 @@ void Script::getRequiredList(std::list<Rule::RequiredInput>* listInput,
     {
         listVariable->sort( RequiredVariableCmp );
         listVariable->unique( RequiredVariableEq );
+
+        // Check if variables exist and set exist to true if they do
+        for(std::list<Rule::RequiredVariable>::iterator it = listVariable->begin(); it != listVariable->end(); it++)
+        {
+            for(std::list<Variable*>::iterator varIt = m_listVars.begin(); varIt != m_listVars.end(); varIt++)
+            {
+                if( (*it).name.compare( (*varIt)->getName() ) == 0 )
+                {
+                    it->exists = true;
+                    break;
+                }
+            }
+        }
     }
 }
 

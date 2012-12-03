@@ -9,6 +9,7 @@
 #include <QLabel>
 #include <QGridLayout>
 #include <QSpinBox>
+#include <QPushButton>
 
 namespace Ui {
     class ActionDialog;
@@ -286,6 +287,25 @@ private:
     QGridLayout* m_layout;
     QLabel* m_label;
     QComboBox* m_comboRule;
+};
+
+// Music Stuff
+class ActionMusicWidget : public IActionWidget
+{
+    Q_OBJECT
+public:
+    ActionMusicWidget(QWidget* parent, Script* script);
+    void edit(Action* action);
+    Action* assemble();
+
+private slots:
+    void selectMusic();
+    void comboChanged(int index);
+
+private:
+    QComboBox* m_combo;
+    QLabel* m_labelMusic;
+    QPushButton* m_buttonSelect;
 };
 
 #endif // ACTIONDIALOG_H

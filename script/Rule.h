@@ -32,6 +32,7 @@ public:
     {
         std::string name;
         HWInput::HWInputType type;
+        bool exists;
     };
 
     /**
@@ -43,6 +44,7 @@ public:
     {
         std::string name;
         HWOutput::HWOutputType type;
+        bool exists;
     };
 
     /**
@@ -53,6 +55,7 @@ public:
     struct RequiredVariable
     {
         std::string name;
+        bool exists;
     };
 
     Rule();

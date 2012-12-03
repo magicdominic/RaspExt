@@ -25,6 +25,12 @@ public:
     Type getType() const { return Music;}
     std::string getDescription() const;
 
+    MusicAction getMusicAction() const { return m_action;}
+    void setMusicAction(MusicAction action) { m_action = action;}
+
+    std::string getFilename() const { return m_filename;}
+    void setFilename(std::string name) { m_filename = name;}
+
 private:
     SoundManager* m_soundManager;
 

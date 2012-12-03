@@ -1,5 +1,6 @@
 
 #include "ui/ScriptConfigTableModel.h"
+#include "ConfigManager.h"
 
 int ScriptInputTableModel::rowCount(const QModelIndex &parent) const
 {
@@ -15,20 +16,29 @@ int ScriptInputTableModel::columnCount(const QModelIndex &parent) const
 
 QVariant ScriptInputTableModel::data(const QModelIndex &index, int role) const
 {
-    if (!index.isValid())
+    if(!index.isValid())
         return QVariant();
 
-    if (index.row() >= m_listInput.size() || index.row() < 0)
+    if(index.row() >= m_listInput.size() || index.row() < 0)
         return QVariant();
 
-    if (role == Qt::DisplayRole)
+    if(role == Qt::DisplayRole)
     {
         Rule::RequiredInput req = *std::next(m_listInput.begin(), index.row());
 
-        if (index.column() == 0)
+        if(index.column() == 0)
             return QString::fromStdString( req.name );
         else
             return QString::fromStdString( HWInput::HWInputTypeToString(req.type) );
+    }
+    else if(role == Qt::BackgroundRole)
+    {
+        Rule::RequiredInput req = *std::next(m_listInput.begin(), index.row());
+
+        if(req.exists)
+            return QColor(200,255,200);
+        else
+            return QColor(255,200,200);
     }
 
     return QVariant();
@@ -55,14 +65,9 @@ QVariant ScriptInputTableModel::headerData(int section, Qt::Orientation orientat
     return QVariant();
 }
 
-void ScriptInputTableModel::setScript(Script* script)
+void ScriptInputTableModel::set(std::list<Rule::RequiredInput> &listInput)
 {
-    // we have to clear the list first, as otherwise the inputs used by script will be added to the ones already in there
-    m_listInput.clear();
-
-    m_script = script;
-
-    m_script->getRequiredList(&m_listInput, NULL, NULL);
+    m_listInput = listInput;
 
     emit layoutChanged();
 }
@@ -98,6 +103,15 @@ QVariant ScriptOutputTableModel::data(const QModelIndex &index, int role) const
         else
             return QString::fromStdString( HWOutput::HWOutputTypeToString(req.type) );
     }
+    else if(role == Qt::BackgroundRole)
+    {
+        Rule::RequiredOutput req = *std::next(m_listOutput.begin(), index.row());
+
+        if(req.exists)
+            return QColor(200,255,200);
+        else
+            return QColor(255,200,200);
+    }
 
     return QVariant();
 }
@@ -123,14 +137,9 @@ QVariant ScriptOutputTableModel::headerData(int section, Qt::Orientation orienta
     return QVariant();
 }
 
-void ScriptOutputTableModel::setScript(Script* script)
+void ScriptOutputTableModel::set(std::list<Rule::RequiredOutput> &listOutput)
 {
-    // we have to clear the list first, as otherwise the inputs used by script will be added to the ones already in there
-    m_listOutput.clear();
-
-    m_script = script;
-
-    m_script->getRequiredList(NULL, &m_listOutput, NULL);
+    m_listOutput = listOutput;
 
     emit layoutChanged();
 }
@@ -165,6 +174,15 @@ QVariant ScriptVariableTableModel::data(const QModelIndex &index, int role) cons
         if (index.column() == 0)
             return QString::fromStdString( req.name );
     }
+    else if(role == Qt::BackgroundRole)
+    {
+        Rule::RequiredVariable req = *std::next(m_listVariable.begin(), index.row());
+
+        if(req.exists)
+            return QColor(200,255,200);
+        else
+            return QColor(255,200,200);
+    }
 
     return QVariant();
 }
@@ -188,14 +206,9 @@ QVariant ScriptVariableTableModel::headerData(int section, Qt::Orientation orien
     return QVariant();
 }
 
-void ScriptVariableTableModel::setScript(Script* script)
+void ScriptVariableTableModel::set(std::list<Rule::RequiredVariable> &listVariable)
 {
-    // we have to clear the list first, as otherwise the inputs used by script will be added to the ones already in there
-    m_listVariable.clear();
-
-    m_script = script;
-
-    m_script->getRequiredList(NULL, NULL, &m_listVariable);
+    m_listVariable = listVariable;
 
     emit layoutChanged();
 }

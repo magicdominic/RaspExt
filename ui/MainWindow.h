@@ -45,6 +45,10 @@ protected slots:
 private:
     void updateScriptState();
     bool checkScript(Script* script);
+    void getRequiredList(std::list<Rule::RequiredInput>* listInput,
+                         std::list<Rule::RequiredOutput>* listOutput,
+                         std::list<Rule::RequiredVariable>* listVariable,
+                         Script* script);
 
     Ui::MainWindow *ui;
     ScriptsTableModel m_scriptsModel;

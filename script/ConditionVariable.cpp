@@ -97,6 +97,8 @@ void ConditionVariable::getRequiredList(std::list<Rule::RequiredInput>* listInpu
     {
         Rule::RequiredVariable req;
         req.name = m_varName;
+        req.exists = false;
+
         listVariable->push_back(req);
     }
 }

@@ -75,6 +75,8 @@ void ActionOutputRelay::getRequiredList(std::list<Rule::RequiredInput>* listInpu
         Rule::RequiredOutput req;
         req.name = m_HWName;
         req.type = HWOutput::Relay;
+        req.exists = false;
+
         listOutput->push_back(req);
     }
 }
