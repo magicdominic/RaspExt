@@ -73,4 +73,9 @@ void OutputStepperFrame::onOutputChangedGUI()
     ui->barIrun->setValue( fullStatus.irun );
     ui->barVmin->setValue( fullStatus.vmin );
     ui->barVmax->setValue( fullStatus.vmax );
+
+    ui->labelActPos->setText( QString::number(fullStatus.actualPosition) );
+    ui->labelTagPos->setText( QString::number(fullStatus.targetPosition) );
 }
+
+

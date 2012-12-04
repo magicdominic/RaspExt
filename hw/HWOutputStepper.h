@@ -118,6 +118,8 @@ public:
     virtual void refreshFullStatus();
 
     virtual void setPosition(short position);
+    virtual void setDualPosition(short position1, short position2);
+    virtual void resetPosition();
     virtual void softStop();
     virtual void runVelocity();
     virtual void setParam(Param param);

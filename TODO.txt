@@ -1,8 +1,7 @@
 
 * Config GUI
-* Add Sound Support
+* Add Music Action GUI
 * Script editing should not be live
-* Stepper has be tested
 * Documentation
 * Stepper can be improved
 * Bluetooth stuff

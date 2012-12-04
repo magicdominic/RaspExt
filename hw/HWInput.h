@@ -36,7 +36,7 @@ public:
     virtual HWInputType getType() const = 0;
     void setName(std::string str);
     std::string getName() const;
-    void setOverride(bool b);
+    virtual void setOverride(bool b); // DEBUG: REMOVE!!!
     bool getOverride() const;
 
     void registerInputListener(HWInputListener* listener); // registriert eine Klasse fuer den Event, ruft den Event einmal direkt auf

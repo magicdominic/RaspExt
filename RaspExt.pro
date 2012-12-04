@@ -63,7 +63,6 @@ SOURCES += main.cpp \
     script/ActionOutputStepper.cpp \
     script/ActionOutputStepperSoftStop.cpp \
     script/ActionOutputStepperRunVelocity.cpp \
-    script/ActionOutputStepperSetPosition.cpp \
     util/Config.cpp \
     hw/BTThread.cpp \
     script/ActionOutputStepperSetParam.cpp \
@@ -79,7 +78,9 @@ SOURCES += main.cpp \
     ui/OutputGPOFrame.cpp \
     hw/HWOutputGPOI2C.cpp \
     SoundManager.cpp \
-    script/ActionMusic.cpp
+    script/ActionMusic.cpp \
+    hw/HWInputButtonBt.cpp \
+    script/ActionOutputStepperPositioning.cpp
 HEADERS += ui/MainWindow.h \
     ui/InputFaderFrame.h \
     ui/ScriptsTableModel.h \
@@ -143,7 +144,6 @@ HEADERS += ui/MainWindow.h \
     script/ActionOutputStepperSoftStop.h \
     script/ActionOutputStepper.h \
     script/ActionOutputStepperRunVelocity.h \
-    script/ActionOutputStepperSetPosition.h \
     util/Config.h \
     hw/BTThread.h \
     script/ActionOutputStepperSetParam.h \
@@ -159,7 +159,9 @@ HEADERS += ui/MainWindow.h \
     ui/OutputGPOFrame.h \
     hw/HWOutputGPOI2C.h \
     SoundManager.h \
-    script/ActionMusic.h
+    script/ActionMusic.h \
+    hw/HWInputButtonBt.h \
+    script/ActionOutputStepperPositioning.h
 FORMS += ui/MainWindow.ui \
     ui/RuleDialog.ui \
     ui/ScriptDialog.ui \

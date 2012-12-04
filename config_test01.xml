@@ -11,6 +11,14 @@
         <Port>0</Port>
     </input>
     <input>
+        <name>Button 3</name>
+        <type>Button</type>
+        <hwtype>Bt</hwtype>
+        <PinGroup>2</PinGroup>
+        <Pin>7</Pin>
+        <BtBoard>First</BtBoard>
+    </input>
+    <input>
         <name>Fader 2</name>
         <type>Fader</type>
     </input>
@@ -60,7 +68,7 @@
         <Port>1</Port>
     </output>
     <bluetooth>
-        <name>bla</name>
-        <BTAddress>00:09:DD:50:88:B6</BTAddress>
+        <name>First</name>
+        <BTAddress>D0:07:90:5B:77:47</BTAddress>
     </bluetooth>
 </config>

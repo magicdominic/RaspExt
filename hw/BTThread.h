@@ -11,6 +11,7 @@
 #include "util/PriorityQueue.h"
 
 class HWInput;
+class HWInputButtonBt;
 class QDomElement;
 class QDomDocument;
 
@@ -26,6 +27,14 @@ struct BTI2CPacket
     char* commandSequence; // pointer to buffer containing
 
     bool assemble(unsigned int size, char* buf);
+};
+
+class BTThread;
+class BTPolling
+{
+public:
+    virtual void poll(BTThread* btThread) = 0;
+    virtual void packetHandler() = 0; // TOODO
 };
 
 class BTThread
@@ -44,15 +53,22 @@ public:
     void removeInput(I2CPolling* hw);
 
     void addOutput(I2COutput* hw);
-    void addOutput(std::function<void(int)> func);
 
     void addInputPCF8575(HWInput* hw, int slaveAddress, unsigned int port);
     void removeInputPCF8575(HWInput* hw, int slaveAddress);*/
+    void addOutput(std::function<void (BTThread*)> func);
+
+    void addGPInput(HWInputButtonBt* hw);
+    void removeGPInput(HWInputButtonBt* hw);
 
     void setName(std::string name) { m_name = name;}
     std::string getName() const { return m_name;}
     void setBTAddr(std::string addr);
     std::string getBTAddr() const { return m_btaddr;}
+
+
+    // TODO
+    void sendGPUpdateRequest(unsigned int pinGroup, BTThread*);
 
 private:
     struct InputElement
@@ -75,13 +91,15 @@ private:
     };
     struct OutputElement
     {
-        std::function<void (int)> func;
+        std::function<void (BTThread*)> func;
     };
 
     static void* run_internal(void* arg);
     void run();
 
     bool readWait(timespec timeout);
+    void packetHandler(char* buffer, unsigned int length);
+
 
     int m_socket;
     pthread_t m_thread;
@@ -94,5 +112,14 @@ private:
     std::queue<OutputElement> m_outputQueue;
 
     //std::list<PCF8575I2C*> m_listPCF8575;
+
+    struct GPInput
+    {
+        HWInputButtonBt* hw;
+        unsigned int pinGroup;
+        unsigned int pin;
+    };
+
+    std::list<GPInput> m_listGPInput;
 };
 #endif // BTTHREAD_H

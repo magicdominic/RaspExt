@@ -2,6 +2,7 @@
 #include "hw/HWInputButton.h"
 #include "hw/HWInputButtonGPIO.h"
 #include "hw/HWInputButtonI2C.h"
+#include "hw/HWInputButtonBt.h"
 
 #include "util/Debug.h"
 
@@ -28,6 +29,10 @@ HWInput* HWInputButton::load(QDomElement* root)
             else if(elem.text().toLower().compare("i2c") == 0)
             {
                 hw = (HWInputButton*)HWInputButtonI2C::load(root);
+            }
+            else if(elem.text().toLower().compare("bt") == 0)
+            {
+                hw = (HWInputButton*)HWInputButtonBt::load(root);
             }
         }
         elem = elem.nextSiblingElement();

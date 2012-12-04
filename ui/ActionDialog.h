@@ -167,18 +167,23 @@ private:
     QLabel* m_label;
 };
 
-class ActionOutputStepperSetPositionWidget : public IActionWidget
+class ActionOutputStepperPositioningWidget : public IActionWidget
 {
     Q_OBJECT
 public:
-    ActionOutputStepperSetPositionWidget(QWidget* parent, Script* script);
+    ActionOutputStepperPositioningWidget(QWidget* parent, Script* script);
 
     Action* assemble();
     void edit(Action* action);
 
+private slots:
+    void comboTypeChanged(int index);
 private:
+    QComboBox* m_comboType;
     QLabel* m_label;
     QSpinBox* m_spinBox;
+    QLabel* m_label2;
+    QSpinBox* m_spinBox2;
 };
 
 class ActionOutputStepperSetParamWidget : public IActionWidget

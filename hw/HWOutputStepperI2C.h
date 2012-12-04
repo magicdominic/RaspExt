@@ -21,6 +21,8 @@ public:
     void poll(int fd);
 
     void setPosition(short position);
+    void setDualPosition(short position1, short position2);
+    void resetPosition();
     void softStop();
     void runVelocity();
     void refreshFullStatus();
@@ -28,6 +30,8 @@ public:
 private:
     void softStopI2C(int fd);
     void setPositionI2C(int fd, short position);
+    void setDualPositionI2C(int fd, short position1, short position2);
+    void resetPositionI2C(int fd);
     void runVelocityI2C(int fd);
     void setParamI2C(int fd, Param param);
 

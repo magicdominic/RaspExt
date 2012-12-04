@@ -57,7 +57,19 @@ void HWOutputStepper::softStop()
 
 void HWOutputStepper::setPosition(short position)
 {
-    m_fullStatus.actualPosition = position;
+    m_fullStatus.targetPosition = position;
+
+    this->outputChanged();
+}
+
+void HWOutputStepper::setDualPosition(short position1, short position2)
+{
+    this->outputChanged();
+}
+
+void HWOutputStepper::resetPosition()
+{
+    m_fullStatus.actualPosition = 0;
 
     this->outputChanged();
 }
@@ -86,6 +98,8 @@ void HWOutputStepper::setParam(Param param)
     if(param.minSamplesSet) m_fullStatus.minSamples = param.minSamples;
     if(param.dc100StallEnableSet) m_fullStatus.dc100StallEnable = param.dc100StallEnable;
     if(param.PWMJitterEnableSet) m_fullStatus.PWMJitterEnable = param.PWMJitterEnable;
+
+    this->outputChanged();
 }
 
 

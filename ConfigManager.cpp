@@ -44,6 +44,12 @@ void ConfigManager::init()
         (*it)->init(this);
     }
 
+    // start Bluetooth threads
+    for(std::list<BTThread*>::iterator it = m_listBTThread.begin(); it != m_listBTThread.end(); it++)
+    {
+        (*it)->start();
+    }
+
     m_ruleTimer = new RuleTimerThread();
 
     m_soundManager = new SoundManager();
@@ -58,6 +64,11 @@ void ConfigManager::deinit()
         this->stopActiveScript();
     }
 
+    if(m_ruleTimer != NULL)
+    {
+        m_ruleTimer->kill();
+    }
+
     if(m_gpioThread != NULL)
     {
         m_gpioThread->kill();
@@ -68,9 +79,9 @@ void ConfigManager::deinit()
         m_i2cThread->kill();
     }
 
-    if(m_ruleTimer != NULL)
+    for(std::list<BTThread*>::iterator it = m_listBTThread.begin(); it != m_listBTThread.end(); it++)
     {
-        m_ruleTimer->kill();
+        (*it)->kill();
     }
 
     for(std::list<HWInput*>::iterator it = m_listInput.begin(); it != m_listInput.end(); it++)
@@ -444,4 +455,15 @@ I2CThread* ConfigManager::getI2CThread()
 RuleTimerThread* ConfigManager::getRuleTimerThread()
 {
     return m_ruleTimer;
+}
+
+BTThread* ConfigManager::getBTThreadByName(std::string str)
+{
+    for(std::list<BTThread*>::iterator it = m_listBTThread.begin(); it != m_listBTThread.end(); it++)
+    {
+        if(strcasecmp((*it)->getName().c_str(), str.c_str()) == 0)
+            return *it;
+    }
+
+    return NULL;
 }

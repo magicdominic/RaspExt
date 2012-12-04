@@ -65,6 +65,7 @@ public:
 
     GPIOInterruptThread* getGPIOThread();
     I2CThread* getI2CThread();
+    BTThread* getBTThreadByName(std::string str);
     RuleTimerThread* getRuleTimerThread();
     SoundManager* getSoundManager() const { return m_soundManager;}
 

@@ -10,7 +10,7 @@ public:
     {
         SoftStop = 0,
         RunVelocity = 1,
-        SetPosition = 2,
+        Positioning = 2,
         SetParam = 3,
         EINVALID
     };

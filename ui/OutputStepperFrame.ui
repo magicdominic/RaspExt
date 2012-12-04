@@ -22,128 +22,35 @@
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <layout class="QGridLayout" name="gridLayout">
-     <item row="3" column="4" colspan="2">
-      <widget class="QLabel" name="labelMotion">
-       <property name="text">
-        <string>N/A</string>
-       </property>
-      </widget>
-     </item>
-     <item row="7" column="0">
-      <widget class="QLabel" name="label_9">
-       <property name="text">
-        <string>Vmin</string>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="0">
-      <widget class="QLabel" name="label_5">
-       <property name="text">
-        <string>Temperature</string>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="1">
+     <item row="5" column="1">
       <widget class="QLabel" name="labelElDef">
        <property name="text">
         <string>N/A</string>
        </property>
       </widget>
      </item>
-     <item row="3" column="2">
+     <item row="5" column="2">
       <widget class="Line" name="line_2">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
        </property>
       </widget>
      </item>
-     <item row="5" column="2">
+     <item row="7" column="2">
       <widget class="Line" name="line_4">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
        </property>
       </widget>
      </item>
-     <item row="9" column="0">
+     <item row="11" column="0">
       <widget class="QLabel" name="label_10">
        <property name="text">
         <string>Ihold</string>
        </property>
       </widget>
      </item>
-     <item row="9" column="1">
-      <widget class="QProgressBar" name="barIhold">
-       <property name="maximum">
-        <number>15</number>
-       </property>
-       <property name="value">
-        <number>0</number>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="3">
-      <widget class="QLabel" name="label_3">
-       <property name="text">
-        <string>Motion</string>
-       </property>
-      </widget>
-     </item>
-     <item row="7" column="3">
-      <widget class="QLabel" name="label_11">
-       <property name="text">
-        <string>Vmax</string>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="3">
-      <widget class="QLabel" name="label_7">
-       <property name="text">
-        <string>Stall</string>
-       </property>
-      </widget>
-     </item>
-     <item row="7" column="1">
-      <widget class="QProgressBar" name="barVmin">
-       <property name="maximum">
-        <number>15</number>
-       </property>
-       <property name="value">
-        <number>0</number>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="1">
-      <widget class="QLabel" name="labelTinfo">
-       <property name="text">
-        <string>N/A</string>
-       </property>
-      </widget>
-     </item>
-     <item row="9" column="3">
-      <widget class="QLabel" name="label_12">
-       <property name="text">
-        <string>Irun</string>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="0">
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string>El. Defect</string>
-       </property>
-      </widget>
-     </item>
-     <item row="7" column="4" colspan="2">
-      <widget class="QProgressBar" name="barVmax">
-       <property name="maximum">
-        <number>15</number>
-       </property>
-       <property name="value">
-        <number>0</number>
-       </property>
-      </widget>
-     </item>
-     <item row="9" column="4" colspan="2">
+     <item row="11" column="4" colspan="2">
       <widget class="QProgressBar" name="barIrun">
        <property name="maximum">
         <number>15</number>
@@ -153,49 +60,142 @@
        </property>
       </widget>
      </item>
-     <item row="7" column="2">
+     <item row="5" column="4" colspan="2">
+      <widget class="QLabel" name="labelMotion">
+       <property name="text">
+        <string>N/A</string>
+       </property>
+      </widget>
+     </item>
+     <item row="9" column="0">
+      <widget class="QLabel" name="label_9">
+       <property name="text">
+        <string>Vmin</string>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="0">
+      <widget class="QLabel" name="label_5">
+       <property name="text">
+        <string>Temperature</string>
+       </property>
+      </widget>
+     </item>
+     <item row="11" column="1">
+      <widget class="QProgressBar" name="barIhold">
+       <property name="maximum">
+        <number>15</number>
+       </property>
+       <property name="value">
+        <number>0</number>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="3">
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>Motion</string>
+       </property>
+      </widget>
+     </item>
+     <item row="9" column="1">
+      <widget class="QProgressBar" name="barVmin">
+       <property name="maximum">
+        <number>15</number>
+       </property>
+       <property name="value">
+        <number>0</number>
+       </property>
+      </widget>
+     </item>
+     <item row="9" column="3">
+      <widget class="QLabel" name="label_11">
+       <property name="text">
+        <string>Vmax</string>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="3">
+      <widget class="QLabel" name="label_7">
+       <property name="text">
+        <string>Stall</string>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="1">
+      <widget class="QLabel" name="labelTinfo">
+       <property name="text">
+        <string>N/A</string>
+       </property>
+      </widget>
+     </item>
+     <item row="11" column="3">
+      <widget class="QLabel" name="label_12">
+       <property name="text">
+        <string>Irun</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="0">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>El. Defect</string>
+       </property>
+      </widget>
+     </item>
+     <item row="9" column="4" colspan="2">
+      <widget class="QProgressBar" name="barVmax">
+       <property name="maximum">
+        <number>15</number>
+       </property>
+       <property name="value">
+        <number>0</number>
+       </property>
+      </widget>
+     </item>
+     <item row="9" column="2">
       <widget class="Line" name="line_7">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
        </property>
       </widget>
      </item>
-     <item row="9" column="2">
+     <item row="11" column="2">
       <widget class="Line" name="line_8">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
        </property>
       </widget>
      </item>
-     <item row="2" column="0" colspan="6">
+     <item row="4" column="0" colspan="6">
       <widget class="Line" name="line">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
       </widget>
      </item>
-     <item row="4" column="0" colspan="6">
+     <item row="6" column="0" colspan="6">
       <widget class="Line" name="line_3">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
       </widget>
      </item>
-     <item row="6" column="0" colspan="6">
+     <item row="8" column="0" colspan="6">
       <widget class="Line" name="line_5">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
       </widget>
      </item>
-     <item row="8" column="0" colspan="6">
+     <item row="10" column="0" colspan="6">
       <widget class="Line" name="line_6">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
       </widget>
      </item>
-     <item row="5" column="4" colspan="2">
+     <item row="7" column="4" colspan="2">
       <widget class="QLabel" name="labelStall">
        <property name="text">
         <string>N/A</string>
@@ -247,6 +247,48 @@
       <widget class="QToolButton" name="buttonRunVelocity">
        <property name="text">
         <string>Run Velocity</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QLabel" name="labelActPos">
+       <property name="text">
+        <string>N/A</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="4" colspan="2">
+      <widget class="QLabel" name="labelTagPos">
+       <property name="text">
+        <string>N/A</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>Actual Pos.</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="3">
+      <widget class="QLabel" name="label_4">
+       <property name="text">
+        <string>Target</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="2">
+      <widget class="Line" name="line_9">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0" colspan="6">
+      <widget class="Line" name="line_10">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
        </property>
       </widget>
      </item>

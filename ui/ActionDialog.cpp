@@ -9,7 +9,7 @@
 #include "script/ActionOutputStepper.h"
 #include "script/ActionOutputStepperSoftStop.h"
 #include "script/ActionOutputStepperRunVelocity.h"
-#include "script/ActionOutputStepperSetPosition.h"
+#include "script/ActionOutputStepperPositioning.h"
 #include "script/ActionOutputStepperSetParam.h"
 #include "script/ActionVariable.h"
 #include "script/ActionSleep.h"
@@ -436,8 +436,8 @@ void ActionOutputStepperWidget::typeComboChanged(int index)
     case ActionOutputStepper::RunVelocity:
         m_baseWidget = new ActionOutputStepperRunVelocityWidget(this, NULL); // we do not need Script in this class, so we just take NULL
         break;
-    case ActionOutputStepper::SetPosition:
-        m_baseWidget = new ActionOutputStepperSetPositionWidget(this, NULL); // we do not need Script in this class, so we just take NULL
+    case ActionOutputStepper::Positioning:
+        m_baseWidget = new ActionOutputStepperPositioningWidget(this, NULL); // we do not need Script in this class, so we just take NULL
         break;
     case ActionOutputStepper::SetParam:
         m_baseWidget = new ActionOutputStepperSetParamWidget(this, NULL); // we do not need Script in this class, so we just take NULL
@@ -521,12 +521,23 @@ void ActionOutputStepperRunVelocityWidget::edit(Action* act)
     // nothing to do
 }
 
-ActionOutputStepperSetPositionWidget::ActionOutputStepperSetPositionWidget(QWidget* parent, Script* script) : IActionWidget(parent)
+ActionOutputStepperPositioningWidget::ActionOutputStepperPositioningWidget(QWidget* parent, Script* script) : IActionWidget(parent)
 {
+    QLabel* labelType = new QLabel("Select positioning type", this);
+    m_comboType = new QComboBox(this);
+    m_comboType->addItem("Set Position");
+    m_comboType->addItem("Set Dual Position");
+    m_comboType->addItem("Reset Position");
+
     m_label = new QLabel("Set target position", this);
     m_spinBox = new QSpinBox(this);
     m_spinBox->setMinimum( SHRT_MIN );
     m_spinBox->setMaximum( SHRT_MAX );
+
+    m_label2 = new QLabel("Set target position 2", this);
+    m_spinBox2 = new QSpinBox(this);
+    m_spinBox2->setMinimum( SHRT_MIN );
+    m_spinBox2->setMaximum( SHRT_MAX );
 
     QGridLayout* layout = new QGridLayout(this);
 
@@ -534,26 +545,69 @@ ActionOutputStepperSetPositionWidget::ActionOutputStepperSetPositionWidget(QWidg
     layout->setContentsMargins(0, 0, 0, 0);
 
     // add our widgets to the layout
-    layout->addWidget(m_label, 0, 0);
-    layout->addWidget(m_spinBox, 0, 1);
+    layout->addWidget(labelType, 0, 0);
+    layout->addWidget(m_comboType, 0, 1);
+    layout->addWidget(m_label, 1, 0);
+    layout->addWidget(m_spinBox, 1, 1);
+    layout->addWidget(m_label2, 2, 0);
+    layout->addWidget(m_spinBox2, 2, 1);
 
     this->setLayout(layout);
+
+    // connect all signals - slots
+    connect(m_comboType, SIGNAL(currentIndexChanged(int)), this, SLOT(comboTypeChanged(int)));
+
+    // set default values
+    this->comboTypeChanged( m_comboType->currentIndex() );
 }
 
-Action* ActionOutputStepperSetPositionWidget::assemble()
+void ActionOutputStepperPositioningWidget::comboTypeChanged(int index)
 {
-    ActionOutputStepperSetPosition* action =  new ActionOutputStepperSetPosition();
+    if(index == ActionOutputStepperPositioning::SetPosition)
+    {
+        m_label->setText("Set target position");
 
+        m_label->show();
+        m_spinBox->show();
+        m_label2->hide();
+        m_spinBox2->hide();
+    }
+    else if(index == ActionOutputStepperPositioning::SetDualPosition)
+    {
+        m_label->setText("Set target position 1");
+
+        m_label->show();
+        m_spinBox->show();
+        m_label2->show();
+        m_spinBox2->show();
+    }
+    else // index == ActionOutputStepperPositioning::RestePosition
+    {
+        m_label->hide();
+        m_spinBox->hide();
+        m_label2->hide();
+        m_spinBox2->hide();
+    }
+}
+
+Action* ActionOutputStepperPositioningWidget::assemble()
+{
+    ActionOutputStepperPositioning* action =  new ActionOutputStepperPositioning();
+
+    action->setPositioningType( (ActionOutputStepperPositioning::PositioningType) m_comboType->currentIndex() );
+    action->setDualPosition( m_spinBox->value(), m_spinBox2->value() );
     action->setPosition( m_spinBox->value() );
 
     return action;
 }
 
-void ActionOutputStepperSetPositionWidget::edit(Action* act)
+void ActionOutputStepperPositioningWidget::edit(Action* act)
 {
-    ActionOutputStepperSetPosition* action = (ActionOutputStepperSetPosition*)act;
+    ActionOutputStepperPositioning* action = (ActionOutputStepperPositioning*)act;
 
+    m_comboType->setCurrentIndex( action->getPositioningType() );
     m_spinBox->setValue( action->getPosition() );
+    m_spinBox2->setValue( action->getDualPosition2() );
 }
 
 ActionOutputStepperSetParamWidget::ActionOutputStepperSetParamWidget(QWidget* parent, Script* script) : IActionWidget(parent)

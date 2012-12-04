@@ -17,7 +17,7 @@
 
 #endif
 
-//#define USE_BLUETOOTH
+#define USE_BLUETOOTH
 
 enum RPiRevision
 {

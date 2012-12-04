@@ -1,5 +1,6 @@
 
 #include "hw/BTThread.h"
+#include "hw/HWInputButtonBt.h"
 #include "util/Config.h"
 #include "util/Debug.h"
 
@@ -86,9 +87,6 @@ BTThread* BTThread::load(QDomElement* root)
         delete btthread;
     }
 
-    // start thread immediatly
-    btthread->start();
-
     return btthread;
 }
 
@@ -128,6 +126,8 @@ void BTThread::run()
     do
     {
         // TODO: we need the possibility to kill this thread here!
+        if(m_bStop)
+            return;
 
         // open socket
         struct sockaddr_l2 addr;
@@ -194,6 +194,7 @@ void BTThread::run()
 
             // we have to read data, now we have to parse the packet and call the apropriate functions
             printf("Received %d bytes: %s\n", readBytes, buffer);
+            this->packetHandler(buffer, readBytes);
         }
 
 
@@ -214,7 +215,7 @@ void BTThread::run()
             m_mutex.unlock();
 
             // run function
-            //element.func(m_socket);
+            element.func(this);
             continue;
         }
 
@@ -287,6 +288,14 @@ void BTThread::run()
 #endif
 }
 
+void* BTThread::run_internal(void* arg)
+{
+    BTThread* thread = (BTThread*)arg;
+    thread->run();
+
+    return NULL;
+}
+
 /**
  * @brief BTThread::waitForRead checks for pending data to read from the socket and if there is none waits for the amount of time specified by timeout
  * @param timeout specifies the amount of time to wait
@@ -319,10 +328,91 @@ bool BTThread::readWait(timespec timeout)
     }
 }
 
-void* BTThread::run_internal(void* arg)
+void BTThread::packetHandler(char* buffer, unsigned int length)
 {
-    BTThread* thread = (BTThread*)arg;
-    thread->run();
+    // parse the packet
+    while(length != 0)
+    {
+        unsigned char type = (buffer[0] & 0xE0) >> 5;
+        unsigned char packetLength = (buffer[0] & 0x1F);
 
-    return NULL;
+        pi_assert(packetLength <= length);
+
+        unsigned char seq = buffer[1];
+        unsigned char seqAck = buffer[2];
+
+        if(type == 0) // i2c packet
+        {
+
+        }
+        else if(type == 1) // gpio packet
+        {
+            bool req = (buffer[3] & 0x80) != 0;
+            bool err = (buffer[3] & 0x40) != 0;
+            unsigned char pinGroup = buffer[3] & 0x1F;
+
+            printf("State of GPIOs is: %x\n", buffer[4]);
+
+            // now lets see if anything has changed, and if yes, inform the respective object
+            for(std::list<GPInput>::iterator it = m_listGPInput.begin(); it != m_listGPInput.end(); it++)
+            {
+                if( (*it).pinGroup == pinGroup)
+                {
+                    (*it).hw->setValue( (buffer[4] & (1 << (*it).pin)) != 0);
+                }
+            }
+        }
+
+        buffer = buffer + packetLength;
+        length -= packetLength;
+    }
+}
+
+void BTThread::sendGPUpdateRequest(unsigned int pinGroup, BTThread*)
+{
+    // TODO: find a better way, this is an ugly hack
+    char buffer[5];
+    buffer[0] = 1 << 5 | 5;
+    buffer[1] = 0x00;
+    buffer[2] = 0xFF;
+    buffer[3] = 1 << 7 | 2;
+    buffer[4] = 0xFF;
+    int ret = write(m_socket, buffer, 5);
+    if(ret != 5)
+    {
+        pi_warn("Write to bluetooth socket has failed");
+    }
+}
+
+void BTThread::addGPInput(HWInputButtonBt *hw)
+{
+    GPInput gp;
+    gp.hw = hw;
+    gp.pin = hw->getPin();
+    gp.pinGroup = hw->getPinGroup();
+
+    m_listGPInput.push_back(gp);
+
+    // As we have a new general purpose input we should request a status update so that our inputs are consistent
+    this->addOutput(std::bind(&BTThread::sendGPUpdateRequest, this, gp.pinGroup, std::placeholders::_1));
+}
+
+void BTThread::removeGPInput(HWInputButtonBt *hw)
+{
+    for(std::list<GPInput>::iterator it = m_listGPInput.begin(); it != m_listGPInput.end(); it++)
+    {
+        if( (*it).hw == hw)
+        {
+            m_listGPInput.erase(it);
+            break;
+        }
+    }
+}
+
+void BTThread::addOutput(std::function<void (BTThread*)> func)
+{
+    OutputElement el;
+    el.func = func;
+
+    m_outputQueue.push(el);
 }
