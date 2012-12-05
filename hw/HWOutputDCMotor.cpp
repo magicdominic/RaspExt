@@ -1,6 +1,7 @@
 
 #include "hw/HWOutputDCMotor.h"
 #include "hw/HWOutputDCMotorI2C.h"
+#include "hw/HWOutputDCMotorBt.h"
 
 #include "util/Debug.h"
 
@@ -26,6 +27,10 @@ HWOutput* HWOutputDCMotor::load(QDomElement* root)
             if(elem.text().toLower().compare("i2c") == 0)
             {
                 hw = (HWOutputDCMotor*)HWOutputDCMotorI2C::load(root);
+            }
+            else if(elem.text().toLower().compare("bt") == 0)
+            {
+                hw = (HWOutputDCMotor*)HWOutputDCMotorBt::load(root);
             }
         }
         elem = elem.nextSiblingElement();

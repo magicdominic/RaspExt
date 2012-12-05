@@ -1,6 +1,6 @@
 
 #include "hw/BTThread.h"
-#include "hw/HWInputButtonBt.h"
+#include "hw/HWInputButtonBtGPIO.h"
 #include "util/Config.h"
 #include "util/Debug.h"
 
@@ -23,6 +23,7 @@ BTThread::BTThread()
     m_bStop = false;
     m_thread = 0;
     m_socket = -1;
+    m_seq = 0;
 
     // specify a dummy handler for SIGUSR1
     struct sigaction sa;
@@ -343,7 +344,9 @@ void BTThread::packetHandler(char* buffer, unsigned int length)
 
         if(type == 0) // i2c packet
         {
-
+            BTI2CPacket packet;
+            if( !packet.parse(buffer, packetLength) )
+                pi_warn("Parsing packet failed");
         }
         else if(type == 1) // gpio packet
         {
@@ -363,28 +366,24 @@ void BTThread::packetHandler(char* buffer, unsigned int length)
             }
         }
 
-        buffer = buffer + packetLength;
+        buffer += packetLength;
         length -= packetLength;
     }
 }
 
 void BTThread::sendGPUpdateRequest(unsigned int pinGroup, BTThread*)
 {
-    // TODO: find a better way, this is an ugly hack
     char buffer[5];
     buffer[0] = 1 << 5 | 5;
-    buffer[1] = 0x00;
+    buffer[1] = this->seqInc();
     buffer[2] = 0xFF;
-    buffer[3] = 1 << 7 | 2;
+    buffer[3] = 1 << 7 | pinGroup;
     buffer[4] = 0xFF;
-    int ret = write(m_socket, buffer, 5);
-    if(ret != 5)
-    {
-        pi_warn("Write to bluetooth socket has failed");
-    }
+
+    this->send(buffer, 5);
 }
 
-void BTThread::addGPInput(HWInputButtonBt *hw)
+void BTThread::addGPInput(HWInputButtonBtGPIO *hw)
 {
     GPInput gp;
     gp.hw = hw;
@@ -397,7 +396,7 @@ void BTThread::addGPInput(HWInputButtonBt *hw)
     this->addOutput(std::bind(&BTThread::sendGPUpdateRequest, this, gp.pinGroup, std::placeholders::_1));
 }
 
-void BTThread::removeGPInput(HWInputButtonBt *hw)
+void BTThread::removeGPInput(HWInputButtonBtGPIO *hw)
 {
     for(std::list<GPInput>::iterator it = m_listGPInput.begin(); it != m_listGPInput.end(); it++)
     {
@@ -415,4 +414,159 @@ void BTThread::addOutput(std::function<void (BTThread*)> func)
     el.func = func;
 
     m_outputQueue.push(el);
+}
+
+void BTThread::sendI2CPackets(BTI2CPacket *packets, unsigned int num)
+{
+    unsigned int totalSize = 0;
+
+    // first calculate the size of the whole packet
+    for(unsigned int i = 0; i < num; i++)
+    {
+        totalSize = packets[i].size() + 3;
+    }
+
+    // now allocate a buffer of the required size
+    char* buffer = (char*)malloc(totalSize * sizeof(char));
+
+    char* runningBuffer = buffer;
+    unsigned int runningSize = totalSize;
+    for(unsigned int i = 0; i < num; i++)
+    {
+        unsigned short size = packets[i].size();
+        runningBuffer[0] = BTPacketType::I2C << 5 | (size + 3);
+        runningBuffer[1] = this->seqInc();
+        runningBuffer[2] = 0xFF;
+
+        runningBuffer += 3;
+        runningSize -= 3;
+
+        packets[i].assemble(runningBuffer, runningSize);
+
+        runningBuffer += size;
+        runningSize -= size;
+    }
+
+    pi_assert(runningSize == 0);
+
+    // send the buffer
+    this->send(buffer, totalSize);
+
+    // we dont need it anymore, free it
+    free(buffer);
+}
+
+/**
+ * @brief BTThread::send sends the packet given by buffer over bluetooth
+ * @param buffer
+ * @param length
+ */
+void BTThread::send(char *buffer, unsigned int length)
+{
+    int ret = write(m_socket, buffer, length);
+    if(ret != length)
+    {
+        // TODO: check if we need to reconnect
+        pi_warn("Write to bluetooth socket has failed");
+    }
+}
+
+
+BTI2CPacket::BTI2CPacket()
+{
+    this->slaveAddress = -1;
+    this->read = 0;
+    this->request = 1;
+    this->error = 0;
+
+    this->commandLength = 0;
+    this->commandBuffer = NULL;
+
+    this->readLength = 0;
+    this->readBuffer = NULL;
+}
+
+BTI2CPacket::~BTI2CPacket()
+{
+    if(commandBuffer != NULL)
+        free(commandBuffer);
+
+    if(readBuffer != NULL)
+        free(readBuffer);
+}
+
+unsigned int BTI2CPacket::size() const
+{
+    if(this->readBuffer != NULL)
+        return 2 + this->readLength + this->commandLength;
+    else
+        return 2 + this->commandLength;
+}
+
+/**
+ * @brief BTI2CPacket::assemble assumes that the param buf points to an empty buffer element where a new I2CPacket should be placed
+ * @param buf
+ * @param length
+ */
+void BTI2CPacket::assemble(char* buf, unsigned int length)
+{
+    pi_assert(length >= this->size());
+
+    buf[0] = this->read << 7 | this->slaveAddress;
+
+    if(this->read)
+    {
+        // the packet is a read
+        buf[1] = this->request << 7 | this->error << 6 | this->readLength;
+        memcpy(&buf[2], this->commandBuffer, this->commandLength);
+    }
+    else
+    {
+        // the packet is a write
+        buf[1] = this->request << 7 | this->error << 6;
+        memcpy(&buf[2], this->commandBuffer, this->commandLength);
+    }
+}
+
+bool BTI2CPacket::parse(char *buf, unsigned int i2cSize)
+{
+
+    if(i2cSize <= 2) // if a packet is smaller than or equal to 2 byte it cannot contain any information at all
+        return false;
+
+    this->read = (buf[0] & 0x80) != 0;
+    this->slaveAddress = buf[0] & 0x7F;
+
+    this->request = (buf[1] & 0x80) != 0;
+    this->error = (buf[1] & 0x40) != 0;
+
+    if(this->read)
+    {
+        // the packet is a read
+        this->readLength = buf[1] & 0x1F;
+
+
+        if(this->readLength + 2 > i2cSize) // the packet is too small, it cannot contain a valid response
+            return false;
+
+        this->commandLength = i2cSize - 2 - (this->request ? 0 : this->readLength);
+        this->commandBuffer = (char*)malloc(this->commandLength);
+        memcpy(this->commandBuffer, &buf[2], this->commandLength);
+
+        if(!this->request)
+        {
+            // the packet is a response, we have to copy the read buffer
+            this->readBuffer = (char*)malloc(this->readLength);
+            memcpy(this->readBuffer, &buf[2 + this->commandLength], this->readLength);
+        }
+    }
+    else
+    {
+        // the packet is a write
+        this->commandLength = i2cSize - 2;
+        this->commandBuffer = (char*)malloc(this->commandLength);
+        memcpy(this->commandBuffer, &buf[2], this->commandLength);
+    }
+
+    return true;
 }

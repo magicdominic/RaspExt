@@ -13,10 +13,6 @@
     <input>
         <name>Button 3</name>
         <type>Button</type>
-        <hwtype>Bt</hwtype>
-        <PinGroup>2</PinGroup>
-        <Pin>7</Pin>
-        <BtBoard>First</BtBoard>
     </input>
     <input>
         <name>Fader 2</name>
@@ -44,7 +40,8 @@
     <output>
         <name>Motor 1</name>
         <type>DCMotor</type>
-        <hwtype>I2C</hwtype>
+        <hwtype>Bt</hwtype>
+        <BtBoard>First</BtBoard>
         <SlaveAddress>96</SlaveAddress>
     </output>
     <output>

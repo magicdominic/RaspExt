@@ -1,15 +1,15 @@
-#ifndef HWINPUTBUTTONBT_H
-#define HWINPUTBUTTONBT_H
+#ifndef HWINPUTBUTTONBTGPIO_H
+#define HWINPUTBUTTONBTGPIO_H
 
 #include "hw/HWInputButton.h"
 
 class BTThread;
 
 // TODO: maybe the name has to be changed due to a collision with the PCF8575
-class HWInputButtonBt : public HWInputButton
+class HWInputButtonBtGPIO : public HWInputButton
 {
 public:
-    HWInputButtonBt();
+    HWInputButtonBtGPIO();
 
     bool init(ConfigManager* config);
     void deinit(ConfigManager* config);

@@ -1,6 +1,5 @@
 
 * Config GUI
-* Add Music Action GUI
 * Script editing should not be live
 * Documentation
 * Stepper can be improved

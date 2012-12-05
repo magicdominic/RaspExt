@@ -79,8 +79,9 @@ SOURCES += main.cpp \
     hw/HWOutputGPOI2C.cpp \
     SoundManager.cpp \
     script/ActionMusic.cpp \
-    hw/HWInputButtonBt.cpp \
-    script/ActionOutputStepperPositioning.cpp
+    script/ActionOutputStepperPositioning.cpp \
+    hw/HWInputButtonBtGPIO.cpp \
+    hw/HWOutputDCMotorBt.cpp
 HEADERS += ui/MainWindow.h \
     ui/InputFaderFrame.h \
     ui/ScriptsTableModel.h \
@@ -160,8 +161,9 @@ HEADERS += ui/MainWindow.h \
     hw/HWOutputGPOI2C.h \
     SoundManager.h \
     script/ActionMusic.h \
-    hw/HWInputButtonBt.h \
-    script/ActionOutputStepperPositioning.h
+    script/ActionOutputStepperPositioning.h \
+    hw/HWInputButtonBtGPIO.h \
+    hw/HWOutputDCMotorBt.h
 FORMS += ui/MainWindow.ui \
     ui/RuleDialog.ui \
     ui/ScriptDialog.ui \

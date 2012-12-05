@@ -1,21 +1,21 @@
 
-#include "hw/HWInputButtonBt.h"
+#include "hw/HWInputButtonBtGPIO.h"
 #include "ConfigManager.h"
 #include "hw/BTThread.h"
 #include "util/Debug.h"
 
 #include <QDomElement>
 
-HWInputButtonBt::HWInputButtonBt()
+HWInputButtonBtGPIO::HWInputButtonBtGPIO()
 {
-    this->m_pinGroup = -1;
-    this->m_pin = -1;
+    m_pinGroup = -1;
+    m_pin = -1;
     m_btThread = NULL;
 }
 
-HWInput* HWInputButtonBt::load(QDomElement *root)
+HWInput* HWInputButtonBtGPIO::load(QDomElement *root)
 {
-    HWInputButtonBt* hw = new HWInputButtonBt();
+    HWInputButtonBtGPIO* hw = new HWInputButtonBtGPIO();
     QDomElement elem = root->firstChildElement();
 
     while(!elem.isNull())
@@ -46,12 +46,12 @@ HWInput* HWInputButtonBt::load(QDomElement *root)
     return hw;
 }
 
-QDomElement HWInputButtonBt::save(QDomElement* root, QDomDocument* document)
+QDomElement HWInputButtonBtGPIO::save(QDomElement* root, QDomDocument* document)
 {
     QDomElement input = HWInputButton::save(root, document);
 
     QDomElement type = document->createElement("hwtype");
-    QDomText typeText = document->createTextNode("Bt");
+    QDomText typeText = document->createTextNode("BtGPIO");
     type.appendChild(typeText);
 
     input.appendChild(type);
@@ -77,7 +77,7 @@ QDomElement HWInputButtonBt::save(QDomElement* root, QDomDocument* document)
     return input;
 }
 
-bool HWInputButtonBt::init(ConfigManager* config)
+bool HWInputButtonBtGPIO::init(ConfigManager* config)
 {
     m_btThread = config->getBTThreadByName(m_btName);
 
@@ -86,14 +86,14 @@ bool HWInputButtonBt::init(ConfigManager* config)
     return true;
 }
 
-void HWInputButtonBt::deinit(ConfigManager* config)
+void HWInputButtonBtGPIO::deinit(ConfigManager* config)
 {
     m_btThread->removeGPInput(this);
 
     m_btThread = NULL;
 }
 
-void HWInputButtonBt::setValue(bool value)
+void HWInputButtonBtGPIO::setValue(bool value)
 {
     // only do something if the value has really changed
     if(m_value != value)
@@ -103,7 +103,7 @@ void HWInputButtonBt::setValue(bool value)
     }
 }
 
-void HWInputButtonBt::setOverride(bool v)
+void HWInputButtonBtGPIO::setOverride(bool v)
 {
     HWInput::setOverride(v);
     m_btThread->sendGPUpdateRequest(m_pinGroup, NULL);
