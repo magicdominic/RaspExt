@@ -62,7 +62,7 @@ void HWOutputStepper::setPosition(short position)
     this->outputChanged();
 }
 
-void HWOutputStepper::setDualPosition(short position1, short position2)
+void HWOutputStepper::setDualPosition(short position1, short position2, unsigned char vmin, unsigned char vmax)
 {
     this->outputChanged();
 }

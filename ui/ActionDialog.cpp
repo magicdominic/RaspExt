@@ -6,6 +6,7 @@
 #include "script/ActionOutputLED.h"
 #include "script/ActionOutputDCMotor.h"
 #include "script/ActionOutputRelay.h"
+#include "script/ActionOutputGPO.h"
 #include "script/ActionOutputStepper.h"
 #include "script/ActionOutputStepperSoftStop.h"
 #include "script/ActionOutputStepperRunVelocity.h"
@@ -169,6 +170,9 @@ void ActionOutputWidget::outputChanged(int index)
     case HWOutput::Relay:
         m_baseWidget = new ActionOutputRelayWidget(this, m_script);
         break;
+    case HWOutput::GPO:
+        m_baseWidget = new ActionOutputGPOWidget(this, m_script);
+        break;
     case HWOutput::DCMotor:
         m_baseWidget = new ActionOutputDCMotorWidget(this, m_script);
         break;
@@ -232,6 +236,7 @@ ActionOutputRelayWidget::ActionOutputRelayWidget(QWidget* parent, Script *script
     m_combo->addItem("On");
     m_combo->addItem("Toggle");
 
+
     m_label = new QLabel("Set relay to", this);
 
     QGridLayout* layout = new QGridLayout(this);
@@ -258,6 +263,45 @@ Action* ActionOutputRelayWidget::assemble()
 void ActionOutputRelayWidget::edit(Action* act)
 {
     ActionOutputRelay* action = (ActionOutputRelay*)act;
+    m_combo->setCurrentIndex( action->getState());
+}
+
+
+
+ActionOutputGPOWidget::ActionOutputGPOWidget(QWidget* parent, Script *script) : IActionWidget(parent)
+{
+    // create comboBox and add items
+    m_combo = new QComboBox(this);
+    m_combo->addItem("Low");
+    m_combo->addItem("High");
+    m_combo->addItem("Toggle");
+
+    m_label = new QLabel("Set GPO to", this);
+
+    QGridLayout* layout = new QGridLayout(this);
+
+    // remove spacing around widget, it looks kind of odd otherwise
+    layout->setContentsMargins(0, 0, 0, 0);
+
+    // add our widgets to the layout
+    layout->addWidget(m_label, 0, 0);
+    layout->addWidget(m_combo, 0, 1);
+
+    this->setLayout(layout);
+}
+
+Action* ActionOutputGPOWidget::assemble()
+{
+    ActionOutputGPO* action = new ActionOutputGPO();
+
+    action->setState( (ActionOutputGPO::State)m_combo->currentIndex() );
+
+    return action;
+}
+
+void ActionOutputGPOWidget::edit(Action* act)
+{
+    ActionOutputGPO* action = (ActionOutputGPO*)act;
     m_combo->setCurrentIndex( action->getState());
 }
 
@@ -539,6 +583,16 @@ ActionOutputStepperPositioningWidget::ActionOutputStepperPositioningWidget(QWidg
     m_spinBox2->setMinimum( SHRT_MIN );
     m_spinBox2->setMaximum( SHRT_MAX );
 
+    m_labelVmin = new QLabel("Set Vmin", this);
+    m_spinVmin = new QSpinBox(this);
+    m_spinVmin->setMinimum( 0 );
+    m_spinVmin->setMaximum( 15 );
+
+    m_labelVmax = new QLabel("Set Vmax", this);
+    m_spinVmax = new QSpinBox(this);
+    m_spinVmax->setMinimum( 0 );
+    m_spinVmax->setMaximum( 15 );
+
     QGridLayout* layout = new QGridLayout(this);
 
     // remove spacing around widget, it looks kind of odd otherwise
@@ -551,6 +605,11 @@ ActionOutputStepperPositioningWidget::ActionOutputStepperPositioningWidget(QWidg
     layout->addWidget(m_spinBox, 1, 1);
     layout->addWidget(m_label2, 2, 0);
     layout->addWidget(m_spinBox2, 2, 1);
+
+    layout->addWidget(m_labelVmin, 3, 0);
+    layout->addWidget(m_spinVmin, 3, 1);
+    layout->addWidget(m_labelVmax, 4, 0);
+    layout->addWidget(m_spinVmax, 4, 1);
 
     this->setLayout(layout);
 
@@ -571,6 +630,10 @@ void ActionOutputStepperPositioningWidget::comboTypeChanged(int index)
         m_spinBox->show();
         m_label2->hide();
         m_spinBox2->hide();
+        m_labelVmin->hide();
+        m_spinVmin->hide();
+        m_labelVmax->hide();
+        m_spinVmax->hide();
     }
     else if(index == ActionOutputStepperPositioning::SetDualPosition)
     {
@@ -580,13 +643,21 @@ void ActionOutputStepperPositioningWidget::comboTypeChanged(int index)
         m_spinBox->show();
         m_label2->show();
         m_spinBox2->show();
+        m_labelVmin->show();
+        m_spinVmin->show();
+        m_labelVmax->show();
+        m_spinVmax->show();
     }
-    else // index == ActionOutputStepperPositioning::RestePosition
+    else // index == ActionOutputStepperPositioning::ResetPosition
     {
         m_label->hide();
         m_spinBox->hide();
         m_label2->hide();
         m_spinBox2->hide();
+        m_labelVmin->hide();
+        m_spinVmin->hide();
+        m_labelVmax->hide();
+        m_spinVmax->hide();
     }
 }
 
@@ -595,7 +666,7 @@ Action* ActionOutputStepperPositioningWidget::assemble()
     ActionOutputStepperPositioning* action =  new ActionOutputStepperPositioning();
 
     action->setPositioningType( (ActionOutputStepperPositioning::PositioningType) m_comboType->currentIndex() );
-    action->setDualPosition( m_spinBox->value(), m_spinBox2->value() );
+    action->setDualPosition( m_spinBox->value(), m_spinBox2->value(), m_spinVmin->value(), m_spinVmax->value());
     action->setPosition( m_spinBox->value() );
 
     return action;
@@ -608,6 +679,8 @@ void ActionOutputStepperPositioningWidget::edit(Action* act)
     m_comboType->setCurrentIndex( action->getPositioningType() );
     m_spinBox->setValue( action->getPosition() );
     m_spinBox2->setValue( action->getDualPosition2() );
+    m_spinVmin->setValue( action->getDualVmin() );
+    m_spinVmax->setValue( action->getDualVmax() );
 }
 
 ActionOutputStepperSetParamWidget::ActionOutputStepperSetParamWidget(QWidget* parent, Script* script) : IActionWidget(parent)

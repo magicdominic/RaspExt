@@ -8,6 +8,8 @@ ActionOutputStepperPositioning::ActionOutputStepperPositioning()
     m_posType = SetPosition;
     m_position = 0;
     m_position2 = 0;
+    m_vmin = 0;
+    m_vmax = 0;
 }
 
 Action* ActionOutputStepperPositioning::load(QDomElement* root)
@@ -24,6 +26,14 @@ Action* ActionOutputStepperPositioning::load(QDomElement* root)
         else if(elem.tagName().toLower().compare("position2") == 0)
         {
             action->m_position2 = elem.text().toShort();
+        }
+        else if(elem.tagName().toLower().compare("vmin") == 0)
+        {
+            action->m_vmin = elem.text().toShort();
+        }
+        else if(elem.tagName().toLower().compare("vmax") == 0)
+        {
+            action->m_vmax = elem.text().toShort();
         }
         else if(elem.tagName().toLower().compare("positioningtype") == 0)
         {
@@ -51,19 +61,6 @@ QDomElement ActionOutputStepperPositioning::save(QDomElement* root, QDomDocument
 
     action.appendChild(steppertype);
 
-    QDomElement position = document->createElement("Position");
-    QDomText positionText = document->createTextNode( QString::number(m_position) );
-    position.appendChild(positionText);
-
-    action.appendChild(position);
-
-    QDomElement position2 = document->createElement("Position2");
-    QDomText position2Text = document->createTextNode( QString::number(m_position2) );
-    position2.appendChild(position2Text);
-
-    action.appendChild(position2);
-
-
     QString strPosType;
     switch(m_posType)
     {
@@ -84,6 +81,36 @@ QDomElement ActionOutputStepperPositioning::save(QDomElement* root, QDomDocument
 
     action.appendChild(posType);
 
+    if(m_posType == SetPosition || m_posType == SetDualPosition)
+    {
+        QDomElement position = document->createElement("Position");
+        QDomText positionText = document->createTextNode( QString::number(m_position) );
+        position.appendChild(positionText);
+
+        action.appendChild(position);
+    }
+
+    if(m_posType == SetDualPosition)
+    {
+        QDomElement position2 = document->createElement("Position2");
+        QDomText position2Text = document->createTextNode( QString::number(m_position2) );
+        position2.appendChild(position2Text);
+
+        action.appendChild(position2);
+
+        QDomElement vmin = document->createElement("Vmin");
+        QDomText vminText = document->createTextNode( QString::number(m_vmin) );
+        vmin.appendChild(vminText);
+
+        action.appendChild(vmin);
+
+        QDomElement vmax = document->createElement("Vmax");
+        QDomText vmaxText = document->createTextNode( QString::number(m_vmax) );
+        vmax.appendChild(vmaxText);
+
+        action.appendChild(vmax);
+    }
+
     return action;
 }
 
@@ -99,7 +126,7 @@ bool ActionOutputStepperPositioning::execute(unsigned int)
         hw->setPosition(m_position);
         break;
     case SetDualPosition:
-        hw->setDualPosition(m_position, m_position2);
+        hw->setDualPosition(m_position, m_position2, m_vmin, m_vmax);
         break;
     case ResetPosition:
         hw->resetPosition();
@@ -133,4 +160,14 @@ std::string ActionOutputStepperPositioning::getDescription() const
     }
 
     return str;
+}
+
+void ActionOutputStepperPositioning::setDualPosition(short position1, short position2, unsigned char vmin, unsigned char vmax)
+{
+    pi_assert(vmin <= 15 && vmax <= 15);
+
+    m_position = position1;
+    m_position2 = position2;
+    m_vmin = vmin;
+    m_vmax = vmax;
 }

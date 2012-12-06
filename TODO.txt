@@ -6,5 +6,4 @@
 * Bluetooth stuff
 
 * Move all event stuff (onInput, onOutput, ...) to private
-* ActionOutputGPO has to be implemented
 * on*Destroy has to be deleted

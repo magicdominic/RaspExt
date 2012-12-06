@@ -2,6 +2,7 @@
 #include "script/ActionOutputRelay.h"
 #include "script/ActionOutputDCMotor.h"
 #include "script/ActionOutputStepper.h"
+#include "script/ActionOutputGPO.h"
 #include "ConfigManager.h"
 
 #include "util/Debug.h"
@@ -22,6 +23,8 @@ Action* ActionOutput::load(QDomElement* root)
                 action = (ActionOutput*)ActionOutputDCMotor::load(root);
             else if(elem.text().toLower().compare("stepper") == 0)
                 action = (ActionOutput*)ActionOutputStepper::load(root);
+            else if(elem.text().toLower().compare("gpo") == 0)
+                action = (ActionOutput*)ActionOutputGPO::load(root);
         }
         else if(elem.tagName().toLower().compare("name") == 0)
             name = elem.text().toStdString();

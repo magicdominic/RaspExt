@@ -28,14 +28,18 @@ public:
 
     void setPosition(short position) { m_position = position;}
     short getPosition() const { return m_position;}
-    void setDualPosition(short position1, short position2) { m_position = position1; m_position2 = position2;}
+    void setDualPosition(short position1, short position2, unsigned char vmin, unsigned char vmax);
     short getDualPosition1() const { return m_position;}
     short getDualPosition2() const { return m_position2;}
+    unsigned char getDualVmin() const { return m_vmin;}
+    unsigned char getDualVmax() const { return m_vmax;}
 
 private:
     PositioningType m_posType;
     short m_position;
     short m_position2;
+    unsigned char m_vmin;
+    unsigned char m_vmax;
 };
 
 #endif // ACTIONOUTPUTSTEPPERPOSITION_H

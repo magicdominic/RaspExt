@@ -80,9 +80,15 @@ void HWOutputStepperI2C::setPosition(short position)
     m_i2cThread->addOutput(std::bind(&HWOutputStepperI2C::setPositionI2C, this, std::placeholders::_1, position));
 }
 
-void HWOutputStepperI2C::setDualPosition(short position1, short position2)
+void HWOutputStepperI2C::setDualPosition(short position1, short position2, unsigned char vmin, unsigned char vmax)
 {
-    m_i2cThread->addOutput(std::bind(&HWOutputStepperI2C::setDualPositionI2C, this, std::placeholders::_1, position1, position2));
+    m_i2cThread->addOutput(std::bind(&HWOutputStepperI2C::setDualPositionI2C,
+                                     this,
+                                     std::placeholders::_1,
+                                     position1,
+                                     position2,
+                                     vmin,
+                                     vmax));
 }
 
 void HWOutputStepperI2C::resetPosition()
@@ -244,9 +250,9 @@ void HWOutputStepperI2C::setPositionI2C(int fd, short position)
     }
 }
 
-void HWOutputStepperI2C::setDualPositionI2C(int fd, short position1, short position2)
+void HWOutputStepperI2C::setDualPositionI2C(int fd, short position1, short position2, unsigned char vmin, unsigned char vmax)
 {
-    HWOutputStepper::setDualPosition(position1, position2);
+    HWOutputStepper::setDualPosition(position1, position2, vmin, vmax);
 
     int ret;
     unsigned char buf[8];
@@ -261,7 +267,7 @@ void HWOutputStepperI2C::setDualPositionI2C(int fd, short position1, short posit
     buf[0] = 0x88;
     buf[1] = 0xFF;
     buf[2] = 0xFF;
-    buf[3] = m_fullStatus.vmax << 4 | m_fullStatus.vmin;
+    buf[3] = vmax << 4 | vmin;
     buf[4] = (position1 & 0xFF00) >> 8;
     buf[5] = (position1 & 0x00FF);
     buf[6] = (position2 & 0xFF00) >> 8;

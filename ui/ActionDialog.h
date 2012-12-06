@@ -87,6 +87,19 @@ private:
     QLabel* m_label;
 };
 
+class ActionOutputGPOWidget : public IActionWidget
+{
+    Q_OBJECT
+public:
+    ActionOutputGPOWidget(QWidget* parent, Script* script);
+
+    Action* assemble();
+    void edit(Action* action);
+
+private:
+    QComboBox* m_combo;
+    QLabel* m_label;
+};
 
 class ActionOutputLEDWidget : public IActionWidget
 {
@@ -184,6 +197,10 @@ private:
     QSpinBox* m_spinBox;
     QLabel* m_label2;
     QSpinBox* m_spinBox2;
+    QLabel* m_labelVmin;
+    QSpinBox* m_spinVmin;
+    QLabel* m_labelVmax;
+    QSpinBox* m_spinVmax;
 };
 
 class ActionOutputStepperSetParamWidget : public IActionWidget

@@ -118,7 +118,7 @@ public:
     virtual void refreshFullStatus();
 
     virtual void setPosition(short position);
-    virtual void setDualPosition(short position1, short position2);
+    virtual void setDualPosition(short position1, short position2, unsigned char vmin, unsigned char vmax);
     virtual void resetPosition();
     virtual void softStop();
     virtual void runVelocity();
