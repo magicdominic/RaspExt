@@ -35,7 +35,6 @@ public:
 
 private:
     void onOutputChanged(HWOutput *hw);
-    void onOutputDestroy(HWOutput *hw);
 
     struct InputElement
     {

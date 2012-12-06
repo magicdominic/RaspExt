@@ -30,7 +30,7 @@ private slots:
     void actionUp();
     void actionDown();
 
-    void okPressed();
+    void closePressed();
 
 private:
     Ui::RuleDialog* ui;

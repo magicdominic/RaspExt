@@ -103,11 +103,6 @@ void ConditionInputButton::onInputChanged(HWInput* hw)
     }
 }
 
-void ConditionInputButton::onInputDestroy(HWInput *hw)
-{
-    pi_warn("Input was destroyed while a Condition was still linked to it");
-}
-
 std::string ConditionInputButton::getDescription() const
 {
     std::string str = std::string("If ").append(m_HWName).append(" is ");

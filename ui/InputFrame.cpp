@@ -26,8 +26,3 @@ void InputFrame::onInputChangedGUI()
 {
     m_GUIUpdatePending = false;
 }
-
-void InputFrame::onInputDestroy(HWInput *hw)
-{
-    pi_error("HWInput was destroyed while still in use by GUI");
-}

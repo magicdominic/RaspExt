@@ -13,15 +13,14 @@ public:
     Type getType() const { return Input;}
 
     void init(ConfigManager* config);
-    void deinit();
-
-    virtual void onInputChanged(HWInput *hw) = 0;
-    virtual void onInputDestroy(HWInput *hw) = 0;
+    void deinit();    
 
     void setHWName(std::string str) { m_HWName = str;}
     std::string getHWName() const { return m_HWName;}
 
 protected:
+    virtual void onInputChanged(HWInput *hw) = 0;
+
     std::string m_HWName;
     HWInput* m_hw;
 };

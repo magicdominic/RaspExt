@@ -27,9 +27,6 @@ public:
                                  std::list<Rule::RequiredOutput>* listOutput,
                                  std::list<Rule::RequiredVariable>* listVariable) const;
 
-    void onInputChanged(HWInput *hw);
-    void onInputDestroy(HWInput *hw);
-
     std::string getDescription() const;
 
     bool isFulfilled() const { return m_isFulfilled;}
@@ -41,6 +38,8 @@ public:
     unsigned int getTriggerValue() const { return m_triggerValue;}
 
 private:
+    void onInputChanged(HWInput *hw);
+
     Trigger m_trigger;
     unsigned int m_triggerValue;
 

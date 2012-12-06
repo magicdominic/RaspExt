@@ -41,17 +41,21 @@ ScriptDialog::~ScriptDialog()
 
 void ScriptDialog::okPressed()
 {
-    m_script->setName( ui->editName->text().toStdString() );
-    m_script->setDescription( ui->editDesc->text().toStdString() );
-
-    if(m_script->getName().empty())
+    if( ui->editName->text().size() == 0 )
     {
         // name is empty, we cannot save a script with an empty name
-        QMessageBox(QMessageBox::Warning, "Empty Name", "The name of a script cannot be empty! Please fill in a name", QMessageBox::Ok, this).exec();
+        QMessageBox(QMessageBox::Warning,
+                    "Empty Name",
+                    "The name of a script cannot be empty! Please fill in a name",
+                    QMessageBox::Ok,
+                    this).exec();
         return;
     }
 
     // TODO: check if a file with this name already exists, and if yes, abort
+
+    m_script->setName( ui->editName->text().toStdString() );
+    m_script->setDescription( ui->editDesc->text().toStdString() );
 
     this->done(Accepted);
 }

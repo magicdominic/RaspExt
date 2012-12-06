@@ -14,9 +14,6 @@ public:
 
     HWInput* getHW() const { return m_hw;}
 
-    void onInputChanged(HWInput *hw);
-    void onInputDestroy(HWInput *hw);
-
 signals:
     void onInputChangedSignal();
 
@@ -24,6 +21,8 @@ protected slots:
     virtual void onInputChangedGUI();
 
 private:
+    void onInputChanged(HWInput *hw);
+
     HWInput* m_hw;
     bool m_GUIUpdatePending;
 };

@@ -19,8 +19,6 @@ public:
 
     Variable* getVariable() const { return m_variable;}
 
-    void onVariableChanged(Variable* var);
-
 signals:
     void onVariableChangedSignal();
 
@@ -29,6 +27,8 @@ private slots:
     void onVariableChangedGUI();
 
 private:
+    void onVariableChanged(Variable* var);
+
     Ui::VariableFrame* ui;
     Variable* m_variable;
 };

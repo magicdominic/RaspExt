@@ -16,10 +16,6 @@ HWInput::HWInput()
 
 HWInput::~HWInput()
 {
-    for(std::list<HWInputListener*>::iterator it = m_listListeners.begin(); it != m_listListeners.end(); it++)
-    {
-        (*it)->onInputDestroy(this);
-    }
 }
 
 bool HWInput::init(ConfigManager *config)

@@ -155,8 +155,3 @@ void PCF8575I2C::onOutputChanged(HWOutput *hw)
     // after we have set the new port mask, we have to update the device as well
     this->updateI2C();
 }
-
-void PCF8575I2C::onOutputDestroy(HWOutput *hw)
-{
-    pi_warn("Output was destroyed while this object still was registered to it");
-}

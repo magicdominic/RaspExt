@@ -14,8 +14,3 @@ void OutputFrame::onOutputChanged(HWOutput *hw)
     pi_assert(hw == m_hw);
     emit onOutputChangedSignal();
 }
-
-void OutputFrame::onOutputDestroy(HWOutput *hw)
-{
-    pi_error("HWOutput was destroyed while still in use by GUI");
-}

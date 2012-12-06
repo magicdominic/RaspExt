@@ -14,15 +14,11 @@
 
 HWOutput::HWOutput()
 {
-    this->m_bOverride = false;
+    m_bOverride = false;
 }
 
 HWOutput::~HWOutput()
 {
-    for(std::list<HWOutputListener*>::iterator it = m_listListeners.begin(); it != m_listListeners.end(); it++)
-    {
-        (*it)->onOutputDestroy(this);
-    }
 }
 
 void HWOutput::init(ConfigManager *config)

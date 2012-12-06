@@ -26,8 +26,6 @@ public:
     void init(ConfigManager* config);
     void deinit();
 
-    void onVariableChanged(Variable *var);
-
     void setVarName(std::string str) { m_varName = str;}
     std::string getVarName() const { return m_varName;}
 
@@ -41,7 +39,9 @@ public:
     int getTriggerValue() const { return m_triggerValue;}
     void setTriggerValue(int value) { m_triggerValue = value;}
 
-protected:
+private:
+    void onVariableChanged(Variable *var);
+
     Variable* m_var;
     Trigger m_trigger;
     int m_triggerValue;

@@ -165,6 +165,7 @@ void BTThread::run()
 
 
     // now we are connected and can enter the run loop
+    pi_message("Connected to bluetooth board %s\n", m_name.c_str());
 
     timespec currentTime;
     timespec waitTime;

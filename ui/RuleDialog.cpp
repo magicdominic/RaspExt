@@ -4,6 +4,8 @@
 #include "ui/ActionDialog.h"
 #include "ui_RuleDialog.h"
 
+#include <QMessageBox>
+
 RuleDialog::RuleDialog(QWidget *parent, Rule* rule, Script *script) :
     QDialog(parent),
     ui(new Ui::RuleDialog),
@@ -32,7 +34,7 @@ RuleDialog::RuleDialog(QWidget *parent, Rule* rule, Script *script) :
     connect(ui->buttonUp, SIGNAL(clicked()), this, SLOT(actionUp()));
     connect(ui->buttonDown, SIGNAL(clicked()), this, SLOT(actionDown()));
 
-    connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(okPressed()));
+    connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(closePressed()));
 }
 
 RuleDialog::~RuleDialog()
@@ -166,8 +168,31 @@ void RuleDialog::deleteCondition()
 }
 
 
-void RuleDialog::okPressed()
+void RuleDialog::closePressed()
 {
+    if( ui->editName->text().size() == 0 )
+    {
+        // name is empty, we cannot save a script with an empty name
+        QMessageBox(QMessageBox::Warning,
+                    "Empty Name",
+                    "The name of a rule cannot be empty! Please fill in a name",
+                    QMessageBox::Ok,
+                    this).exec();
+        return;
+    }
+
+    // check if a rule with this name already exists and is not identical to this one (if the name did not change)
+    Rule* rule = m_script->getRuleByName( ui->editName->text().toStdString() );
+    if( rule != NULL && rule != m_rule)
+    {
+        QMessageBox(QMessageBox::Warning,
+                    "Warning",
+                    "A rule with this name already exists!\nPlease choose a different name",
+                    QMessageBox::Ok,
+                    this).exec();
+        return;
+    }
+
     m_rule->setName( ui->editName->text().toStdString() );
     m_rule->setType( (Rule::Type)ui->comboType->currentIndex() );
 

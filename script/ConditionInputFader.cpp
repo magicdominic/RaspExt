@@ -121,11 +121,6 @@ void ConditionInputFader::onInputChanged(HWInput* hw)
     }
 }
 
-void ConditionInputFader::onInputDestroy(HWInput *hw)
-{
-    pi_warn("Input was destroyed while a Condition was still linked to it");
-}
-
 std::string ConditionInputFader::getDescription() const
 {
     std::string str = std::string("If ").append(m_HWName);
