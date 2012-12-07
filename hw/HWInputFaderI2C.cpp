@@ -39,6 +39,7 @@ HWInput* HWInputFaderI2C::load(QDomElement *root)
             hw->m_channel < 0 || hw->m_channel > 7)
     {
         pi_warn("Invalid i2c parameters");
+        delete hw;
         return NULL;
     }
 

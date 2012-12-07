@@ -22,10 +22,6 @@ public:
     unsigned int getPin() { return m_pin;}
     unsigned int getPinGroup() { return m_pinGroup;}
 
-
-    // DEBUG
-    void setOverride(bool v);
-
 private:
     unsigned int m_pinGroup;
     unsigned int m_pin;

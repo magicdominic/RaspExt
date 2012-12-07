@@ -12,6 +12,7 @@
 
 class HWInput;
 class HWInputButtonBtGPIO;
+class BTThread;
 class QDomElement;
 class QDomDocument;
 
@@ -42,14 +43,14 @@ public:
     // only for i2c read response
     unsigned char readLength; // buffer length for I2C read
     char* readBuffer; // pointer to read buffer, should be != NULL for a response
+
+    std::function<void (BTThread*, BTI2CPacket*)> callbackFunc; // used for processing errors and read responses
 };
 
-class BTThread;
 class BTI2CPolling
 {
 public:
     virtual void poll(BTThread* btThread) = 0;
-    virtual void packetHandler() = 0; // TOODO
 };
 
 class BTThread
@@ -63,15 +64,13 @@ public:
 
     static BTThread* load(QDomElement* root);
     QDomElement save(QDomElement* root, QDomDocument* document);
-/*
-    void addInput(I2CPolling* hw, unsigned int freq);
-    void removeInput(I2CPolling* hw);
 
-    void addOutput(I2COutput* hw);
+    void addInput(BTI2CPolling* hw, unsigned int freq);
+    void removeInput(BTI2CPolling* hw);
 
+    /*
     void addInputPCF8575(HWInput* hw, int slaveAddress, unsigned int port);
     void removeInputPCF8575(HWInput* hw, int slaveAddress);*/
-    // We need the i2c slave address for every input! Otherwise we cannot match them upon receiption of the response
 
     void addOutput(std::function<void (BTThread*)> func);
 
@@ -88,16 +87,12 @@ public:
     // TODO: ATTENTION!!! USE ONLY IN BTTHREAD!!!!
     void sendI2CPackets(BTI2CPacket* packets, unsigned int num);
 
-
-    // TODO
-    void sendGPUpdateRequest(unsigned int pinGroup, BTThread*);
-
 private:
     struct InputElement
     {
         unsigned int freq;
         timespec time;
-        void* hw; // TODO
+        BTI2CPolling* hw;
 
         bool operator< (const InputElement& rhs)
         {
@@ -119,11 +114,14 @@ private:
     static void* run_internal(void* arg);
     void run();
 
+    void connectBt();
+    void disconnectBt();
+
     bool readWait(timespec timeout);
     void packetHandler(char* buffer, unsigned int length);
-
     unsigned short seqInc() { m_seq = (m_seq + 1) % 0xFF; return m_seq;}
     void send(char* buffer, unsigned int length);
+    void sendGPUpdateRequest(unsigned int pinGroup, BTThread*);
 
 
     int m_socket;
@@ -147,5 +145,14 @@ private:
     };
 
     std::list<GPInput> m_listGPInput;
+
+    struct SeqCallback
+    {
+        unsigned char seq;
+        std::function<void (BTThread*, BTI2CPacket*)> callbackFunc;
+
+    };
+
+    std::list<SeqCallback> m_listCallback;
 };
 #endif // BTTHREAD_H

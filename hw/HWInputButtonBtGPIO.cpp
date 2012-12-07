@@ -102,9 +102,3 @@ void HWInputButtonBtGPIO::setValue(bool value)
         this->inputChanged();
     }
 }
-
-void HWInputButtonBtGPIO::setOverride(bool v)
-{
-    HWInput::setOverride(v);
-    m_btThread->sendGPUpdateRequest(m_pinGroup, NULL);
-}

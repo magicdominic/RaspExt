@@ -41,8 +41,8 @@ public:
     void setOverride(bool b);
     bool getOverride() const;
 
-    void registerOutputListener(HWOutputListener* listener); // registriert eine Klasse fuer den Event, ruft den Event einmal direkt auf
-    void unregisterOutputListener(HWOutputListener* listener); // deregistriert eine Klasse fuer den Event
+    void registerOutputListener(HWOutputListener* listener);
+    void unregisterOutputListener(HWOutputListener* listener);
 
 protected:
     virtual void outputChanged();

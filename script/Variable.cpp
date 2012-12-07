@@ -84,6 +84,11 @@ void Variable::variableChanged()
     }
 }
 
+/**
+ * @brief Variable::registerVariableListener registers the object listener for the onVariableChanged event.
+ * This method calls the event handler immediately once after registration
+ * @param listener
+ */
 void Variable::registerVariableListener(VariableListener *listener)
 {
     // TODO: check if already registered
@@ -93,6 +98,10 @@ void Variable::registerVariableListener(VariableListener *listener)
     listener->onVariableChanged(this);
 }
 
+/**
+ * @brief Variable::unregisterVariableListener unregisters an object for the onVariableChanged event.
+ * @param listener
+ */
 void Variable::unregisterVariableListener(VariableListener *listener)
 {
     // TODO: check if registered, otherwise raise error

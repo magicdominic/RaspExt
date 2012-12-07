@@ -1,6 +1,7 @@
 
 #include "hw/HWInputFader.h"
 #include "hw/HWInputFaderI2C.h"
+#include "hw/HWInputFaderBt.h"
 
 #include "util/Debug.h"
 
@@ -23,6 +24,10 @@ HWInput* HWInputFader::load(QDomElement* root)
             if(elem.text().toLower().compare("i2c") == 0)
             {
                 hw = (HWInputFader*)HWInputFaderI2C::load(root);
+            }
+            else if(elem.text().toLower().compare("bt") == 0)
+            {
+                hw = (HWInputFader*)HWInputFaderBt::load(root);
             }
         }
         elem = elem.nextSiblingElement();

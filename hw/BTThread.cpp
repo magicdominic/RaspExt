@@ -118,17 +118,43 @@ void BTThread::setBTAddr(std::string addr)
     m_btaddr = addr;
 }
 
-void BTThread::run()
+void BTThread::addInput(BTI2CPolling *hw, unsigned int freq)
 {
-#ifdef USE_BLUETOOTH
-    // connect to bluetooth board
+    InputElement element;
+    element.freq = freq;
+    clock_gettime(CLOCK_MONOTONIC, &element.time);
+    element.hw = hw;
+
+    m_mutex.lock();
+    m_inputQueue.push(element);
+    m_mutex.unlock();
+
+    // deliver signal to thread to wake it up
+    pthread_kill(m_thread, SIGUSR1);
+}
+
+void BTThread::removeInput(BTI2CPolling *hw)
+{
+    // we only use this element to remove the corresponding element from the queue
+    InputElement element;
+    element.hw = hw;
+
+    m_mutex.lock();
+    m_inputQueue.remove(element);
+    m_mutex.unlock();
+}
+
+void BTThread::connectBt()
+{
     // try to connect until it succeeds
     int status;
     do
     {
-        // TODO: we need the possibility to kill this thread here!
+        // If we want to exit this thread
         if(m_bStop)
-            return;
+        {
+            pthread_exit(0);
+        }
 
         // open socket
         struct sockaddr_l2 addr;
@@ -162,6 +188,18 @@ void BTThread::run()
         }
     }
     while(status == -1);
+}
+
+void BTThread::disconnectBt()
+{
+    close(m_socket);
+}
+
+void BTThread::run()
+{
+#ifdef USE_BLUETOOTH
+    // connect to bluetooth board
+    this->connectBt();
 
 
     // now we are connected and can enter the run loop
@@ -258,7 +296,7 @@ void BTThread::run()
         }
 
         // now we should do something as the timer has expired
-        //element.hw->poll(m_handle);
+        element.hw->poll(this);
 
 
         // preperation for next poll
@@ -286,7 +324,7 @@ void BTThread::run()
         m_mutex.unlock();
     }
 
-    close(m_socket);
+    this->disconnectBt();
 #endif
 }
 
@@ -299,7 +337,7 @@ void* BTThread::run_internal(void* arg)
 }
 
 /**
- * @brief BTThread::waitForRead checks for pending data to read from the socket and if there is none waits for the amount of time specified by timeout
+ * @brief BTThread::waitForRead checks for pending data to read from the socket and if there is none waits for the amount of time specified by timeout.
  * @param timeout specifies the amount of time to wait
  * @return true if there is pending data to read or it was interrupted by a signal (which most of the time means data to write), false if timeout has expired
  */
@@ -343,13 +381,31 @@ void BTThread::packetHandler(char* buffer, unsigned int length)
         unsigned char seq = buffer[1];
         unsigned char seqAck = buffer[2];
 
-        if(type == 0) // i2c packet
+        if(type == BTPacketType::I2C) // I2C packet
         {
             BTI2CPacket packet;
             if( !packet.parse(buffer, packetLength) )
                 pi_warn("Parsing packet failed");
+
+            // now lets see if there is a callback function for this sequence number
+            for(std::list<SeqCallback>::iterator it = m_listCallback.begin(); it != m_listCallback.end(); it++)
+            {
+                if(it->seq == seqAck)
+                {
+                    // we have found our callback function
+                    packet.callbackFunc = it->callbackFunc;
+
+                    m_listCallback.erase(it);
+
+                    break;
+                }
+            }
+
+            // if we have found a valid callback function, execute it
+            if(packet.callbackFunc)
+                packet.callbackFunc(this, &packet);
         }
-        else if(type == 1) // gpio packet
+        else if(type == BTPacketType::GPIO) // gpio packet
         {
             bool req = (buffer[3] & 0x80) != 0;
             bool err = (buffer[3] & 0x40) != 0;
@@ -435,8 +491,10 @@ void BTThread::sendI2CPackets(BTI2CPacket *packets, unsigned int num)
     for(unsigned int i = 0; i < num; i++)
     {
         unsigned short size = packets[i].size();
+        unsigned char seq = this->seqInc();
+
         runningBuffer[0] = BTPacketType::I2C << 5 | (size + 3);
-        runningBuffer[1] = this->seqInc();
+        runningBuffer[1] = seq;
         runningBuffer[2] = 0xFF;
 
         runningBuffer += 3;
@@ -446,6 +504,16 @@ void BTThread::sendI2CPackets(BTI2CPacket *packets, unsigned int num)
 
         runningBuffer += size;
         runningSize -= size;
+
+        // add the callback function (if any) to the list of callback functions for later matching of the response
+        if(packets[i].callbackFunc)
+        {
+            SeqCallback seqCallback;
+            seqCallback.seq = seq;
+            seqCallback.callbackFunc = packets[i].callbackFunc;
+
+            m_listCallback.push_back(seqCallback);
+        }
     }
 
     pi_assert(runningSize == 0);
@@ -531,7 +599,6 @@ void BTI2CPacket::assemble(char* buf, unsigned int length)
 
 bool BTI2CPacket::parse(char *buf, unsigned int i2cSize)
 {
-
     if(i2cSize <= 2) // if a packet is smaller than or equal to 2 byte it cannot contain any information at all
         return false;
 

@@ -26,8 +26,8 @@ public:
     int getValue() const { return m_value;}
     void setValue(int value);
 
-    void registerVariableListener(VariableListener* listener); // registers an Object for this event, calls the Object immediatly after registration once
-    void unregisterVariableListener(VariableListener* listener); // unregisters an Object
+    void registerVariableListener(VariableListener* listener);
+    void unregisterVariableListener(VariableListener* listener);
 private:
     void variableChanged();
 

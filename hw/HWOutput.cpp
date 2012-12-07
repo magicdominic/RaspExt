@@ -123,6 +123,11 @@ std::string HWOutput::getName() const
     return this->m_name;
 }
 
+/**
+ * @brief HWOutput::registerOutputListener registers the object listener for the onOutputChanged event.
+ * This method calls the event handler immediately once after registration
+ * @param listener
+ */
 void HWOutput::registerOutputListener(HWOutputListener *listener)
 {
     // TODO: check if already registered
@@ -132,6 +137,10 @@ void HWOutput::registerOutputListener(HWOutputListener *listener)
     listener->onOutputChanged(this);
 }
 
+/**
+ * @brief HWOutput::unregisterOutputListener unregisters an object for the onOutputChanged event.
+ * @param listener
+ */
 void HWOutput::unregisterOutputListener(HWOutputListener *listener)
 {
     // TODO: check if registered, otherwise raise error

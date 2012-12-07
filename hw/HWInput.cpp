@@ -112,6 +112,11 @@ std::string HWInput::getName() const
     return this->m_name;
 }
 
+/**
+ * @brief HWInput::registerInputListener registers the object listener for the onInputChanged event.
+ * This method calls the event handler immediately once after registration
+ * @param listener
+ */
 void HWInput::registerInputListener(HWInputListener *listener)
 {
     // TODO: check if already registered
@@ -121,6 +126,10 @@ void HWInput::registerInputListener(HWInputListener *listener)
     listener->onInputChanged(this);
 }
 
+/**
+ * @brief HWInput::registerInputListener unregisters an object for the onInputChanged event.
+ * @param listener
+ */
 void HWInput::unregisterInputListener(HWInputListener *listener)
 {
     // TODO: check if registered, otherwise raise error
