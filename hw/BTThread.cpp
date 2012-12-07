@@ -130,7 +130,8 @@ void BTThread::addInput(BTI2CPolling *hw, unsigned int freq)
     m_mutex.unlock();
 
     // deliver signal to thread to wake it up
-    pthread_kill(m_thread, SIGUSR1);
+    if(m_thread != 0)
+        pthread_kill(m_thread, SIGUSR1);
 }
 
 void BTThread::removeInput(BTI2CPolling *hw)
@@ -188,11 +189,21 @@ void BTThread::connectBt()
         }
     }
     while(status == -1);
+
+    pi_message("Connected to bluetooth board %s\n", m_name.c_str());
 }
 
 void BTThread::disconnectBt()
 {
     close(m_socket);
+}
+
+void BTThread::reconnectBt()
+{
+    pi_message("Lost connection to bluetooth board %s\nTrying to reconnect\n", m_name.c_str());
+
+    this->disconnectBt();
+    this->connectBt();
 }
 
 void BTThread::run()
@@ -203,7 +214,6 @@ void BTThread::run()
 
 
     // now we are connected and can enter the run loop
-    pi_message("Connected to bluetooth board %s\n", m_name.c_str());
 
     timespec currentTime;
     timespec waitTime;
@@ -232,8 +242,23 @@ void BTThread::run()
             memset(buffer, 0, sizeof(buffer));
             int readBytes = recv(m_socket, buffer, sizeof(buffer), 0);
 
+            // TODO: check if this is enough error checking
+            if(readBytes == 0)
+            {
+                // if read returns 0 this means end of file => we have lost connection and need to reconnect
+                this->reconnectBt();
+            }
+
+            if(readBytes == -1)
+            {
+                perror("Error occurred while doing read");
+                if(errno == ENOTCONN)
+                    this->reconnectBt();
+
+                continue;
+            }
+
             // we have to read data, now we have to parse the packet and call the apropriate functions
-            printf("Received %d bytes: %s\n", readBytes, buffer);
             this->packetHandler(buffer, readBytes);
         }
 
@@ -353,7 +378,6 @@ bool BTThread::readWait(timespec timeout)
     if(ret == -1)
     {
         // we have been interrupted by a signal
-        pi_warn("Interrupted by signal");
         return true;
     }
     else if(ret == 0)
@@ -384,8 +408,11 @@ void BTThread::packetHandler(char* buffer, unsigned int length)
         if(type == BTPacketType::I2C) // I2C packet
         {
             BTI2CPacket packet;
-            if( !packet.parse(buffer, packetLength) )
+            if( !packet.parse(buffer + 3, packetLength - 3) )
+            {
                 pi_warn("Parsing packet failed");
+                return;
+            }
 
             // now lets see if there is a callback function for this sequence number
             for(std::list<SeqCallback>::iterator it = m_listCallback.begin(); it != m_listCallback.end(); it++)
@@ -470,7 +497,13 @@ void BTThread::addOutput(std::function<void (BTThread*)> func)
     OutputElement el;
     el.func = func;
 
+    m_mutex.lock();
     m_outputQueue.push(el);
+    m_mutex.unlock();
+
+    // deliver signal to thread to wake it up
+    if(m_thread != 0)
+        pthread_kill(m_thread, SIGUSR1);
 }
 
 void BTThread::sendI2CPackets(BTI2CPacket *packets, unsigned int num)
@@ -536,7 +569,12 @@ void BTThread::send(char *buffer, unsigned int length)
     if(ret != length)
     {
         // TODO: check if we need to reconnect
-        pi_warn("Write to bluetooth socket has failed");
+        perror("Write to bluetooth socket has failed");
+
+        if(errno == ENOTCONN)
+        {
+            this->reconnectBt();
+        }
     }
 }
 
@@ -588,6 +626,12 @@ void BTI2CPacket::assemble(char* buf, unsigned int length)
         // the packet is a read
         buf[1] = this->request << 7 | this->error << 6 | this->readLength;
         memcpy(&buf[2], this->commandBuffer, this->commandLength);
+
+        if(!this->request)
+        {
+            // the packet is a response, therefore we need the read buffer
+            memcpy(&buf[2 + this->commandLength], this->readBuffer, this->readLength);
+        }
     }
     else
     {

@@ -81,7 +81,7 @@ QDomElement HWInputFaderBt::save(QDomElement* root, QDomDocument* document)
 bool HWInputFaderBt::init(ConfigManager* config)
 {
     m_btThread = config->getBTThreadByName(m_btName);
-    m_btThread->addInput(this, 50);
+    m_btThread->addInput(this, 1); // TODO: DEBUG set this to 50
 
     return true;
 }
@@ -122,7 +122,7 @@ void HWInputFaderBt::onRead(BTThread* thread, BTI2CPacket* packet)
         return;
 
     // convert ad value to percent
-    unsigned int value = packet->readBuffer[0] * 100 / 255;
+    unsigned int value = ((unsigned char)packet->readBuffer[0]) * 100 / 255;
 
     if(m_value != value)
     {

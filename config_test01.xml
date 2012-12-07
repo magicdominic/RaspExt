@@ -29,6 +29,14 @@
         <SlaveAddress>72</SlaveAddress>
         <Channel>0</Channel>
     </input>
+    <input>
+        <name>Fader 3</name>
+        <type>Fader</type>
+        <hwtype>Bt</hwtype>
+        <SlaveAddress>72</SlaveAddress>
+        <Channel>0</Channel>
+        <BtBoard>first</BtBoard>
+    </input>
     <output>
         <name>Relay 2</name>
         <type>Relay</type>
@@ -70,6 +78,6 @@
     </output>
     <bluetooth>
         <name>First</name>
-        <BTAddress>D0:07:90:5B:77:47</BTAddress>
+        <BTAddress>00:09:DD:50:88:B6</BTAddress>
     </bluetooth>
 </config>

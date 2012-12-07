@@ -116,6 +116,7 @@ private:
 
     void connectBt();
     void disconnectBt();
+    void reconnectBt();
 
     bool readWait(timespec timeout);
     void packetHandler(char* buffer, unsigned int length);

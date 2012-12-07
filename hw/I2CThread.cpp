@@ -90,6 +90,9 @@ void I2CThread::addOutput(I2COutput *hw)
     m_mutex.lock();
     m_outputQueue.push(element);
     m_mutex.unlock();
+
+    // deliver signal to thread to wake it up
+    pthread_kill(m_thread, SIGUSR1);
 }
 
 void I2CThread::addOutput(std::function<void (int)> func)
@@ -100,6 +103,9 @@ void I2CThread::addOutput(std::function<void (int)> func)
     m_mutex.lock();
     m_outputQueue.push(element);
     m_mutex.unlock();
+
+    // deliver signal to thread to wake it up
+    pthread_kill(m_thread, SIGUSR1);
 }
 
 void I2CThread::addInputPCF8575(HWInput* hw, int slaveAddress, unsigned int port)
