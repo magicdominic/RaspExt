@@ -24,6 +24,7 @@ BTThread::BTThread()
     m_thread = 0;
     m_socket = -1;
     m_seq = 0;
+    m_btaddr = "11:22:33:44:55:66";
 
     // specify a dummy handler for SIGUSR1
     struct sigaction sa;
@@ -114,6 +115,34 @@ QDomElement BTThread::save(QDomElement* root, QDomDocument* document)
 
 void BTThread::setBTAddr(std::string addr)
 {
+    // convert to upper case
+    std::transform(addr.begin(), addr.end(),addr.begin(), ::toupper);
+
+    // check if the address is valid
+    bool valid = true;
+    if(addr.size() != 17)
+        valid = false;
+
+    for(unsigned int i = 0; i < addr.size(); i++)
+    {
+        if( (i + 1) % 3 == 0 )
+        {
+            if(addr.at(i) != ':')
+                valid = false;
+        }
+        else
+        {
+            if(addr.at(i) > 'F' && addr.at(i) < '0')
+                valid = false;
+        }
+    }
+
+    if(!valid)
+    {
+        pi_warn("Bluetooth address is not valid");
+        return;
+    }
+
     // TODO: check format and only save if it is correct
     m_btaddr = addr;
 }

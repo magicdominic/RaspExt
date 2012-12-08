@@ -1,6 +1,7 @@
 
 #include "hw/HWOutputLED.h"
 #include "hw/HWOutputLEDI2C.h"
+#include "hw/HWOutputLEDBt.h"
 
 #include "util/Debug.h"
 
@@ -23,7 +24,11 @@ HWOutput* HWOutputLED::load(QDomElement* root)
         {
             if(elem.text().toLower().compare("i2c") == 0)
             {
-                hw = (HWOutputLEDI2C*)HWOutputLEDI2C::load(root);
+                hw = (HWOutputLED*)HWOutputLEDI2C::load(root);
+            }
+            else if(elem.text().toLower().compare("bt") == 0)
+            {
+                hw = (HWOutputLED*)HWOutputLEDBt::load(root);
             }
         }
         elem = elem.nextSiblingElement();
