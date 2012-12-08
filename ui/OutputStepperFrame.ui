@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>248</height>
+    <height>284</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -204,6 +204,9 @@
      </item>
      <item row="0" column="5">
       <widget class="QPushButton" name="pushButton">
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(255, 255, 255);</string>
+       </property>
        <property name="text">
         <string>Override</string>
        </property>

@@ -54,413 +54,434 @@
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
          <layout class="QGridLayout" name="gridLayout_2">
-          <item row="21" column="1">
-           <widget class="QLabel" name="labelAbsThr">
-            <property name="text">
-             <string>N/A</string>
-            </property>
-           </widget>
-          </item>
-          <item row="7" column="1">
-           <widget class="QLabel" name="labelVmax">
-            <property name="text">
-             <string>N/A</string>
-            </property>
-           </widget>
-          </item>
-          <item row="11" column="0">
-           <widget class="QLabel" name="label_11">
-            <property name="text">
-             <string>Step Mode</string>
-            </property>
-           </widget>
-          </item>
-          <item row="7" column="0">
-           <widget class="QLabel" name="label_7">
-            <property name="text">
-             <string>Vmax</string>
-            </property>
-           </widget>
-          </item>
-          <item row="6" column="1">
-           <widget class="QLabel" name="labelVmin">
-            <property name="text">
-             <string>N/A</string>
-            </property>
-           </widget>
-          </item>
-          <item row="5" column="1">
-           <widget class="QLabel" name="labelIhold">
-            <property name="text">
-             <string>N/A</string>
-            </property>
-           </widget>
-          </item>
-          <item row="25" column="0">
-           <widget class="QLabel" name="label_28">
-            <property name="text">
-             <string>Del Stall Lo</string>
-            </property>
-           </widget>
-          </item>
-          <item row="21" column="0">
+          <item row="22" column="0">
            <widget class="QLabel" name="label_12">
             <property name="text">
              <string>Absolut Threshold</string>
             </property>
            </widget>
           </item>
-          <item row="28" column="1">
-           <widget class="QLabel" name="labelPWMJEn">
-            <property name="text">
-             <string>N/A</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="0">
-           <widget class="QLabel" name="label">
-            <property name="text">
-             <string>Actual Position</string>
-            </property>
-           </widget>
-          </item>
-          <item row="27" column="0">
-           <widget class="QLabel" name="label_15">
-            <property name="text">
-             <string>Min Samples</string>
-            </property>
-           </widget>
-          </item>
-          <item row="28" column="0">
-           <widget class="QLabel" name="label_16">
-            <property name="text">
-             <string>PWM jitter enable</string>
-            </property>
-           </widget>
-          </item>
-          <item row="14" column="0">
-           <widget class="QLabel" name="label_20">
-            <property name="text">
-             <string>Battery under voltage</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="1">
-           <widget class="QLabel" name="labelIrun">
-            <property name="text">
-             <string>N/A</string>
-            </property>
-           </widget>
-          </item>
-          <item row="23" column="1">
-           <widget class="QLabel" name="labelFS2StEn">
-            <property name="text">
-             <string>N/A</string>
-            </property>
-           </widget>
-          </item>
-          <item row="29" column="0">
-           <widget class="QLabel" name="label_18">
-            <property name="text">
-             <string>DC100StEn</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QLabel" name="labelActPos">
-            <property name="text">
-             <string>N/A</string>
-            </property>
-           </widget>
-          </item>
-          <item row="22" column="0">
-           <widget class="QLabel" name="label_13">
-            <property name="text">
-             <string>Delta Threshold</string>
-            </property>
-           </widget>
-          </item>
-          <item row="9" column="1">
-           <widget class="QLabel" name="labelAcc">
-            <property name="text">
-             <string>N/A</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="0">
-           <widget class="QLabel" name="label_4">
-            <property name="text">
-             <string>Irun</string>
-            </property>
-           </widget>
-          </item>
-          <item row="23" column="0">
-           <widget class="QLabel" name="label_14">
-            <property name="text">
-             <string>FS2StallEnabled</string>
-            </property>
-           </widget>
-          </item>
-          <item row="8" column="0">
-           <widget class="QLabel" name="label_8">
-            <property name="text">
-             <string>Shaft</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QLabel" name="label_17">
-            <property name="text">
-             <string>Target Position</string>
-            </property>
-           </widget>
-          </item>
-          <item row="29" column="1">
-           <widget class="QLabel" name="labelDC100StEn">
-            <property name="text">
-             <string>N/A</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="1">
-           <widget class="QLabel" name="labelAccShape">
-            <property name="text">
-             <string>N/A</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="1">
-           <widget class="QLabel" name="labelSecPos">
-            <property name="text">
-             <string>N/A</string>
-            </property>
-           </widget>
-          </item>
-          <item row="6" column="0">
-           <widget class="QLabel" name="label_6">
-            <property name="text">
-             <string>Vmin</string>
-            </property>
-           </widget>
-          </item>
-          <item row="11" column="1">
-           <widget class="QLabel" name="labelStepmode">
-            <property name="text">
-             <string>N/A</string>
-            </property>
-           </widget>
-          </item>
-          <item row="9" column="0">
-           <widget class="QLabel" name="label_9">
-            <property name="text">
-             <string>Acceleration</string>
-            </property>
-           </widget>
-          </item>
-          <item row="22" column="1">
-           <widget class="QLabel" name="labelDelThr">
-            <property name="text">
-             <string>N/A</string>
-            </property>
-           </widget>
-          </item>
-          <item row="5" column="0">
-           <widget class="QLabel" name="label_5">
-            <property name="text">
-             <string>Ihold</string>
-            </property>
-           </widget>
-          </item>
-          <item row="16" column="0">
+          <item row="17" column="0">
            <widget class="QLabel" name="label_22">
             <property name="text">
              <string>Thermal Warning</string>
             </property>
            </widget>
           </item>
-          <item row="2" column="0">
-           <widget class="QLabel" name="label_10">
+          <item row="10" column="0">
+           <widget class="QLabel" name="label_9">
             <property name="text">
-             <string>Secure Position</string>
+             <string>Acceleration</string>
             </property>
            </widget>
           </item>
           <item row="8" column="1">
-           <widget class="QLabel" name="labelShaft">
+           <widget class="QLabel" name="labelVmax">
             <property name="text">
              <string>N/A</string>
             </property>
            </widget>
           </item>
-          <item row="27" column="1">
-           <widget class="QLabel" name="labelMinSamples">
+          <item row="30" column="0">
+           <widget class="QLabel" name="label_18">
+            <property name="text">
+             <string>DC100StEn</string>
+            </property>
+           </widget>
+          </item>
+          <item row="24" column="0">
+           <widget class="QLabel" name="label_14">
+            <property name="text">
+             <string>FS2StallEnabled</string>
+            </property>
+           </widget>
+          </item>
+          <item row="24" column="1">
+           <widget class="QLabel" name="labelFS2StEn">
             <property name="text">
              <string>N/A</string>
             </property>
            </widget>
           </item>
-          <item row="17" column="0">
-           <widget class="QLabel" name="label_23">
+          <item row="5" column="1">
+           <widget class="QLabel" name="labelIrun">
             <property name="text">
-             <string>External Switch Status</string>
+             <string>N/A</string>
             </property>
            </widget>
           </item>
-          <item row="18" column="0">
-           <widget class="QLabel" name="label_24">
+          <item row="29" column="1">
+           <widget class="QLabel" name="labelPWMJEn">
             <property name="text">
-             <string>Over current in X-Coil</string>
+             <string>N/A</string>
             </property>
            </widget>
           </item>
-          <item row="15" column="0">
-           <widget class="QLabel" name="label_21">
+          <item row="26" column="0">
+           <widget class="QLabel" name="label_28">
             <property name="text">
-             <string>Thermal shutdown</string>
+             <string>Del Stall Lo</string>
             </property>
            </widget>
           </item>
-          <item row="19" column="0">
+          <item row="29" column="0">
+           <widget class="QLabel" name="label_16">
+            <property name="text">
+             <string>PWM jitter enable</string>
+            </property>
+           </widget>
+          </item>
+          <item row="20" column="0">
            <widget class="QLabel" name="label_25">
             <property name="text">
              <string>Over current in Y-Coil</string>
             </property>
            </widget>
           </item>
-          <item row="13" column="0">
+          <item row="14" column="0">
            <widget class="QLabel" name="label_19">
             <property name="text">
              <string>Step Loss</string>
             </property>
            </widget>
           </item>
-          <item row="1" column="1">
+          <item row="2" column="1">
            <widget class="QLabel" name="labelTagPos">
             <property name="text">
              <string>N/A</string>
             </property>
            </widget>
           </item>
-          <item row="12" column="0">
+          <item row="13" column="0">
            <widget class="QLabel" name="label_3">
             <property name="text">
              <string>Vdd Reset</string>
             </property>
            </widget>
           </item>
-          <item row="20" column="0">
+          <item row="21" column="0">
            <widget class="QLabel" name="label_26">
             <property name="text">
              <string>Charge pump failure</string>
             </property>
            </widget>
           </item>
-          <item row="3" column="0">
+          <item row="4" column="0">
            <widget class="QLabel" name="label_2">
             <property name="text">
              <string>Acceleration Shape</string>
             </property>
            </widget>
           </item>
-          <item row="24" column="0">
+          <item row="25" column="0">
            <widget class="QLabel" name="label_27">
             <property name="text">
              <string>Del Stall Hi</string>
             </property>
            </widget>
           </item>
-          <item row="26" column="0">
+          <item row="27" column="0">
            <widget class="QLabel" name="label_29">
             <property name="text">
              <string>Abs Stall</string>
             </property>
            </widget>
           </item>
-          <item row="12" column="1">
+          <item row="13" column="1">
            <widget class="QLabel" name="labelVddReset">
             <property name="text">
              <string>N/A</string>
             </property>
            </widget>
           </item>
-          <item row="13" column="1">
+          <item row="14" column="1">
            <widget class="QLabel" name="labelStepLoss">
             <property name="text">
              <string>N/A</string>
             </property>
            </widget>
           </item>
-          <item row="14" column="1">
+          <item row="15" column="1">
            <widget class="QLabel" name="labelUV2">
             <property name="text">
              <string>N/A</string>
             </property>
            </widget>
           </item>
-          <item row="15" column="1">
+          <item row="16" column="1">
            <widget class="QLabel" name="labelTSD">
             <property name="text">
              <string>N/A</string>
             </property>
            </widget>
           </item>
-          <item row="16" column="1">
+          <item row="17" column="1">
            <widget class="QLabel" name="labelTW">
             <property name="text">
              <string>N/A</string>
             </property>
            </widget>
           </item>
-          <item row="17" column="1">
+          <item row="18" column="1">
            <widget class="QLabel" name="labelESW">
             <property name="text">
              <string>N/A</string>
             </property>
            </widget>
           </item>
-          <item row="18" column="1">
+          <item row="19" column="1">
            <widget class="QLabel" name="labelOVC1">
             <property name="text">
              <string>N/A</string>
             </property>
            </widget>
           </item>
-          <item row="19" column="1">
+          <item row="20" column="1">
            <widget class="QLabel" name="labelOVC2">
             <property name="text">
              <string>N/A</string>
             </property>
            </widget>
           </item>
-          <item row="20" column="1">
+          <item row="21" column="1">
            <widget class="QLabel" name="labelCPFail">
             <property name="text">
              <string>N/A</string>
             </property>
            </widget>
           </item>
-          <item row="24" column="1">
+          <item row="25" column="1">
            <widget class="QLabel" name="labelDelStallHi">
             <property name="text">
              <string>N/A</string>
             </property>
            </widget>
           </item>
-          <item row="25" column="1">
+          <item row="23" column="1">
+           <widget class="QLabel" name="labelDelThr">
+            <property name="text">
+             <string>N/A</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="0">
+           <widget class="QLabel" name="label_5">
+            <property name="text">
+             <string>Ihold</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label">
+            <property name="text">
+             <string>Actual Position</string>
+            </property>
+           </widget>
+          </item>
+          <item row="9" column="0">
+           <widget class="QLabel" name="label_8">
+            <property name="text">
+             <string>Shaft</string>
+            </property>
+           </widget>
+          </item>
+          <item row="30" column="1">
+           <widget class="QLabel" name="labelDC100StEn">
+            <property name="text">
+             <string>N/A</string>
+            </property>
+           </widget>
+          </item>
+          <item row="28" column="0">
+           <widget class="QLabel" name="label_15">
+            <property name="text">
+             <string>Min Samples</string>
+            </property>
+           </widget>
+          </item>
+          <item row="8" column="0">
+           <widget class="QLabel" name="label_7">
+            <property name="text">
+             <string>Vmax</string>
+            </property>
+           </widget>
+          </item>
+          <item row="23" column="0">
+           <widget class="QLabel" name="label_13">
+            <property name="text">
+             <string>Delta Threshold</string>
+            </property>
+           </widget>
+          </item>
+          <item row="10" column="1">
+           <widget class="QLabel" name="labelAcc">
+            <property name="text">
+             <string>N/A</string>
+            </property>
+           </widget>
+          </item>
+          <item row="22" column="1">
+           <widget class="QLabel" name="labelAbsThr">
+            <property name="text">
+             <string>N/A</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="1">
+           <widget class="QLabel" name="labelIhold">
+            <property name="text">
+             <string>N/A</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QLabel" name="labelAccShape">
+            <property name="text">
+             <string>N/A</string>
+            </property>
+           </widget>
+          </item>
+          <item row="28" column="1">
+           <widget class="QLabel" name="labelMinSamples">
+            <property name="text">
+             <string>N/A</string>
+            </property>
+           </widget>
+          </item>
+          <item row="15" column="0">
+           <widget class="QLabel" name="label_20">
+            <property name="text">
+             <string>Battery under voltage</string>
+            </property>
+           </widget>
+          </item>
+          <item row="12" column="0">
+           <widget class="QLabel" name="label_11">
+            <property name="text">
+             <string>Step Mode</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="0">
+           <widget class="QLabel" name="label_4">
+            <property name="text">
+             <string>Irun</string>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="0">
+           <widget class="QLabel" name="label_6">
+            <property name="text">
+             <string>Vmin</string>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="1">
+           <widget class="QLabel" name="labelVmin">
+            <property name="text">
+             <string>N/A</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLabel" name="labelActPos">
+            <property name="text">
+             <string>N/A</string>
+            </property>
+           </widget>
+          </item>
+          <item row="12" column="1">
+           <widget class="QLabel" name="labelStepmode">
+            <property name="text">
+             <string>N/A</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QLabel" name="labelSecPos">
+            <property name="text">
+             <string>N/A</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_17">
+            <property name="text">
+             <string>Target Position</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="label_10">
+            <property name="text">
+             <string>Secure Position</string>
+            </property>
+           </widget>
+          </item>
+          <item row="9" column="1">
+           <widget class="QLabel" name="labelShaft">
+            <property name="text">
+             <string>N/A</string>
+            </property>
+           </widget>
+          </item>
+          <item row="18" column="0">
+           <widget class="QLabel" name="label_23">
+            <property name="text">
+             <string>External Switch Status</string>
+            </property>
+           </widget>
+          </item>
+          <item row="19" column="0">
+           <widget class="QLabel" name="label_24">
+            <property name="text">
+             <string>Over current in X-Coil</string>
+            </property>
+           </widget>
+          </item>
+          <item row="16" column="0">
+           <widget class="QLabel" name="label_21">
+            <property name="text">
+             <string>Thermal shutdown</string>
+            </property>
+           </widget>
+          </item>
+          <item row="26" column="1">
            <widget class="QLabel" name="labelDelStallLo">
             <property name="text">
              <string>N/A</string>
             </property>
            </widget>
           </item>
-          <item row="26" column="1">
+          <item row="27" column="1">
            <widget class="QLabel" name="labelAbsStall">
             <property name="text">
              <string>N/A</string>
             </property>
            </widget>
           </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_30">
+            <property name="text">
+             <string>I2C address</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLabel" name="labelAddress">
+            <property name="text">
+             <string>N/A</string>
+            </property>
+           </widget>
+          </item>
          </layout>
+        </item>
+        <item>
+         <widget class="QPushButton" name="buttonTestBemf">
+          <property name="text">
+           <string>TestBemf</string>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>

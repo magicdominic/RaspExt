@@ -18,6 +18,7 @@ public:
     ~OutputStepperDetailsDialog();
 
 private slots:
+    void testBemf();
     void refreshClicked();
     void onOutputChangedGUI();
 

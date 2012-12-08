@@ -117,6 +117,7 @@ public:
     FullStatus getFullStatus() const { return m_fullStatus;}
     virtual void refreshFullStatus();
 
+    virtual void testBemf();
     virtual void setPosition(short position);
     virtual void setDualPosition(short position1, short position2, unsigned char vmin, unsigned char vmax);
     virtual void resetPosition();
@@ -124,8 +125,12 @@ public:
     virtual void runVelocity();
     virtual void setParam(Param param);
 
+    void setSlaveAddress(int slaveAddress) { m_slaveAddress = slaveAddress;}
+    int getSlaveAddress() const { return m_slaveAddress;}
+
 protected:
     FullStatus m_fullStatus;
+    int m_slaveAddress;
 };
 
 #endif // HWOUTPUTSTEPPER_H

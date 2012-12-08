@@ -51,6 +51,10 @@ void HWOutputStepper::refreshFullStatus()
     this->outputChanged();
 }
 
+void HWOutputStepper::testBemf()
+{
+}
+
 void HWOutputStepper::softStop()
 {
 }

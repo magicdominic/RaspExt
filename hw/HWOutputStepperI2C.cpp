@@ -70,6 +70,11 @@ void HWOutputStepperI2C::deinit()
     m_i2cThread = NULL;
 }
 
+void HWOutputStepperI2C::testBemf()
+{
+    m_i2cThread->addOutput(std::bind(&HWOutputStepperI2C::testBemfI2C, this, std::placeholders::_1));
+}
+
 void HWOutputStepperI2C::softStop()
 {
     m_i2cThread->addOutput(std::bind(&HWOutputStepperI2C::softStopI2C, this, std::placeholders::_1));
@@ -197,6 +202,27 @@ void HWOutputStepperI2C::poll(int fd)
     m_fullStatus.PWMJitterEnable = (buf[7] & 0x01);
 
     HWOutputStepper::refreshFullStatus();
+}
+
+void HWOutputStepperI2C::testBemfI2C(int fd)
+{
+    int ret;
+    unsigned char buf[1];
+
+    if( ioctl(fd, I2C_SLAVE, m_slaveAddress) < 0)
+    {
+        pi_warn("Failed to talk to slave");
+        return;
+    }
+    // send command byte (see page 51 of datasheet)
+    buf[0] = 0x9F;
+
+    ret = write(fd, buf, 1);
+    if(ret != 1)
+    {
+        pi_warn("Could not write to bus");
+        return;
+    }
 }
 
 void HWOutputStepperI2C::softStopI2C(int fd)

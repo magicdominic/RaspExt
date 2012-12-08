@@ -12,11 +12,14 @@ OutputStepperDetailsDialog::OutputStepperDetailsDialog(HWOutputStepper *hw, QWid
     ui->setupUi(this);
     this->setWindowTitle( QString::fromStdString( m_hw->getName() ) );
 
+    ui->labelAddress->setText( QString::number( hw->getSlaveAddress() ) );
+
     // connect to parent to receive signals
     // These will be used to update our content
     connect(parent, SIGNAL(onOutputChangedSignal()), this, SLOT(onOutputChangedGUI()));
     connect(ui->buttonRefresh, SIGNAL(clicked()), this, SLOT(refreshClicked()));
     connect(ui->buttonClose, SIGNAL(clicked()), this, SLOT(close()));
+    connect(ui->buttonTestBemf, SIGNAL(clicked()), this, SLOT(testBemf()));
 
     // refresh dialog content
     this->refreshClicked();
@@ -66,4 +69,9 @@ void OutputStepperDetailsDialog::onOutputChangedGUI()
 void OutputStepperDetailsDialog::refreshClicked()
 {
     m_hw->refreshFullStatus();
+}
+
+void OutputStepperDetailsDialog::testBemf()
+{
+    m_hw->testBemf();
 }
