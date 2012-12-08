@@ -124,9 +124,5 @@ void HWInputFaderBt::onRead(BTThread* thread, BTI2CPacket* packet)
     // convert ad value to percent
     unsigned int value = ((unsigned char)packet->readBuffer[0]) * 100 / 255;
 
-    if(m_value != value)
-    {
-        m_value = value;
-        this->inputChanged();
-    }
+    this->setValue(value);
 }

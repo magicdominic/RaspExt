@@ -124,9 +124,5 @@ void HWInputFaderI2C::poll(int fd)
     // convert ad value to percent
     unsigned int value = buf[0] * 100 / 255;
 
-    if(m_value != value)
-    {
-        m_value = value;
-        this->inputChanged();
-    }
+    this->setValue(value);
 }

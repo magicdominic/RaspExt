@@ -2,9 +2,10 @@ SD Karten vorbereiten
 Vorgehen:
 1. Raspbian auf SD Karte kopieren
 2. Raspbian konfigurieren und anpassen
-3. Installieren von qt-sdk, git, libbluetooth-dev, i2c-tools, libsdl-mixer1.2-dev
+3. Installieren von qt-sdk, git, libbluetooth-dev, i2c-tools, libsdl-mixer1.2-dev, bluez, bluez-hcidump
 4. Konfigurieren von qtcreator
 5. Konfigurieren von i2c-modulen (blacklist unter /etc/modprobe.d/ und einfügen unter /etc/modules)
 6. sudo adduser pi i2c (ermöglicht i2c-access als non-root)
 7. RaspExt klonen und kompilieren
 
+Attention: There is an I2C bug in the Raspberry Pi concerning clock stretching

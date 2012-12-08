@@ -16,6 +16,8 @@ public:
 
     HWInputType getType() const { return Fader;}
 protected:
+    void setValue(unsigned int value);
+
     unsigned int m_value;
 };
 

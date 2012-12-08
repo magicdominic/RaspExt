@@ -54,7 +54,7 @@ QDomElement HWInputFader::save(QDomElement *root, QDomDocument *document)
 
 bool HWInputFader::setOverrideValue(unsigned int v)
 {
-    if(!this->m_bOverride)
+    if(!m_bOverride)
         return false;
 
     if(v != m_value)
@@ -64,6 +64,24 @@ bool HWInputFader::setOverrideValue(unsigned int v)
     }
 
     return true;
+}
+
+void HWInputFader::setValue(unsigned int value)
+{
+    if(m_bOverride || m_value == value)
+        return;
+
+    // make sure value is valid
+    if(value > 100)
+        value = 100;
+
+    // ignore small changes due to noise
+    unsigned int diff = m_value > value ? (m_value - value) : (value - m_value);
+    if( diff > 1 || value == 100 || value == 0)
+    {
+        m_value = value;
+        this->inputChanged();
+    }
 }
 
 unsigned int HWInputFader::getValue() const
