@@ -70,40 +70,59 @@ void HWOutputStepperI2C::testBemf()
     m_i2cThread->addOutput(std::bind(&HWOutputStepperI2C::testBemfI2C, this, std::placeholders::_1));
 }
 
-void HWOutputStepperI2C::softStop()
+void HWOutputStepperI2C::softStop(bool override)
 {
-    m_i2cThread->addOutput(std::bind(&HWOutputStepperI2C::softStopI2C, this, std::placeholders::_1));
+    if(override != this->getOverride())
+        return;
+
+    m_i2cThread->addOutput(std::bind(&HWOutputStepperI2C::softStopI2C, this, std::placeholders::_1, override));
 }
 
-void HWOutputStepperI2C::setPosition(short position)
+void HWOutputStepperI2C::setPosition(short position, bool override)
 {
-    m_i2cThread->addOutput(std::bind(&HWOutputStepperI2C::setPositionI2C, this, std::placeholders::_1, position));
+    if(override != this->getOverride())
+        return;
+
+    m_i2cThread->addOutput(std::bind(&HWOutputStepperI2C::setPositionI2C, this, std::placeholders::_1, position, override));
 }
 
-void HWOutputStepperI2C::setDualPosition(short position1, short position2, unsigned char vmin, unsigned char vmax)
+void HWOutputStepperI2C::setDualPosition(short position1, short position2, unsigned char vmin, unsigned char vmax, bool override)
 {
+    if(override != this->getOverride())
+        return;
+
     m_i2cThread->addOutput(std::bind(&HWOutputStepperI2C::setDualPositionI2C,
                                      this,
                                      std::placeholders::_1,
                                      position1,
                                      position2,
                                      vmin,
-                                     vmax));
+                                     vmax,
+                                     override));
 }
 
-void HWOutputStepperI2C::resetPosition()
+void HWOutputStepperI2C::resetPosition(bool override)
 {
-    m_i2cThread->addOutput(std::bind(&HWOutputStepperI2C::resetPositionI2C, this, std::placeholders::_1));
+    if(override != this->getOverride())
+        return;
+
+    m_i2cThread->addOutput(std::bind(&HWOutputStepperI2C::resetPositionI2C, this, std::placeholders::_1, override));
 }
 
-void HWOutputStepperI2C::runVelocity()
+void HWOutputStepperI2C::runVelocity(bool override)
 {
-    m_i2cThread->addOutput(std::bind(&HWOutputStepperI2C::runVelocityI2C, this, std::placeholders::_1));
+    if(override != this->getOverride())
+        return;
+
+    m_i2cThread->addOutput(std::bind(&HWOutputStepperI2C::runVelocityI2C, this, std::placeholders::_1, override));
 }
 
-void HWOutputStepperI2C::setParam(Param param)
+void HWOutputStepperI2C::setParam(Param param, bool override)
 {
-    m_i2cThread->addOutput(std::bind(&HWOutputStepperI2C::setParamI2C, this, std::placeholders::_1, param));
+    if(override != this->getOverride())
+        return;
+
+    m_i2cThread->addOutput(std::bind(&HWOutputStepperI2C::setParamI2C, this, std::placeholders::_1, param, override));
 }
 
 void HWOutputStepperI2C::refreshFullStatus()
@@ -213,9 +232,9 @@ void HWOutputStepperI2C::testBemfI2C(I2CThread *i2cThread)
     }
 }
 
-void HWOutputStepperI2C::softStopI2C(I2CThread *i2cThread)
+void HWOutputStepperI2C::softStopI2C(I2CThread *i2cThread, bool override)
 {
-    HWOutputStepper::softStop();
+    HWOutputStepper::softStop(override);
 
     unsigned char buf[1];
 
@@ -234,9 +253,9 @@ void HWOutputStepperI2C::softStopI2C(I2CThread *i2cThread)
     }
 }
 
-void HWOutputStepperI2C::setPositionI2C(I2CThread *i2cThread, short position)
+void HWOutputStepperI2C::setPositionI2C(I2CThread *i2cThread, short position, bool override)
 {
-    HWOutputStepper::setPosition(position);
+    HWOutputStepper::setPosition(position, override);
 
     unsigned char buf[5];
 
@@ -260,9 +279,14 @@ void HWOutputStepperI2C::setPositionI2C(I2CThread *i2cThread, short position)
     }
 }
 
-void HWOutputStepperI2C::setDualPositionI2C(I2CThread *i2cThread, short position1, short position2, unsigned char vmin, unsigned char vmax)
+void HWOutputStepperI2C::setDualPositionI2C(I2CThread *i2cThread,
+                                            short position1,
+                                            short position2,
+                                            unsigned char vmin,
+                                            unsigned char vmax,
+                                            bool override)
 {
-    HWOutputStepper::setDualPosition(position1, position2, vmin, vmax);
+    HWOutputStepper::setDualPosition(position1, position2, vmin, vmax, override);
 
     unsigned char buf[8];
 
@@ -289,9 +313,9 @@ void HWOutputStepperI2C::setDualPositionI2C(I2CThread *i2cThread, short position
     }
 }
 
-void HWOutputStepperI2C::resetPositionI2C(I2CThread *i2cThread)
+void HWOutputStepperI2C::resetPositionI2C(I2CThread *i2cThread, bool override)
 {
-    HWOutputStepper::resetPosition();
+    HWOutputStepper::resetPosition(override);
 
     unsigned char buf[1];
 
@@ -311,9 +335,9 @@ void HWOutputStepperI2C::resetPositionI2C(I2CThread *i2cThread)
     }
 }
 
-void HWOutputStepperI2C::runVelocityI2C(I2CThread *i2cThread)
+void HWOutputStepperI2C::runVelocityI2C(I2CThread *i2cThread, bool override)
 {
-    HWOutputStepper::runVelocity();
+    HWOutputStepper::runVelocity(override);
 
     unsigned char buf[1];
 
@@ -332,9 +356,9 @@ void HWOutputStepperI2C::runVelocityI2C(I2CThread *i2cThread)
     }
 }
 
-void HWOutputStepperI2C::setParamI2C(I2CThread *i2cThread, Param param)
+void HWOutputStepperI2C::setParamI2C(I2CThread *i2cThread, Param param, bool override)
 {
-    HWOutputStepper::setParam(param);
+    HWOutputStepper::setParam(param, override);
 
     // as we need to set EVERY value for these I2C commands,
     // we take the current value from the last FullStatus update and change those specified in param

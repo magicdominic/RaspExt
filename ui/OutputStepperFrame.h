@@ -20,6 +20,7 @@ private slots:
     void detailsClicked();
     void runVelocityClicked();
     void softStopClicked();
+    void overrideClicked();
     void onOutputChangedGUI();
 
 private:

@@ -17,6 +17,7 @@ OutputStepperFrame::OutputStepperFrame(HWOutputStepper* hw) : OutputFrame(hw), u
     connect(ui->buttonDetails, SIGNAL(clicked()), this, SLOT(detailsClicked()));
     connect(ui->buttonRunVelocity, SIGNAL(clicked()), this, SLOT(runVelocityClicked()));
     connect(ui->buttonSoftStop, SIGNAL(clicked()), this, SLOT(softStopClicked()));
+    connect(ui->buttonOverride, SIGNAL(clicked()), this, SLOT(overrideClicked()));
 }
 
 OutputStepperFrame::~OutputStepperFrame()
@@ -78,4 +79,20 @@ void OutputStepperFrame::onOutputChangedGUI()
     ui->labelTagPos->setText( QString::number(fullStatus.targetPosition) );
 }
 
+void OutputStepperFrame::overrideClicked()
+{
+    m_hw->setOverride(!m_hw->getOverride());
 
+    if(m_hw->getOverride())
+    {
+        ui->buttonOverride->setStyleSheet(QString::fromUtf8("background-color: rgb(17, 255, 0);"));
+        ui->buttonRunVelocity->setEnabled(true);
+        ui->buttonSoftStop->setEnabled(true);
+    }
+    else
+    {
+        ui->buttonOverride->setStyleSheet(QString::fromUtf8("background-color: rgb(255, 255, 255);"));
+        ui->buttonRunVelocity->setEnabled(false);
+        ui->buttonSoftStop->setEnabled(false);
+    }
+}

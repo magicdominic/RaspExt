@@ -38,8 +38,10 @@ public:
     void init();
     void deinit();
 
-    bool load(std::string filename);
-    bool save(std::string filename);
+    bool load(std::string name);
+    bool save();
+
+    std::string getName() const { return m_name;}
 
     bool addInput(HWInput* hw);
     bool addOutput(HWOutput* hw);
@@ -70,6 +72,8 @@ public:
     SoundManager* getSoundManager() const { return m_soundManager;}
 
 private:
+    std::string m_name;
+
     ScriptState m_scriptState;
     Script* m_activeScript;
 

@@ -55,35 +55,44 @@ void HWOutputStepper::testBemf()
 {
 }
 
-void HWOutputStepper::softStop()
+void HWOutputStepper::softStop(bool override)
 {
 }
 
-void HWOutputStepper::setPosition(short position)
+void HWOutputStepper::setPosition(short position, bool override)
 {
+    if(override != this->getOverride())
+        return;
+
     m_fullStatus.targetPosition = position;
 
     this->outputChanged();
 }
 
-void HWOutputStepper::setDualPosition(short position1, short position2, unsigned char vmin, unsigned char vmax)
+void HWOutputStepper::setDualPosition(short position1, short position2, unsigned char vmin, unsigned char vmax, bool override)
 {
     this->outputChanged();
 }
 
-void HWOutputStepper::resetPosition()
+void HWOutputStepper::resetPosition(bool override)
 {
+    if(override != this->getOverride())
+        return;
+
     m_fullStatus.actualPosition = 0;
 
     this->outputChanged();
 }
 
-void HWOutputStepper::runVelocity()
+void HWOutputStepper::runVelocity(bool override)
 {
 }
 
-void HWOutputStepper::setParam(Param param)
+void HWOutputStepper::setParam(Param param, bool override)
 {
+    if(override != this->getOverride())
+        return;
+
     // update FullStatus
     // we do this now to eliminate a gap between setting the values and displaying them
     // If our new values are not accepted we have an inconsistency between displayed and real values, so we can only hope that this does not happen much

@@ -16,24 +16,24 @@ public:
     static HWOutput* load(QDomElement* root);
     virtual QDomElement save(QDomElement* root, QDomDocument* document);
 
+    void testBemf();
+    void setPosition(short position, bool override);
+    void setDualPosition(short position1, short position2, unsigned char vmin, unsigned char vmax, bool override);
+    void resetPosition(bool override);
+    void softStop(bool override);
+    void runVelocity(bool override);
+    void setParam(Param param, bool override);
+    void refreshFullStatus();
+private:
     void poll(I2CThread* i2cThread);
 
-    void testBemf();
-    void setPosition(short position);
-    void setDualPosition(short position1, short position2, unsigned char vmin, unsigned char vmax);
-    void resetPosition();
-    void softStop();
-    void runVelocity();
-    void refreshFullStatus();
-    void setParam(Param param);
-private:
     void testBemfI2C(I2CThread* i2cThread);
-    void softStopI2C(I2CThread* i2cThread);
-    void setPositionI2C(I2CThread* i2cThread, short position);
-    void setDualPositionI2C(I2CThread* i2cThread, short position1, short position2, unsigned char vmin, unsigned char vmax);
-    void resetPositionI2C(I2CThread* i2cThread);
-    void runVelocityI2C(I2CThread* i2cThread);
-    void setParamI2C(I2CThread* i2cThread, Param param);
+    void softStopI2C(I2CThread* i2cThread, bool override);
+    void setPositionI2C(I2CThread* i2cThread, short position, bool override);
+    void setDualPositionI2C(I2CThread* i2cThread, short position1, short position2, unsigned char vmin, unsigned char vmax, bool override);
+    void resetPositionI2C(I2CThread* i2cThread, bool override);
+    void runVelocityI2C(I2CThread* i2cThread, bool override);
+    void setParamI2C(I2CThread* i2cThread, Param param, bool override);
 
     I2CThread* m_i2cThread;
 };

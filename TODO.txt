@@ -1,9 +1,5 @@
 
 * Config GUI
-* Script editing should not be live
 * Documentation
 * Stepper can be improved
-* Stepper override
 * Bluetooth stuff
-
-* Error handling i2c

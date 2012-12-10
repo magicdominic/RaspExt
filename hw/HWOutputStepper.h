@@ -118,12 +118,12 @@ public:
     virtual void refreshFullStatus();
 
     virtual void testBemf();
-    virtual void setPosition(short position);
-    virtual void setDualPosition(short position1, short position2, unsigned char vmin, unsigned char vmax);
-    virtual void resetPosition();
-    virtual void softStop();
-    virtual void runVelocity();
-    virtual void setParam(Param param);
+    virtual void setPosition(short position, bool override = false);
+    virtual void setDualPosition(short position1, short position2, unsigned char vmin, unsigned char vmax, bool override = false);
+    virtual void resetPosition(bool override = false);
+    virtual void softStop(bool override = false);
+    virtual void runVelocity(bool override = false);
+    virtual void setParam(Param param, bool override = false);
 
     void setSlaveAddress(int slaveAddress) { m_slaveAddress = slaveAddress;}
     int getSlaveAddress() const { return m_slaveAddress;}

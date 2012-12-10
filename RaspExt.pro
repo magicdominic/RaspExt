@@ -84,7 +84,8 @@ SOURCES += main.cpp \
     hw/HWOutputDCMotorBt.cpp \
     script/ActionOutputGPO.cpp \
     hw/HWInputFaderBt.cpp \
-    hw/HWOutputLEDBt.cpp
+    hw/HWOutputLEDBt.cpp \
+    ui/ConfigTableModel.cpp
 HEADERS += ui/MainWindow.h \
     ui/InputFaderFrame.h \
     ui/ScriptsTableModel.h \
@@ -167,7 +168,8 @@ HEADERS += ui/MainWindow.h \
     hw/HWOutputDCMotorBt.h \
     script/ActionOutputGPO.h \
     hw/HWInputFaderBt.h \
-    hw/HWOutputLEDBt.h
+    hw/HWOutputLEDBt.h \
+    ui/ConfigTableModel.h
 FORMS += ui/MainWindow.ui \
     ui/RuleDialog.ui \
     ui/ScriptDialog.ui \

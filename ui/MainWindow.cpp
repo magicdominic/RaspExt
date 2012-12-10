@@ -17,6 +17,8 @@
 #include "util/Debug.h"
 
 #include <QMessageBox>
+#include <QDomDocument>
+#include <QFile>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -49,6 +51,10 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->tableScriptVariable->horizontalHeader()->setStretchLastSection(true);
     ui->tableScriptVariable->setColumnWidth(0, 150);
 
+    // Config page
+    ui->tableConfig->setModel(&m_configTableModel);
+    ui->tableConfig->horizontalHeader()->setStretchLastSection(true);
+
 
     // connect all signals-slots
     connect(ui->buttonCreateScript, SIGNAL(clicked()), this, SLOT(createScript()));
@@ -58,17 +64,74 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->tableScripts->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)), this, SLOT(updateScriptConfig()));
 
+    connect(ui->buttonSelectConfig, SIGNAL(clicked()), this, SLOT(selectConfig()));
+
     connect(ui->buttonStop, SIGNAL(clicked()), this, SLOT(stopScript()));
     connect(ui->buttonPlayPause, SIGNAL(clicked()), this, SLOT(startPauseScript()));
 
-    // load standard config
-    m_config.load("config_test01.xml");
+
+    // load last settings
+    QFile file( "defaults.xml" );
+    if(!file.open(QIODevice::ReadOnly))
+    {
+        pi_warn("Could not open file");
+        return;
+    }
+
+    QDomDocument document;
+    document.setContent(&file);
+
+    QDomElement docElem = document.documentElement();
+
+    // check if this is a valid defaults file
+    if(docElem.tagName().toLower().compare("default") != 0)
+    {
+        pi_warn("Invalid defaults file: tag \"default\" is missing");
+        return;
+    }
+
+    QDomElement elem = docElem.firstChildElement();
+    while(!elem.isNull())
+    {
+        if(elem.tagName().toLower().compare("config") == 0)
+        {
+            m_config.load( elem.text().toStdString() );
+        }
+        elem = elem.nextSiblingElement();
+    }
+
+    file.close();
+
+    //m_config.load("config_test01");
     m_config.init();
+
+    ui->labelConfig->setText( QString::fromStdString( m_config.getName() ) );
 }
 
 MainWindow::~MainWindow()
 {
-    m_config.save("config_test01.xml");
+    // save last settings
+    QFile file( "defaults.xml" );
+    if(file.open(QIODevice::WriteOnly))
+    {
+        QDomDocument document;
+
+        QDomElement defaultElem = document.createElement("default");
+        document.appendChild(defaultElem);
+
+        // save last loaded config
+        QDomElement config = document.createElement("config");
+        QDomText configText = document.createTextNode( QString::fromStdString( m_config.getName() ) );
+        config.appendChild(configText);
+        defaultElem.appendChild(config);
+
+        file.write(document.toByteArray(4));
+
+        file.close();
+    }
+
+    // DEBUG CODE: remove the following line
+    m_config.save();
     m_config.deinit();
     m_config.clear(); // has to be cleared before ui is deleted, otherwise ui widgets are no longer available and this would lead to a segfault
 
@@ -190,7 +253,6 @@ void MainWindow::selectScript()
         // if not and the user decides that this is not acceptable, we stop immediatly
         if( !this->checkScript(script) )
             return;
-
 
         m_config.setActiveScript( script );
 
@@ -449,6 +511,29 @@ void MainWindow::removeVariable(Variable* var)
             ui->layoutVariable->removeWidget(*it);
             delete (*it);
             break;
+        }
+    }
+}
+
+
+void MainWindow::selectConfig()
+{
+    QModelIndexList indices = ui->tableConfig->selectionModel()->selection().indexes();
+
+    if(indices.size() != 0)
+    {
+        std::string name = m_configTableModel.get(indices.front().row());
+
+        // we only allow modifications on the config if no script is loaded
+        if(m_config.getActiveScriptState() == ConfigManager::Inactive && name.compare(m_config.getName()) != 0)
+        {
+            m_config.deinit();
+            m_config.clear();
+
+            m_config.load(name);
+            m_config.init();
+
+            ui->labelConfig->setText( QString::fromStdString(name) );
         }
     }
 }

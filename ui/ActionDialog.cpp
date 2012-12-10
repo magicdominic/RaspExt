@@ -442,7 +442,7 @@ ActionOutputStepperWidget::ActionOutputStepperWidget(QWidget* parent, Script* sc
     m_combo = new QComboBox(this);
     m_combo->addItem("Soft stop");
     m_combo->addItem("RunVelocity");
-    m_combo->addItem("Set position");
+    m_combo->addItem("Positioning");
     m_combo->addItem("Set parameters");
 
     m_layout = new QGridLayout(this);

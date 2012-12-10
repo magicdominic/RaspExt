@@ -1,5 +1,6 @@
 
 #include "ConfigManager.h"
+#include "SoundManager.h"
 #include "hw/BTThread.h"
 #include "hw/GPIOInterruptThread.h"
 #include "hw/I2CThread.h"
@@ -9,9 +10,6 @@
 
 #include <QDomDocument>
 #include <QFile>
-
-// TEST CODE
-#include "SoundManager.h"
 
 ConfigManager::ConfigManager(MainWindow *win)
 {
@@ -134,10 +132,22 @@ void ConfigManager::clear()
             m_mainWindow->removeVariable(*it);
     }
     m_listVariable.clear();
+
+
+    for(std::list<BTThread*>::iterator it = m_listBTThread.begin(); it != m_listBTThread.end(); it++)
+    {
+        // delete Pointer, we must clean the list afterwards immediatly!
+        delete (*it);
+    }
+    m_listBTThread.clear();
 }
 
-bool ConfigManager::load(std::string filename)
+bool ConfigManager::load(std::string name)
 {
+    std::string filename = "config/";
+    filename.append(name);
+    filename.append(".xml");
+
     QFile file(filename.c_str());
     if(!file.open(QIODevice::ReadOnly))
     {
@@ -157,7 +167,10 @@ bool ConfigManager::load(std::string filename)
         return false;
     }
 
+    // now set the filename
+    m_name = name;
 
+    // load xml data
     QDomElement elem = docElem.firstChildElement();
 
     while(!elem.isNull())
@@ -203,8 +216,12 @@ bool ConfigManager::load(std::string filename)
     return true;
 }
 
-bool ConfigManager::save(std::string filename)
+bool ConfigManager::save()
 {
+    std::string filename = "config/";
+    filename.append(m_name);
+    filename.append(".xml");
+
     QFile file(filename.c_str());
     if(!file.open(QIODevice::WriteOnly))
     {
