@@ -85,7 +85,9 @@ SOURCES += main.cpp \
     script/ActionOutputGPO.cpp \
     hw/HWInputFaderBt.cpp \
     hw/HWOutputLEDBt.cpp \
-    ui/ConfigTableModel.cpp
+    ui/ConfigTableModel.cpp \
+    ui/ConfigDialog.cpp \
+    hw/Config.cpp
 HEADERS += ui/MainWindow.h \
     ui/InputFaderFrame.h \
     ui/ScriptsTableModel.h \
@@ -169,7 +171,9 @@ HEADERS += ui/MainWindow.h \
     script/ActionOutputGPO.h \
     hw/HWInputFaderBt.h \
     hw/HWOutputLEDBt.h \
-    ui/ConfigTableModel.h
+    ui/ConfigTableModel.h \
+    ui/ConfigDialog.h \
+    hw/Config.h
 FORMS += ui/MainWindow.ui \
     ui/RuleDialog.ui \
     ui/ScriptDialog.ui \
@@ -185,7 +189,8 @@ FORMS += ui/MainWindow.ui \
     ui/VariableListDialog.ui \
     ui/VariableEditDialog.ui \
     ui/OutputRelayFrame.ui \
-    ui/OutputGPOFrame.ui
+    ui/OutputGPOFrame.ui \
+    ui/ConfigDialog.ui
 
 OTHER_FILES += \
     TODO.txt

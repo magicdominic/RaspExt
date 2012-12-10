@@ -13,6 +13,7 @@
 #include "ui/OutputStepperFrame.h"
 
 #include "ui/ScriptDialog.h"
+#include "ui/ConfigDialog.h"
 
 #include "util/Debug.h"
 
@@ -64,6 +65,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->tableScripts->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)), this, SLOT(updateScriptConfig()));
 
+    connect(ui->buttonCreateConfig, SIGNAL(clicked()), this, SLOT(createConfig()));
     connect(ui->buttonSelectConfig, SIGNAL(clicked()), this, SLOT(selectConfig()));
 
     connect(ui->buttonStop, SIGNAL(clicked()), this, SLOT(stopScript()));
@@ -515,6 +517,12 @@ void MainWindow::removeVariable(Variable* var)
     }
 }
 
+void MainWindow::createConfig()
+{
+    ConfigDialog* dialog = new ConfigDialog(this, "");
+
+    dialog->exec();
+}
 
 void MainWindow::selectConfig()
 {

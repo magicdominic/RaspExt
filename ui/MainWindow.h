@@ -43,6 +43,7 @@ protected slots:
     void stopScript();
     void startPauseScript();
 
+    void createConfig();
     void selectConfig();
 
 private:
