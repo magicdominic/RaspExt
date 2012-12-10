@@ -2,7 +2,6 @@
 #define HWOUTPUTRELAYI2C_H
 
 #include "hw/HWOutputRelay.h"
-#include "hw/I2COutput.h"
 
 class I2CThread;
 
@@ -11,7 +10,7 @@ class I2CThread;
  * whereas with this implementation one can only control if it is fully on or fully of (relay mode).
  * This implementation is specific for TLC59116, it will not work for other led drivers!
  */
-class HWOutputRelayI2C : public HWOutputRelay, public I2COutput
+class HWOutputRelayI2C : public HWOutputRelay
 {
 public:
     HWOutputRelayI2C();
@@ -21,12 +20,11 @@ public:
 
     static HWOutput* load(QDomElement* root);
     virtual QDomElement save(QDomElement* root, QDomDocument* document);
-
-    void setI2C(int fd);
 private:
     void outputChanged();
 
-    void setupI2C(int fd);
+    void setI2C(I2CThread* i2cThread);
+    void setupI2C(I2CThread* i2cThread);
 
     int m_slaveAddress;
     unsigned int m_channel;

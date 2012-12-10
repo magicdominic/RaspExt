@@ -2,6 +2,7 @@
 #include "hw/HWOutputDCMotorBt.h"
 #include "hw/BTThread.h"
 #include "ConfigManager.h"
+#include "util/Debug.h"
 
 HWOutputDCMotorBt::HWOutputDCMotorBt()
 {

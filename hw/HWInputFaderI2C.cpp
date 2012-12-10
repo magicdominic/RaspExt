@@ -6,10 +6,6 @@
 
 #include <QDomElement>
 
-#include <unistd.h>
-#include <sys/ioctl.h>
-#include <linux/i2c-dev.h>
-
 HWInputFaderI2C::HWInputFaderI2C()
 {
     this->m_slaveAddress = -1;
@@ -85,17 +81,15 @@ void HWInputFaderI2C::deinit(ConfigManager* config)
     i2c->removeInput(this);
 }
 
-void HWInputFaderI2C::poll(int fd)
+void HWInputFaderI2C::poll(I2CThread* i2cThread)
 {
     // If override is active, our polled value is of no interest anyway, so we do not even poll
     if(this->getOverride())
         return;
 
-
-    int ret;
     unsigned char buf[1];
 
-    if( ioctl(fd, I2C_SLAVE, m_slaveAddress) < 0)
+    if( !i2cThread->setSlaveAddress(m_slaveAddress) )
     {
         pi_warn("Failed to talk to slave");
         return;
@@ -106,16 +100,14 @@ void HWInputFaderI2C::poll(int fd)
     buf[0] = ((m_channel & 6) >> 1 | (m_channel & 1) << 2)<< 4; // bit 0 => bit 2, bit 1,2 => 0,1
     buf[0] = buf[0] | 1 << 7 | 1 << 3 | 1 << 2; // internal reference and ad convert on
 
-    ret = write(fd, buf, 1);
-    if(ret != 1)
+    if( !i2cThread->write(buf, 1) )
     {
         pi_warn("Could not write to bus");
         return;
     }
 
     // read back value
-    ret = read(fd, buf, 1);
-    if(ret != 1)
+    if( !i2cThread->read(buf, 1) )
     {
         pi_warn("Could not read from bus");
         return;

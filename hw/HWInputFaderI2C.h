@@ -2,7 +2,7 @@
 #define HWINPUTFADERI2C_H
 
 #include "hw/HWInputFader.h"
-#include "hw/I2CPolling.h"
+#include "hw/I2CThread.h"
 
 class HWInputFaderI2C : public HWInputFader, public I2CPolling
 {
@@ -14,10 +14,9 @@ public:
 
     static HWInput* load(QDomElement* root);
     virtual QDomElement save(QDomElement* root, QDomDocument* document);
-
-    void poll(int fd);
-
 private:
+    void poll(I2CThread* i2cThread);
+
     int m_slaveAddress;
     int m_channel;
 };

@@ -78,6 +78,6 @@
     </output>
     <bluetooth>
         <name>First</name>
-        <BTAddress>00:09:DD:50:88:B6</BTAddress>
+        <BTAddress>D0:07:90:5B:77:47</BTAddress>
     </bluetooth>
 </config>

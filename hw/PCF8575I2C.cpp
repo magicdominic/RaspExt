@@ -6,10 +6,6 @@
 #include "ConfigManager.h"
 #include "util/Debug.h"
 
-#include <unistd.h>
-#include <sys/ioctl.h>
-#include <linux/i2c-dev.h>
-
 PCF8575I2C::PCF8575I2C(int slaveAddress)
 {
     m_slaveAddress = slaveAddress;
@@ -74,12 +70,11 @@ void PCF8575I2C::removeOutput(HWOutputGPO *hw)
     }
 }
 
-void PCF8575I2C::setI2C(int fd)
+void PCF8575I2C::setI2C(I2CThread *i2cThread)
 {
-    int ret;
     unsigned char buf[2];
 
-    if( ioctl(fd, I2C_SLAVE, m_slaveAddress) < 0)
+    if( !m_i2cThread->setSlaveAddress(m_slaveAddress) )
     {
         pi_warn("Failed to talk to slave");
         return;
@@ -87,29 +82,26 @@ void PCF8575I2C::setI2C(int fd)
 
     // directly write two bytes to the bus, these are the states of all inputs and outputs
     *((unsigned short*)buf) = m_portMask;
-    ret = write(fd, buf, 2);
-    if(ret != 2)
+
+    if( !m_i2cThread->write(buf, 2) )
     {
         pi_warn("Could not write to bus");
-        return;
     }
 }
 
 
-void PCF8575I2C::poll(int fd)
+void PCF8575I2C::poll(I2CThread* i2cThread)
 {
-    int ret;
     unsigned char buf[2];
 
-    if( ioctl(fd, I2C_SLAVE, m_slaveAddress) < 0)
+    if( !m_i2cThread->setSlaveAddress(m_slaveAddress) )
     {
         pi_warn("Failed to talk to slave");
         return;
     }
 
     // read back value
-    ret = read(fd, buf, 2);
-    if(ret != 2)
+    if( !m_i2cThread->read(buf, 2) )
     {
         pi_warn("Could not read from bus");
         return;
@@ -129,7 +121,7 @@ void PCF8575I2C::updateI2C()
 {
     pi_assert(m_i2cThread != NULL);
 
-    m_i2cThread->addOutput(this);
+    m_i2cThread->addOutput( std::bind(&PCF8575I2C::setI2C, this, std::placeholders::_1) );
 }
 
 void PCF8575I2C::init(I2CThread* thread)

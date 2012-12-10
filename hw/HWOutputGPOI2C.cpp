@@ -2,6 +2,7 @@
 #include "hw/HWOutputGPOI2C.h"
 #include "hw/I2CThread.h"
 #include "ConfigManager.h"
+#include "util/Debug.h"
 
 HWOutputGPOI2C::HWOutputGPOI2C()
 {

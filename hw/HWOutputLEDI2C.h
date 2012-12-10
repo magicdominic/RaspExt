@@ -2,12 +2,11 @@
 #define HWOUTPUTLEDI2C_H
 
 #include "hw/HWOutputLED.h"
-#include "hw/I2COutput.h"
 
 class I2CThread;
 
 // this implementation is specific for TLC59116, it will not work for other led drivers
-class HWOutputLEDI2C : public HWOutputLED, public I2COutput
+class HWOutputLEDI2C : public HWOutputLED
 {
 public:
     HWOutputLEDI2C();
@@ -17,12 +16,11 @@ public:
 
     static HWOutput* load(QDomElement* root);
     virtual QDomElement save(QDomElement* root, QDomDocument* document);
-
-    void setI2C(int fd);
 private:
     void outputChanged();
 
-    void setupI2C(int fd);
+    void setI2C(I2CThread *i2cThread);
+    void setupI2C(I2CThread *i2cThread);
 
     int m_slaveAddress;
     unsigned int m_channel;

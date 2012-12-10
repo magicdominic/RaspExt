@@ -114,9 +114,7 @@ HEADERS += ui/MainWindow.h \
     ui/ScriptDialogTableModel.h \
     ui/ConditionDialog.h \
     script/ConditionInputFader.h \
-    hw/I2CPolling.h \
     hw/HWInputFaderI2C.h \
-    hw/I2COutput.h \
     script/Variable.h \
     ui/VariableFrame.h \
     script/VariableListener.h \

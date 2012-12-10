@@ -2,10 +2,7 @@
 #include "hw/HWOutputRelayI2C.h"
 #include "hw/I2CThread.h"
 #include "ConfigManager.h"
-
-#include <unistd.h>
-#include <sys/ioctl.h>
-#include <linux/i2c-dev.h>
+#include "util/Debug.h"
 
 HWOutputRelayI2C::HWOutputRelayI2C()
 {
@@ -68,12 +65,11 @@ QDomElement HWOutputRelayI2C::save(QDomElement* root, QDomDocument* document)
     return output;
 }
 
-void HWOutputRelayI2C::setI2C(int fd)
+void HWOutputRelayI2C::setI2C(I2CThread* i2cThread)
 {
-    int ret;
     unsigned char buf[2];
 
-    if( ioctl(fd, I2C_SLAVE, m_slaveAddress) < 0)
+    if( !m_i2cThread->setSlaveAddress(m_slaveAddress) )
     {
         pi_warn("Failed to talk to slave");
         return;
@@ -85,20 +81,18 @@ void HWOutputRelayI2C::setI2C(int fd)
     // now set brightness (fully on or off for relay, otherwise this is the same as for the LED part)
     buf[1] = m_value ? 0xFF : 0x000;
 
-    ret = write(fd, buf, 2);
-    if(ret != 2)
+    if( !m_i2cThread->write(buf, 2) )
     {
         pi_warn("Could not write to bus");
         return;
     }
 }
 
-void HWOutputRelayI2C::setupI2C(int fd)
+void HWOutputRelayI2C::setupI2C(I2CThread* i2cThread)
 {
-    int ret;
     unsigned char buf[2];
 
-    if( ioctl(fd, I2C_SLAVE, m_slaveAddress) < 0)
+    if( !m_i2cThread->setSlaveAddress(m_slaveAddress) )
     {
         pi_warn("Failed to talk to slave");
         return;
@@ -109,8 +103,7 @@ void HWOutputRelayI2C::setupI2C(int fd)
     // first select mode register
     buf[0] = 0x00;
     buf[1] = 0x00;
-    ret = write(fd, buf, 2);
-    if(ret != 2)
+    if( !m_i2cThread->write(buf, 2) )
     {
         pi_warn("Could not write to bus");
         return;
@@ -125,8 +118,7 @@ void HWOutputRelayI2C::setupI2C(int fd)
     // see page 17 of datasheet
     buf[1] = 0xAA;
 
-    ret = write(fd, buf, 2);
-    if(ret != 2)
+    if( !m_i2cThread->write(buf, 2) )
     {
         pi_warn("Could not write to bus");
         return;
@@ -138,7 +130,7 @@ void HWOutputRelayI2C::init(ConfigManager *config)
     m_i2cThread = config->getI2CThread();
 
     // setup I2C device
-    m_i2cThread->addOutput(std::bind(&HWOutputRelayI2C::setupI2C, this, std::placeholders::_1));
+    m_i2cThread->addOutput( std::bind(&HWOutputRelayI2C::setupI2C, this, std::placeholders::_1) );
 }
 
 void HWOutputRelayI2C::deinit()
@@ -150,5 +142,5 @@ void HWOutputRelayI2C::outputChanged()
 {
     HWOutputRelay::outputChanged();
 
-    m_i2cThread->addOutput(this);
+    m_i2cThread->addOutput( std::bind(&HWOutputRelayI2C::setI2C, this, std::placeholders::_1) );
 }

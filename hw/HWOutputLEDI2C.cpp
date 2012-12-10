@@ -2,10 +2,7 @@
 #include "hw/HWOutputLEDI2C.h"
 #include "hw/I2CThread.h"
 #include "ConfigManager.h"
-
-#include <unistd.h>
-#include <sys/ioctl.h>
-#include <linux/i2c-dev.h>
+#include "util/Debug.h"
 
 HWOutputLEDI2C::HWOutputLEDI2C()
 {
@@ -68,12 +65,11 @@ QDomElement HWOutputLEDI2C::save(QDomElement* root, QDomDocument* document)
     return output;
 }
 
-void HWOutputLEDI2C::setI2C(int fd)
+void HWOutputLEDI2C::setI2C(I2CThread* i2cThread)
 {
-    int ret;
     unsigned char buf[2];
 
-    if( ioctl(fd, I2C_SLAVE, m_slaveAddress) < 0)
+    if( !m_i2cThread->setSlaveAddress(m_slaveAddress) )
     {
         pi_warn("Failed to talk to slave");
         return;
@@ -85,20 +81,18 @@ void HWOutputLEDI2C::setI2C(int fd)
     // now set brightness
     buf[1] = m_value * 255 / 100;
 
-    ret = write(fd, buf, 2);
-    if(ret != 2)
+    if( !m_i2cThread->write(buf, 2) )
     {
         pi_warn("Could not write to bus");
         return;
     }
 }
 
-void HWOutputLEDI2C::setupI2C(int fd)
+void HWOutputLEDI2C::setupI2C(I2CThread *i2cThread)
 {
-    int ret;
     unsigned char buf[2];
 
-    if( ioctl(fd, I2C_SLAVE, m_slaveAddress) < 0)
+    if( !m_i2cThread->setSlaveAddress(m_slaveAddress))
     {
         pi_warn("Failed to talk to slave");
         return;
@@ -109,8 +103,8 @@ void HWOutputLEDI2C::setupI2C(int fd)
     // first select mode register
     buf[0] = 0x00;
     buf[1] = 0x00;
-    ret = write(fd, buf, 2);
-    if(ret != 2)
+
+    if( !m_i2cThread->write(buf, 2) )
     {
         pi_warn("Could not write to bus");
         return;
@@ -125,8 +119,7 @@ void HWOutputLEDI2C::setupI2C(int fd)
     // see page 17 of datasheet
     buf[1] = 0xAA;
 
-    ret = write(fd, buf, 2);
-    if(ret != 2)
+    if( !m_i2cThread->write(buf, 2) )
     {
         pi_warn("Could not write to bus");
         return;
@@ -150,5 +143,5 @@ void HWOutputLEDI2C::outputChanged()
 {
     HWOutputLED::outputChanged();
 
-    m_i2cThread->addOutput(this);
+    m_i2cThread->addOutput( std::bind(&HWOutputLEDI2C::setI2C, this, std::placeholders::_1) );
 }

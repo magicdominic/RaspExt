@@ -2,7 +2,6 @@
 #define HWOUTPUTDCMOTORBT_H
 
 #include "hw/HWOutputDCMotor.h"
-#include "hw/I2COutput.h"
 
 class BTThread;
 

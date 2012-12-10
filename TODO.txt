@@ -5,3 +5,5 @@
 * Stepper can be improved
 * Stepper override
 * Bluetooth stuff
+
+* Error handling i2c

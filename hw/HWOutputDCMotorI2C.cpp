@@ -2,10 +2,7 @@
 #include "hw/HWOutputDCMotorI2C.h"
 #include "hw/I2CThread.h"
 #include "ConfigManager.h"
-
-#include <unistd.h>
-#include <sys/ioctl.h>
-#include <linux/i2c-dev.h>
+#include "util/Debug.h"
 
 HWOutputDCMotorI2C::HWOutputDCMotorI2C()
 {
@@ -56,12 +53,11 @@ QDomElement HWOutputDCMotorI2C::save(QDomElement* root, QDomDocument* document)
     return output;
 }
 
-void HWOutputDCMotorI2C::setI2C(int fd)
+void HWOutputDCMotorI2C::setI2C(I2CThread* i2cThread)
 {
-    int ret;
     unsigned char buf[2];
 
-    if( ioctl(fd, I2C_SLAVE, m_slaveAddress) < 0)
+    if( !m_i2cThread->setSlaveAddress(m_slaveAddress) )
     {
         pi_warn("Failed to talk to slave");
         return;
@@ -72,8 +68,7 @@ void HWOutputDCMotorI2C::setI2C(int fd)
     // now set output state
     buf[1] = m_state | ((m_speed * 63 / 100) << 2);
 
-    ret = write(fd, buf, 2);
-    if(ret != 2)
+    if( !m_i2cThread->write(buf, 2) )
     {
         pi_warn("Could not write to bus");
         return;
@@ -94,5 +89,5 @@ void HWOutputDCMotorI2C::outputChanged()
 {
     HWOutputDCMotor::outputChanged();
 
-    m_i2cThread->addOutput(this);
+    m_i2cThread->addOutput( std::bind(&HWOutputDCMotorI2C::setI2C, this, std::placeholders::_1) );
 }

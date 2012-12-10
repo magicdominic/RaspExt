@@ -4,13 +4,8 @@
 #include "ConfigManager.h"
 #include "util/Debug.h"
 
-#include <unistd.h>
-#include <sys/ioctl.h>
-#include <linux/i2c-dev.h>
-
 HWOutputStepperI2C::HWOutputStepperI2C()
 {
-
 }
 
 HWOutput* HWOutputStepperI2C::load(QDomElement *root)
@@ -116,12 +111,11 @@ void HWOutputStepperI2C::refreshFullStatus()
     m_i2cThread->addOutput(std::bind(&HWOutputStepperI2C::poll, this, std::placeholders::_1));
 }
 
-void HWOutputStepperI2C::poll(int fd)
+void HWOutputStepperI2C::poll(I2CThread *i2cThread)
 {
-    int ret;
     unsigned char buf[8];
 
-    if( ioctl(fd, I2C_SLAVE, m_slaveAddress) < 0)
+    if( !m_i2cThread->setSlaveAddress(m_slaveAddress) )
     {
         pi_warn("Failed to talk to slave");
         return;
@@ -130,16 +124,14 @@ void HWOutputStepperI2C::poll(int fd)
     // write GetFullStatus1
     buf[0] = 0x81;
 
-    ret = write(fd, buf, 1);
-    if(ret != 1)
+    if( !m_i2cThread->write(buf, 1) )
     {
         pi_warn("Could not write to bus");
         return;
     }
 
     // read back value
-    ret = read(fd, buf, 8);
-    if(ret != 8)
+    if( !m_i2cThread->read(buf, 8) )
     {
         pi_warn("Could not read from bus");
         return;
@@ -173,16 +165,14 @@ void HWOutputStepperI2C::poll(int fd)
     // write GetFullStatus2
     buf[0] = 0xFC;
 
-    ret = write(fd, buf, 1);
-    if(ret != 1)
+    if( !m_i2cThread->write(buf, 1) )
     {
         pi_warn("Could not write to bus");
         return;
     }
 
     // read back value
-    ret = read(fd, buf, 8);
-    if(ret != 8)
+    if( !m_i2cThread->read(buf, 8) )
     {
         pi_warn("Could not read from bus");
         return;
@@ -204,12 +194,11 @@ void HWOutputStepperI2C::poll(int fd)
     HWOutputStepper::refreshFullStatus();
 }
 
-void HWOutputStepperI2C::testBemfI2C(int fd)
+void HWOutputStepperI2C::testBemfI2C(I2CThread *i2cThread)
 {
-    int ret;
     unsigned char buf[1];
 
-    if( ioctl(fd, I2C_SLAVE, m_slaveAddress) < 0)
+    if( !m_i2cThread->setSlaveAddress(m_slaveAddress) )
     {
         pi_warn("Failed to talk to slave");
         return;
@@ -217,22 +206,20 @@ void HWOutputStepperI2C::testBemfI2C(int fd)
     // send command byte (see page 51 of datasheet)
     buf[0] = 0x9F;
 
-    ret = write(fd, buf, 1);
-    if(ret != 1)
+    if( !m_i2cThread->write(buf, 1) )
     {
         pi_warn("Could not write to bus");
         return;
     }
 }
 
-void HWOutputStepperI2C::softStopI2C(int fd)
+void HWOutputStepperI2C::softStopI2C(I2CThread *i2cThread)
 {
     HWOutputStepper::softStop();
 
-    int ret;
     unsigned char buf[1];
 
-    if( ioctl(fd, I2C_SLAVE, m_slaveAddress) < 0)
+    if( !m_i2cThread->setSlaveAddress(m_slaveAddress) )
     {
         pi_warn("Failed to talk to slave");
         return;
@@ -240,22 +227,20 @@ void HWOutputStepperI2C::softStopI2C(int fd)
     // send command byte (see page 44 of datasheet)
     buf[0] = 0x8F;
 
-    ret = write(fd, buf, 1);
-    if(ret != 1)
+    if( !m_i2cThread->write(buf, 1) )
     {
         pi_warn("Could not write to bus");
         return;
     }
 }
 
-void HWOutputStepperI2C::setPositionI2C(int fd, short position)
+void HWOutputStepperI2C::setPositionI2C(I2CThread *i2cThread, short position)
 {
     HWOutputStepper::setPosition(position);
 
-    int ret;
     unsigned char buf[5];
 
-    if( ioctl(fd, I2C_SLAVE, m_slaveAddress) < 0)
+    if( !m_i2cThread->setSlaveAddress(m_slaveAddress) )
     {
         pi_warn("Failed to talk to slave");
         return;
@@ -268,22 +253,20 @@ void HWOutputStepperI2C::setPositionI2C(int fd, short position)
     buf[3] = (position & 0xFF00) >> 8;
     buf[4] = (position & 0x00FF);
 
-    ret = write(fd, buf, 5);
-    if(ret != 5)
+    if( !m_i2cThread->write(buf, 5) )
     {
         pi_warn("Could not write to bus");
         return;
     }
 }
 
-void HWOutputStepperI2C::setDualPositionI2C(int fd, short position1, short position2, unsigned char vmin, unsigned char vmax)
+void HWOutputStepperI2C::setDualPositionI2C(I2CThread *i2cThread, short position1, short position2, unsigned char vmin, unsigned char vmax)
 {
     HWOutputStepper::setDualPosition(position1, position2, vmin, vmax);
 
-    int ret;
     unsigned char buf[8];
 
-    if( ioctl(fd, I2C_SLAVE, m_slaveAddress) < 0)
+    if( !m_i2cThread->setSlaveAddress(m_slaveAddress) )
     {
         pi_warn("Failed to talk to slave");
         return;
@@ -299,22 +282,20 @@ void HWOutputStepperI2C::setDualPositionI2C(int fd, short position1, short posit
     buf[6] = (position2 & 0xFF00) >> 8;
     buf[7] = (position2 & 0x00FF);
 
-    ret = write(fd, buf, 8);
-    if(ret != 8)
+    if( !m_i2cThread->write(buf, 8) )
     {
         pi_warn("Could not write to bus");
         return;
     }
 }
 
-void HWOutputStepperI2C::resetPositionI2C(int fd)
+void HWOutputStepperI2C::resetPositionI2C(I2CThread *i2cThread)
 {
     HWOutputStepper::resetPosition();
 
-    int ret;
     unsigned char buf[1];
 
-    if( ioctl(fd, I2C_SLAVE, m_slaveAddress) < 0)
+    if( !m_i2cThread->setSlaveAddress(m_slaveAddress) )
     {
         pi_warn("Failed to talk to slave");
         return;
@@ -323,22 +304,20 @@ void HWOutputStepperI2C::resetPositionI2C(int fd)
     // send command byte (see page 44 of datasheet)
     buf[0] = 0x86;
 
-    ret = write(fd, buf, 1);
-    if(ret != 1)
+    if( !m_i2cThread->write(buf, 1) )
     {
         pi_warn("Could not write to bus");
         return;
     }
 }
 
-void HWOutputStepperI2C::runVelocityI2C(int fd)
+void HWOutputStepperI2C::runVelocityI2C(I2CThread *i2cThread)
 {
     HWOutputStepper::runVelocity();
 
-    int ret;
     unsigned char buf[1];
 
-    if( ioctl(fd, I2C_SLAVE, m_slaveAddress) < 0)
+    if( !m_i2cThread->setSlaveAddress(m_slaveAddress) )
     {
         pi_warn("Failed to talk to slave");
         return;
@@ -346,25 +325,23 @@ void HWOutputStepperI2C::runVelocityI2C(int fd)
     // send command byte (see page 44 of datasheet)
     buf[0] = 0x97;
 
-    ret = write(fd, buf, 1);
-    if(ret != 1)
+    if( !m_i2cThread->write(buf, 1) )
     {
         pi_warn("Could not write to bus");
         return;
     }
 }
 
-void HWOutputStepperI2C::setParamI2C(int fd, Param param)
+void HWOutputStepperI2C::setParamI2C(I2CThread *i2cThread, Param param)
 {
     HWOutputStepper::setParam(param);
 
     // as we need to set EVERY value for these I2C commands,
     // we take the current value from the last FullStatus update and change those specified in param
 
-    int ret;
     unsigned char buf[8];
 
-    if( ioctl(fd, I2C_SLAVE, m_slaveAddress) < 0)
+    if( !m_i2cThread->setSlaveAddress(m_slaveAddress) )
     {
         pi_warn("Failed to talk to slave");
         return;
@@ -390,8 +367,7 @@ void HWOutputStepperI2C::setParamI2C(int fd, Param param)
     buf[7] = buf[7] | (param.PWMJitterEnableSet ? param.PWMJitterEnable : m_fullStatus.PWMJitterEnable); // PWMJitterEnable
 
 
-    ret = write(fd, buf, 8);
-    if(ret != 8)
+    if( !m_i2cThread->write(buf, 8) )
     {
         pi_warn("Could not write to bus");
         return;
@@ -415,8 +391,7 @@ void HWOutputStepperI2C::setParamI2C(int fd, Param param)
     buf[7] = buf[7] | ( (param.stepModeSet ? param.stepMode : m_fullStatus.stepMode) << 2 ); // stepMode
     buf[7] = buf[7] | (param.PWMJitterEnableSet ? param.PWMJitterEnable : m_fullStatus.PWMJitterEnable); // PWMJitterEnable
 
-    ret = write(fd, buf, 8);
-    if(ret != 8)
+    if( !m_i2cThread->write(buf, 8) )
     {
         pi_warn("Could not write to bus");
         return;

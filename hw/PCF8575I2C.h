@@ -1,17 +1,15 @@
 #ifndef I2CPCF8575_H
 #define I2CPCF8575_H
 
-#include "hw/I2CPolling.h"
-#include "hw/I2COutput.h"
 #include "hw/HWOutputListener.h"
+#include "hw/I2CThread.h"
 
 #include <list>
 
 class HWInputButtonI2C;
 class HWOutputGPO;
-class I2CThread;
 
-class PCF8575I2C : public I2CPolling, I2COutput, HWOutputListener
+class PCF8575I2C : public I2CPolling, HWOutputListener
 {
 public:
     PCF8575I2C(int slaveAddress);
@@ -30,10 +28,10 @@ public:
     void init(I2CThread* thread);
     void deinit();
 
-    void poll(int fd);
-    void setI2C(int fd);
-
 private:
+    void poll(I2CThread* i2cThread);
+    void setI2C(I2CThread* i2cThread);
+
     void onOutputChanged(HWOutput *hw);
 
     struct InputElement

@@ -2,12 +2,11 @@
 #define HWOUTPUTDCMOTORI2C_H
 
 #include "hw/HWOutputDCMotor.h"
-#include "hw/I2COutput.h"
 
 class I2CThread;
 
 // this implementation is specific for DRV8830, it will not work for other dc motor drivers
-class HWOutputDCMotorI2C : public HWOutputDCMotor, public I2COutput
+class HWOutputDCMotorI2C : public HWOutputDCMotor
 {
 public:
     HWOutputDCMotorI2C();
@@ -17,9 +16,8 @@ public:
 
     static HWOutput* load(QDomElement* root);
     virtual QDomElement save(QDomElement* root, QDomDocument* document);
-
-    void setI2C(int fd);
 private:
+    void setI2C(I2CThread *i2cThread);
     void outputChanged();
 
     int m_slaveAddress;

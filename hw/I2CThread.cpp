@@ -82,20 +82,7 @@ void I2CThread::removeInput(I2CPolling *hw)
     m_mutex.unlock();
 }
 
-void I2CThread::addOutput(I2COutput *hw)
-{
-    OutputElement element;
-    element.func = std::bind(&I2COutput::setI2C, hw, std::placeholders::_1);
-
-    m_mutex.lock();
-    m_outputQueue.push(element);
-    m_mutex.unlock();
-
-    // deliver signal to thread to wake it up
-    pthread_kill(m_thread, SIGUSR1);
-}
-
-void I2CThread::addOutput(std::function<void (int)> func)
+void I2CThread::addOutput(std::function<void (I2CThread*)> func)
 {
     OutputElement element;
     element.func = func;
@@ -335,4 +322,64 @@ void* I2CThread::run_internal(void* arg)
     thread->run();
 
     return NULL;
+}
+
+#define I2C_WRITE_REPEATCOUNT 2
+#define I2C_READ_REPEATCOUNT 1
+
+/**
+ * @brief I2CThread::write writes to the I2C file descriptor.
+ * On error it repeats the write command I2C_WRITE_REPEATCOUNT times
+ * @param buffer
+ * @param size
+ * @return returns true if the write succeeded (even if repeated), false otherwise
+ */
+bool I2CThread::write(void *buffer, unsigned int size)
+{
+    int ret = 0;
+
+    for(unsigned int i = 0; i <= I2C_WRITE_REPEATCOUNT; i++)
+    {
+        ret = ::write(m_handle, buffer, size);
+
+        if(ret == size)
+            return true;
+    }
+
+    return false;
+}
+
+/**
+ * @brief I2CThread::read reads from the I2C file descriptor.
+ * On error it repeats the read command I2C_READ_REPEATCOUNT times
+ * @param buffer
+ * @param size
+ * @return returns true if the read succeeded (even if repeated), false otherwise
+ */
+bool I2CThread::read(void *buffer, unsigned int size)
+{
+    int ret = 0;
+
+    for(unsigned int i = 0; i <= I2C_READ_REPEATCOUNT; i++)
+    {
+        ret = ::read(m_handle, buffer, size);
+
+        if(ret == size)
+            return true;
+    }
+
+    return false;
+}
+
+/**
+ * @brief I2CThread::setSlaveAddress sets the slave address for the following writes and/or reads
+ * @param slaveAddress
+ * @return
+ */
+bool I2CThread::setSlaveAddress(int slaveAddress)
+{
+    if( ioctl(m_handle, I2C_SLAVE, slaveAddress) < 0)
+        return false;
+
+    return true;
 }
