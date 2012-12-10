@@ -238,7 +238,7 @@ void I2CThread::run()
             m_mutex.unlock();
 
             // run function
-            element.func(m_handle);
+            element.func(this);
             continue;
         }
 
@@ -284,7 +284,7 @@ void I2CThread::run()
         }
 
         // now we should do something as the timer has expired
-        element.hw->poll(m_handle);
+        element.hw->poll(this);
 
 
         // preperation for next poll
