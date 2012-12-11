@@ -21,11 +21,9 @@ public:
     void setName(std::string name) { m_name = name;}
     std::string getName() const { return m_name;}
 
-
     std::list<HWInput*> m_listInput;
     std::list<HWOutput*> m_listOutput;
     std::list<BTThread*> m_listBTThread;
-
 private:
     std::string m_name;
 };

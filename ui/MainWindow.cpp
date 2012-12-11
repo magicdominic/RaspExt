@@ -66,6 +66,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->tableScripts->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)), this, SLOT(updateScriptConfig()));
 
     connect(ui->buttonCreateConfig, SIGNAL(clicked()), this, SLOT(createConfig()));
+    connect(ui->buttonEditConfig, SIGNAL(clicked()), this, SLOT(editConfig()));
     connect(ui->buttonSelectConfig, SIGNAL(clicked()), this, SLOT(selectConfig()));
 
     connect(ui->buttonStop, SIGNAL(clicked()), this, SLOT(stopScript()));
@@ -522,6 +523,20 @@ void MainWindow::createConfig()
     ConfigDialog* dialog = new ConfigDialog(this, "");
 
     dialog->exec();
+}
+
+void MainWindow::editConfig()
+{
+    QModelIndexList indices = ui->tableConfig->selectionModel()->selection().indexes();
+
+    if(indices.size() != 0)
+    {
+        std::string name = m_configTableModel.get(indices.front().row());
+
+        ConfigDialog* dialog = new ConfigDialog(this, name);
+
+        dialog->exec();
+    }
 }
 
 void MainWindow::selectConfig()

@@ -44,6 +44,7 @@ protected slots:
     void startPauseScript();
 
     void createConfig();
+    void editConfig();
     void selectConfig();
 
 private:
