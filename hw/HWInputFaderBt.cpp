@@ -118,7 +118,7 @@ void HWInputFaderBt::poll(BTThread* thread)
 void HWInputFaderBt::onRead(BTThread* thread, BTI2CPacket* packet)
 {
     // first check if this is a valid packet
-    if(packet->readLength != 1 || packet->error != 0)
+    if(packet->readLength != 1 || packet->error != 0 || !packet->read)
         return;
 
     // convert ad value to percent

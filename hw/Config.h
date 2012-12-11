@@ -1,5 +1,5 @@
-#ifndef CONFIG_H
-#define CONFIG_H
+#ifndef HW_CONFIG_H
+#define HW_CONFIG_H
 
 #include <list>
 #include <string>
@@ -16,14 +16,18 @@ public:
     bool load(std::string name);
     bool save();
 
-    void setName(std::string name) { m_name;}
+    void clear();
+
+    void setName(std::string name) { m_name = name;}
     std::string getName() const { return m_name;}
 
-private:
-    std::string m_name;
+
     std::list<HWInput*> m_listInput;
     std::list<HWOutput*> m_listOutput;
     std::list<BTThread*> m_listBTThread;
+
+private:
+    std::string m_name;
 };
 
-#endif // CONFIG_H
+#endif // HW_CONFIG_H

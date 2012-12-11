@@ -63,7 +63,6 @@ SOURCES += main.cpp \
     script/ActionOutputStepper.cpp \
     script/ActionOutputStepperSoftStop.cpp \
     script/ActionOutputStepperRunVelocity.cpp \
-    util/Config.cpp \
     hw/BTThread.cpp \
     script/ActionOutputStepperSetParam.cpp \
     ui/VariableListDialog.cpp \
@@ -87,7 +86,8 @@ SOURCES += main.cpp \
     hw/HWOutputLEDBt.cpp \
     ui/ConfigTableModel.cpp \
     ui/ConfigDialog.cpp \
-    hw/Config.cpp
+    hw/Config.cpp \
+    util/UtilConfig.cpp
 HEADERS += ui/MainWindow.h \
     ui/InputFaderFrame.h \
     ui/ScriptsTableModel.h \

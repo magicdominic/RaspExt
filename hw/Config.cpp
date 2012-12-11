@@ -1,5 +1,8 @@
 
 #include "hw/Config.h"
+#include "hw/HWInput.h"
+#include "hw/HWOutput.h"
+#include "hw/BTThread.h"
 #include "util/Debug.h"
 
 #include <QDomDocument>
@@ -132,4 +135,32 @@ bool Config::save()
     file.close();
 
     return true;
+}
+
+void Config::clear()
+{
+    for(std::list<HWInput*>::iterator it = m_listInput.begin(); it != m_listInput.end(); it++)
+    {
+        // delete Pointer, we must clean the list afterwards immediatly!
+        if(m_mainWindow != NULL)
+            m_mainWindow->removeInput(*it);
+        delete (*it);
+    }
+    m_listInput.clear();
+
+    for(std::list<HWOutput*>::iterator it = m_listOutput.begin(); it != m_listOutput.end(); it++)
+    {
+        // delete Pointer, we must clean the list afterwards immediatly!
+        if(m_mainWindow != NULL)
+            m_mainWindow->removeOutput(*it);
+        delete (*it);
+    }
+    m_listOutput.clear();
+
+    for(std::list<BTThread*>::iterator it = m_listBTThread.begin(); it != m_listBTThread.end(); it++)
+    {
+        // delete Pointer, we must clean the list afterwards immediatly!
+        delete (*it);
+    }
+    m_listBTThread.clear();
 }

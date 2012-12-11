@@ -1,5 +1,5 @@
-#ifndef RPI_H
-#define RPI_H
+#ifndef UTIL_CONFIG_H
+#define UTIL_CONFIG_H
 
 // if we compile on a raspberry, we should include extra functionality
 // maybe __arm__ is not a very good test, but I did not yet found a better one
@@ -28,4 +28,4 @@ enum RPiRevision
 
 RPiRevision getRPiRevision();
 
-#endif // RPI_H
+#endif // UTIL_CONFIG_H

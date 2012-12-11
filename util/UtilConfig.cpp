@@ -1,3 +1,4 @@
+// This file had to be renamed to UtilConfig.cpp from Config.cpp as this was leading a name conflict
 
 #include "util/Config.h"
 
