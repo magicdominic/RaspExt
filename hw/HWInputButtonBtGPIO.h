@@ -11,6 +11,8 @@ class HWInputButtonBtGPIO : public HWInputButton
 public:
     HWInputButtonBtGPIO();
 
+    HWType getHWType() const { return Bt;}
+
     bool init(ConfigManager* config);
     void deinit(ConfigManager* config);
 

@@ -190,7 +190,11 @@ FORMS += ui/MainWindow.ui \
     ui/VariableEditDialog.ui \
     ui/OutputRelayFrame.ui \
     ui/OutputGPOFrame.ui \
-    ui/ConfigDialog.ui
+    ui/ConfigDialog.ui \
+    ui/ConfigBTDialog.ui \
+    ui/ConfigInputDialog.ui
 
 OTHER_FILES += \
     TODO.txt
+
+RESOURCES +=

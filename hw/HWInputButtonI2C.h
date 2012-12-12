@@ -8,6 +8,8 @@ class HWInputButtonI2C : public HWInputButton
 public:
     HWInputButtonI2C();
 
+    HWType getHWType() const { return I2C;}
+
     bool init(ConfigManager* config);
     void deinit(ConfigManager* config);
 
@@ -16,6 +18,11 @@ public:
 
     void onInputPolled(bool state);
 
+    int getPort() const { return m_port;}
+    void setPort(unsigned int port) { m_port = port;}
+
+    int getSlaveAddress() const { return m_slaveAddress;}
+    void setSlaveAddress(int slaveAddress) { m_slaveAddress = slaveAddress;}
 private:
     int m_slaveAddress;
     unsigned int m_port;

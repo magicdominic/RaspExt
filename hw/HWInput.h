@@ -19,10 +19,18 @@ public:
     {
         Button = 0,
         Fader = 1,
-        EINVALID,
+        EINVALID
     };
     static std::string HWInputTypeToString(HWInputType type);
     static HWInputType StringToHWInputType(std::string str);
+
+    enum HWType
+    {
+        Dummy = 0,
+        I2C = 1,
+        BtI2C = 2,
+        Bt = 3,
+    };
 
     HWInput();
     virtual ~HWInput();
@@ -34,6 +42,7 @@ public:
     virtual QDomElement save(QDomElement* root, QDomDocument* document);
 
     virtual HWInputType getType() const = 0;
+    virtual HWType getHWType() const { return Dummy;}
     void setName(std::string str);
     std::string getName() const;
     void setOverride(bool b);
