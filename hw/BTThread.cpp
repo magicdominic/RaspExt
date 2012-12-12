@@ -537,35 +537,74 @@ void BTThread::addOutput(std::function<void (BTThread*)> func)
 
 void BTThread::sendI2CPackets(BTI2CPacket *packets, unsigned int num)
 {
-    unsigned int totalSize = 0;
+    // the following code sends multiple i2c packets in one big l2cap packet. Our bluetooth board currently does not support this
 
-    // first calculate the size of the whole packet
+    //    unsigned int totalSize = 0;
+
+    //    // first calculate the size of the whole packet
+    //    for(unsigned int i = 0; i < num; i++)
+    //    {
+    //        totalSize = packets[i].size() + 3;
+    //    }
+
+    //    // now allocate a buffer of the required size
+    //    char* buffer = (char*)malloc(totalSize * sizeof(char));
+
+    //    char* runningBuffer = buffer;
+    //    unsigned int runningSize = totalSize;
+    //    for(unsigned int i = 0; i < num; i++)
+    //    {
+    //        unsigned short size = packets[i].size();
+    //        unsigned char seq = this->seqInc();
+
+    //        runningBuffer[0] = BTPacketType::I2C << 5 | (size + 3);
+    //        runningBuffer[1] = seq;
+    //        runningBuffer[2] = 0xFF;
+
+    //        runningBuffer += 3;
+    //        runningSize -= 3;
+
+    //        packets[i].assemble(runningBuffer, runningSize);
+
+    //        runningBuffer += size;
+    //        runningSize -= size;
+
+    //        // add the callback function (if any) to the list of callback functions for later matching of the response
+    //        if(packets[i].callbackFunc)
+    //        {
+    //            SeqCallback seqCallback;
+    //            seqCallback.seq = seq;
+    //            seqCallback.callbackFunc = packets[i].callbackFunc;
+
+    //            m_listCallback.push_back(seqCallback);
+    //        }
+    //    }
+
+    //    pi_assert(runningSize == 0);
+
+    //    // send the buffer
+    //    this->send(buffer, totalSize);
+
+    //    // we dont need it anymore, free it
+    //    free(buffer);
+
+
+    // the following code sends each i2c packet on a seperate l2cap packet
     for(unsigned int i = 0; i < num; i++)
     {
-        totalSize = packets[i].size() + 3;
-    }
+        unsigned int totalSize = packets[i].size() + 3;
+        char* buffer = (char*)malloc(totalSize);
 
-    // now allocate a buffer of the required size
-    char* buffer = (char*)malloc(totalSize * sizeof(char));
-
-    char* runningBuffer = buffer;
-    unsigned int runningSize = totalSize;
-    for(unsigned int i = 0; i < num; i++)
-    {
         unsigned short size = packets[i].size();
         unsigned char seq = this->seqInc();
 
-        runningBuffer[0] = BTPacketType::I2C << 5 | (size + 3);
-        runningBuffer[1] = seq;
-        runningBuffer[2] = 0xFF;
+        buffer[0] = BTPacketType::I2C << 5 | (size + 3);
+        buffer[1] = seq;
+        buffer[2] = 0xFF;
 
-        runningBuffer += 3;
-        runningSize -= 3;
+        buffer += 3;
 
-        packets[i].assemble(runningBuffer, runningSize);
-
-        runningBuffer += size;
-        runningSize -= size;
+        packets[i].assemble(buffer, totalSize - 3);
 
         // add the callback function (if any) to the list of callback functions for later matching of the response
         if(packets[i].callbackFunc)
@@ -576,15 +615,12 @@ void BTThread::sendI2CPackets(BTI2CPacket *packets, unsigned int num)
 
             m_listCallback.push_back(seqCallback);
         }
+
+        this->send(buffer, totalSize);
+
+        // we dont need it anymore, free it
+        free(buffer);
     }
-
-    pi_assert(runningSize == 0);
-
-    // send the buffer
-    this->send(buffer, totalSize);
-
-    // we dont need it anymore, free it
-    free(buffer);
 }
 
 /**
