@@ -467,6 +467,12 @@ void BTThread::packetHandler(char* buffer, unsigned int length)
             bool err = (buffer[3] & 0x40) != 0;
             unsigned char pinGroup = buffer[3] & 0x1F;
 
+            if(err || req)
+            {
+                pi_warn("Error occurred in GPIO status update");
+                return;
+            }
+
             printf("State of GPIOs is: %x\n", buffer[4]);
 
             // now lets see if anything has changed, and if yes, inform the respective object
