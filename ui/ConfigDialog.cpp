@@ -3,11 +3,15 @@
 #include "hw/HWInput.h"
 #include "hw/HWOutput.h"
 #include "hw/BTThread.h"
+#include "ConfigManager.h"
+#include "hw/I2CThread.h"
 #include "util/Debug.h"
 
 #include "hw/HWInputButton.h"
 #include "hw/HWInputButtonI2C.h"
 #include "hw/HWInputButtonBtGPIO.h"
+
+#include "ui/I2CScanDialog.h"
 
 #include "ui_ConfigBTDialog.h"
 #include "ui_ConfigDialog.h"
@@ -15,10 +19,12 @@
 
 #include <QMessageBox>
 
-ConfigDialog::ConfigDialog(QWidget *parent, std::string name) :
+ConfigDialog::ConfigDialog(QWidget *parent, std::string name, ConfigManager* configManager) :
     QDialog(parent),
     ui(new Ui::ConfigDialog)
 {
+    m_configManager = configManager;
+
     ui->setupUi(this);
 
     // only try to load config if the name is not empty
@@ -65,6 +71,21 @@ ConfigDialog::~ConfigDialog()
     delete m_inputTableModel;
     delete m_outputTableModel;
     delete m_btThreadTableModel;
+}
+
+/**
+ * @brief ConfigDialog::i2cScan opens a dialog for i2c scanning
+ * @return returns -1 if the user did not select an i2c address or pressed cancel, the selected address otherwise
+ */
+int ConfigDialog::i2cScan()
+{
+    I2CScanDialog dialog(this);
+
+    dialog.exec();
+
+    m_configManager->getI2CThread()->addOutput( std::bind(&I2CScanDialog::i2cScan, &dialog, std::placeholders::_1) );
+
+    return -1;
 }
 
 void ConfigDialog::addInput()
@@ -522,7 +543,7 @@ BTThread* ConfigBTDialog::assemble() const
 }
 
 
-ConfigInputDialog::ConfigInputDialog(QWidget *parent) :
+ConfigInputDialog::ConfigInputDialog(ConfigDialog *parent) :
     QDialog(parent),
     ui(new Ui::ConfigInputDialog)
 {
@@ -584,7 +605,7 @@ void ConfigInputDialog::comboChanged(int index)
     switch( type )
     {
     case HWInput::Button:
-        m_baseWidget = new ConfigInputButtonWidget(this);
+        m_baseWidget = new ConfigInputButtonWidget(this, (ConfigDialog*)this->parent());
         break;
     case HWInput::Fader:
         break;
@@ -598,8 +619,10 @@ void ConfigInputDialog::comboChanged(int index)
 }
 
 
-ConfigInputButtonWidget::ConfigInputButtonWidget(QWidget *parent) : IConfigInputWidget(parent)
+ConfigInputButtonWidget::ConfigInputButtonWidget(QWidget *parent, ConfigDialog* configDialog) : IConfigInputWidget(parent)
 {
+    m_configDialog = configDialog;
+
     QLabel* label = new QLabel("Select hardware", this);
     m_comboType = new QComboBox(this);
     m_comboType->addItem("Dummy");
@@ -610,6 +633,13 @@ ConfigInputButtonWidget::ConfigInputButtonWidget(QWidget *parent) : IConfigInput
     m_labelBtBoard = new QLabel("Select bluetooth board", this);
     m_comboBtBoard = new QComboBox(this);
 
+    // add all bluetooth boards to the combo box
+    const std::list<BTThread*>* listBT = m_configDialog->getListBTThread();
+    for(std::list<BTThread*>::const_iterator it = listBT->begin(); it != listBT->end(); it++)
+    {
+        m_comboBtBoard->addItem( QString::fromStdString( (*it)->getName() ) );
+    }
+
     m_labelI2CAddr = new QLabel("Select I2C address", this);
     m_spinI2CAddr = new QSpinBox(this);
     m_spinI2CAddr->setMinimum(0);
@@ -619,6 +649,8 @@ ConfigInputButtonWidget::ConfigInputButtonWidget(QWidget *parent) : IConfigInput
     m_spinPort = new QSpinBox(this);
     m_spinPort->setMinimum(0);
     m_spinPort->setMaximum(15);
+
+    m_buttonI2CScan = new QPushButton("Scan I2C", this);
 
 
     QGridLayout* layout = new QGridLayout(this);
@@ -637,11 +669,14 @@ ConfigInputButtonWidget::ConfigInputButtonWidget(QWidget *parent) : IConfigInput
     layout->addWidget(m_labelPort, 3, 0);
     layout->addWidget(m_spinPort, 3, 1);
 
+    layout->addWidget(m_buttonI2CScan, 4, 1);
+
 
     this->setLayout(layout);
 
     // now connect all signals - slots
     connect(m_comboType, SIGNAL(currentIndexChanged(int)), this, SLOT(typeChanged(int)));
+    connect(m_buttonI2CScan, SIGNAL(clicked()), this, SLOT(i2cScan()));
 
     // set default
     this->typeChanged( m_comboType->currentIndex() );
@@ -659,6 +694,7 @@ void ConfigInputButtonWidget::typeChanged(int index)
         m_spinI2CAddr->hide();
         m_labelPort->hide();
         m_spinPort->hide();
+        m_buttonI2CScan->hide();
         break;
     case HWInput::I2C:
         m_labelBtBoard->hide();
@@ -667,6 +703,7 @@ void ConfigInputButtonWidget::typeChanged(int index)
         m_spinI2CAddr->show();
         m_labelPort->show();
         m_spinPort->show();
+        m_buttonI2CScan->show();
         break;
     case HWInput::BtI2C:
         m_labelBtBoard->show();
@@ -675,6 +712,7 @@ void ConfigInputButtonWidget::typeChanged(int index)
         m_spinI2CAddr->show();
         m_labelPort->show();
         m_spinPort->show();
+        m_buttonI2CScan->show();
         break;
     case HWInput::Bt:
         m_labelBtBoard->hide();
@@ -683,8 +721,25 @@ void ConfigInputButtonWidget::typeChanged(int index)
         m_spinI2CAddr->hide();
         m_labelPort->show();
         m_spinPort->show();
+        m_buttonI2CScan->hide();
         break;
     }
+}
+
+void ConfigInputButtonWidget::i2cScan()
+{
+    int slaveAddress = -1;
+
+    HWInput::HWType type = (HWInput::HWType)m_comboType->currentIndex();
+    switch(type)
+    {
+    case HWInput::I2C:
+        slaveAddress = m_configDialog->i2cScan();
+        break;
+    }
+
+    if(slaveAddress != -1)
+        m_spinI2CAddr->setValue( slaveAddress );
 }
 
 void ConfigInputButtonWidget::edit(HWInput *hw)
@@ -720,9 +775,11 @@ HWInput* ConfigInputButtonWidget::assemble()
         ((HWInputButtonI2C*)hw)->setSlaveAddress( m_spinI2CAddr->value() );
         break;
     case HWInput::BtI2C:
+        // TODO
         break;
     case HWInput::Bt:
         hw = new HWInputButtonBtGPIO();
+        // TODO
         break;
     }
 

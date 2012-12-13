@@ -87,7 +87,8 @@ SOURCES += main.cpp \
     ui/ConfigTableModel.cpp \
     ui/ConfigDialog.cpp \
     hw/Config.cpp \
-    util/UtilConfig.cpp
+    util/UtilConfig.cpp \
+    ui/I2CScanDialog.cpp
 HEADERS += ui/MainWindow.h \
     ui/InputFaderFrame.h \
     ui/ScriptsTableModel.h \
@@ -173,7 +174,8 @@ HEADERS += ui/MainWindow.h \
     hw/HWOutputLEDBt.h \
     ui/ConfigTableModel.h \
     ui/ConfigDialog.h \
-    hw/Config.h
+    hw/Config.h \
+    ui/I2CScanDialog.h
 FORMS += ui/MainWindow.ui \
     ui/RuleDialog.ui \
     ui/ScriptDialog.ui \
@@ -192,7 +194,8 @@ FORMS += ui/MainWindow.ui \
     ui/OutputGPOFrame.ui \
     ui/ConfigDialog.ui \
     ui/ConfigBTDialog.ui \
-    ui/ConfigInputDialog.ui
+    ui/ConfigInputDialog.ui \
+    ui/I2CScanDialog.ui
 
 OTHER_FILES += \
     TODO.txt

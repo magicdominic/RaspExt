@@ -520,7 +520,7 @@ void MainWindow::removeVariable(Variable* var)
 
 void MainWindow::createConfig()
 {
-    ConfigDialog* dialog = new ConfigDialog(this, "");
+    ConfigDialog* dialog = new ConfigDialog(this, "", &m_config);
 
     dialog->exec();
 }
@@ -533,7 +533,7 @@ void MainWindow::editConfig()
     {
         std::string name = m_configTableModel.get(indices.front().row());
 
-        ConfigDialog* dialog = new ConfigDialog(this, name);
+        ConfigDialog* dialog = new ConfigDialog(this, name, &m_config);
 
         dialog->exec();
     }

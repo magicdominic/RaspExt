@@ -15,6 +15,7 @@ namespace Ui {
     class ConfigInputDialog;
 }
 
+class ConfigManager;
 class ConfigInputTableModel;
 class ConfigOutputTableModel;
 class ConfigBTThreadTableModel;
@@ -22,9 +23,12 @@ class ConfigBTThreadTableModel;
 class ConfigDialog : public QDialog {
     Q_OBJECT
 public:
-    ConfigDialog(QWidget *parent, std::string name);
+    ConfigDialog(QWidget *parent, std::string name, ConfigManager* config);
     ~ConfigDialog();
 
+    int i2cScan();
+
+    const std::list<BTThread*>* getListBTThread() const { return &m_config.m_listBTThread;}
 private slots:
     void addInput();
     void editInput();
@@ -40,6 +44,9 @@ private slots:
 
 private:
     Ui::ConfigDialog* ui;
+
+    ConfigManager* m_configManager;
+
     ConfigInputTableModel* m_inputTableModel;
     ConfigOutputTableModel* m_outputTableModel;
     ConfigBTThreadTableModel* m_btThreadTableModel;
@@ -133,7 +140,7 @@ class ConfigInputDialog : public QDialog
 {
     Q_OBJECT
 public:
-    ConfigInputDialog(QWidget *parent);
+    ConfigInputDialog(ConfigDialog *parent);
     ~ConfigInputDialog();
 
     void edit(HWInput* btThread);
@@ -165,15 +172,18 @@ class ConfigInputButtonWidget : public IConfigInputWidget
 {
     Q_OBJECT
 public:
-    ConfigInputButtonWidget(QWidget* parent);
+    ConfigInputButtonWidget(QWidget* parent, ConfigDialog* configDialog);
 
     HWInput* assemble();
     void edit(HWInput* hw);
 
 private slots:
     void typeChanged(int index);
+    void i2cScan();
 
 private:
+    ConfigDialog* m_configDialog;
+
     QComboBox* m_comboType;
 
     QLabel* m_labelBtBoard;
@@ -184,6 +194,8 @@ private:
 
     QLabel* m_labelPort;
     QSpinBox* m_spinPort;
+
+    QPushButton* m_buttonI2CScan;
 };
 
 #endif // CONFIGDIALOG_H

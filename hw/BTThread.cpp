@@ -467,11 +467,15 @@ void BTThread::packetHandler(char* buffer, unsigned int length)
             bool err = (buffer[3] & 0x40) != 0;
             unsigned char pinGroup = buffer[3] & 0x1F;
 
-            if(err || req)
+            if(req)
             {
-                pi_warn("Error occurred in GPIO status update");
+                pi_warn("Malformed packet received in GPIO status update");
                 return;
             }
+
+            // error occurred, ignoring packet
+            if(err)
+                return;
 
             printf("State of GPIOs is: %x\n", buffer[4]);
 
@@ -608,9 +612,7 @@ void BTThread::sendI2CPackets(BTI2CPacket *packets, unsigned int num)
         buffer[1] = seq;
         buffer[2] = 0xFF;
 
-        buffer += 3;
-
-        packets[i].assemble(buffer, totalSize - 3);
+        packets[i].assemble(buffer + 3, totalSize - 3);
 
         // add the callback function (if any) to the list of callback functions for later matching of the response
         if(packets[i].callbackFunc)
