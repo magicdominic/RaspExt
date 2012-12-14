@@ -1,18 +1,18 @@
 
-#include "hw/HWOutputDCMotorBt.h"
+#include "hw/HWOutputGPOBt.h"
 #include "hw/BTThread.h"
 #include "ConfigManager.h"
 #include "util/Debug.h"
 
-HWOutputDCMotorBt::HWOutputDCMotorBt()
+HWOutputGPOBt::HWOutputGPOBt()
 {
     m_slaveAddress = -1;
-    m_btThread = NULL;
+    m_port = -1;
 }
 
-HWOutput* HWOutputDCMotorBt::load(QDomElement *root)
+HWOutput* HWOutputGPOBt::load(QDomElement *root)
 {
-    HWOutputDCMotorBt* hw = new HWOutputDCMotorBt();
+    HWOutputGPOBt* hw = new HWOutputGPOBt();
     QDomElement elem = root->firstChildElement();
 
     while(!elem.isNull())
@@ -20,6 +20,10 @@ HWOutput* HWOutputDCMotorBt::load(QDomElement *root)
         if( elem.tagName().toLower().compare("slaveaddress") == 0 )
         {
             hw->m_slaveAddress = elem.text().toInt();
+        }
+        else if( elem.tagName().toLower().compare("port") == 0 )
+        {
+            hw->m_port = elem.text().toInt();
         }
         else if( elem.tagName().toLower().compare("btboard") == 0 )
         {
@@ -30,7 +34,7 @@ HWOutput* HWOutputDCMotorBt::load(QDomElement *root)
     }
 
     // check for invalid parameters
-    if( hw->m_slaveAddress > 127 || hw->m_slaveAddress < 0 || hw->m_btName.empty())
+    if( hw->m_slaveAddress > 127 || hw->m_slaveAddress < 0 || hw->m_port > 15 || hw->m_btName.empty())
     {
         pi_warn("Invalid i2c parameters");
         return NULL;
@@ -39,9 +43,9 @@ HWOutput* HWOutputDCMotorBt::load(QDomElement *root)
     return hw;
 }
 
-QDomElement HWOutputDCMotorBt::save(QDomElement* root, QDomDocument* document)
+QDomElement HWOutputGPOBt::save(QDomElement* root, QDomDocument* document)
 {
-    QDomElement output = HWOutputDCMotor::save(root, document);
+    QDomElement output = HWOutputGPO::save(root, document);
 
     QDomElement type = document->createElement("hwtype");
     QDomText typeText = document->createTextNode("Bt");
@@ -61,41 +65,24 @@ QDomElement HWOutputDCMotorBt::save(QDomElement* root, QDomDocument* document)
 
     output.appendChild(slaveAddr);
 
+    QDomElement port = document->createElement("Port");
+    QDomText portText = document->createTextNode(QString::number( m_port ));
+    port.appendChild(portText);
+
+    output.appendChild(port);
+
     return output;
 }
 
-void HWOutputDCMotorBt::setI2CBt(BTThread* btThread)
+void HWOutputGPOBt::init(ConfigManager *config)
 {
-    // allocate our buffer
-    BTI2CPacket packet;
-    packet.commandLength = 2;
-    packet.commandBuffer = (char*) malloc(packet.commandLength);
-    packet.commandBuffer[0] = 0x00;
+    BTThread* btThread = config->getBTThreadByName(m_btName);
+    btThread->addOutputPCF8575(this, m_slaveAddress, m_port);
 
-    // now set output state
-    packet.commandBuffer[1] = m_state | ((m_speed * 63 / 100) << 2);
-
-    packet.read = 0;
-    packet.slaveAddress = m_slaveAddress;
-    packet.request = 1;
-    packet.error = 0;
-
-    btThread->sendI2CPackets(&packet, 1);
 }
 
-void HWOutputDCMotorBt::init(ConfigManager *config)
+void HWOutputGPOBt::deinit(ConfigManager* config)
 {
-    m_btThread = config->getBTThreadByName(m_btName);
-}
-
-void HWOutputDCMotorBt::deinit(ConfigManager* config)
-{
-    m_btThread = NULL;
-}
-
-void HWOutputDCMotorBt::outputChanged()
-{
-    HWOutputDCMotor::outputChanged();
-
-    m_btThread->addOutput( std::bind(&HWOutputDCMotorBt::setI2CBt, this, std::placeholders::_1) );
+    BTThread* btThread = config->getBTThreadByName(m_btName);
+    btThread->removeOutputPCF8575(this, m_slaveAddress);
 }

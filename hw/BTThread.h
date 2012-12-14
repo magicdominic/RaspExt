@@ -12,7 +12,9 @@
 
 class HWInput;
 class HWInputButtonBtGPIO;
+class HWOutput;
 class BTThread;
+class PCF8575Bt;
 class QDomElement;
 class QDomDocument;
 
@@ -68,9 +70,10 @@ public:
     void addInput(BTI2CPolling* hw, unsigned int freq);
     void removeInput(BTI2CPolling* hw);
 
-    /*
     void addInputPCF8575(HWInput* hw, int slaveAddress, unsigned int port);
-    void removeInputPCF8575(HWInput* hw, int slaveAddress);*/
+    void removeInputPCF8575(HWInput* hw, int slaveAddress);
+    void addOutputPCF8575(HWOutput* hw, int slaveAddress, unsigned int port);
+    void removeOutputPCF8575(HWOutput* hw, int slaveAddress);
 
     void addOutput(std::function<void (BTThread*)> func);
 
@@ -136,7 +139,7 @@ private:
     PriorityQueue<InputElement> m_inputQueue;
     std::queue<OutputElement> m_outputQueue;
 
-    //std::list<PCF8575I2C*> m_listPCF8575;
+    std::list<PCF8575Bt*> m_listPCF8575;
 
     struct GPInput
     {

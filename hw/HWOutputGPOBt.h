@@ -1,18 +1,18 @@
-#ifndef HWOUTPUTGPOI2C_H
-#define HWOUTPUTGPOI2C_H
+#ifndef HWOUTPUTGPOBT_H
+#define HWOUTPUTGPOBT_H
 
 #include "hw/HWOutputGPO.h"
 
-class I2CThread;
+class BTThread;
 
 /**
- * @brief The HWOutputGPOI2C class
- * This implementation is specific for the PCF8575. It uses the PCF8575I2C class to communicate over i2c with its chip.
+ * @brief The HWOutputGPOBt class
+ * This implementation is specific for the PCF8575. It uses the PCF8575Bt class to communicate over i2c with its chip.
  */
-class HWOutputGPOI2C : public HWOutputGPO
+class HWOutputGPOBt : public HWOutputGPO
 {
 public:
-    HWOutputGPOI2C();
+    HWOutputGPOBt();
 
     virtual void init(ConfigManager* config);
     virtual void deinit(ConfigManager* config);
@@ -24,7 +24,7 @@ public:
 private:
     int m_slaveAddress;
     unsigned int m_port;
-    I2CThread* m_i2cThread;
+    std::string m_btName;
 };
 
-#endif // HWOUTPUTGPOI2C_H
+#endif // HWOUTPUTGPOBT_H

@@ -80,7 +80,7 @@ void HWOutputDCMotorI2C::init(ConfigManager *config)
     m_i2cThread = config->getI2CThread();
 }
 
-void HWOutputDCMotorI2C::deinit()
+void HWOutputDCMotorI2C::deinit(ConfigManager *config)
 {
     m_i2cThread = NULL;
 }

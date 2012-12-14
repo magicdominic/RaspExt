@@ -1,6 +1,7 @@
 
 #include "hw/HWOutputGPO.h"
 #include "hw/HWOutputGPOI2C.h"
+#include "hw/HWOutputGPOBt.h"
 
 #include "util/Debug.h"
 
@@ -24,6 +25,10 @@ HWOutput* HWOutputGPO::load(QDomElement* root)
             if(elem.text().toLower().compare("i2c") == 0)
             {
                 hw = (HWOutputGPO*)HWOutputGPOI2C::load(root);
+            }
+            else if(elem.text().toLower().compare("bt") == 0)
+            {
+                hw = (HWOutputGPO*)HWOutputGPOBt::load(root);
             }
         }
         elem = elem.nextSiblingElement();

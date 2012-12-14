@@ -88,7 +88,10 @@ SOURCES += main.cpp \
     ui/ConfigDialog.cpp \
     hw/Config.cpp \
     util/UtilConfig.cpp \
-    ui/I2CScanDialog.cpp
+    ui/I2CScanDialog.cpp \
+    hw/HWInputButtonBt.cpp \
+    hw/PCF8575Bt.cpp \
+    hw/HWOutputGPOBt.cpp
 HEADERS += ui/MainWindow.h \
     ui/InputFaderFrame.h \
     ui/ScriptsTableModel.h \
@@ -175,7 +178,10 @@ HEADERS += ui/MainWindow.h \
     ui/ConfigTableModel.h \
     ui/ConfigDialog.h \
     hw/Config.h \
-    ui/I2CScanDialog.h
+    ui/I2CScanDialog.h \
+    hw/HWInputButtonBt.h \
+    hw/PCF8575Bt.h \
+    hw/HWOutputGPOBt.h
 FORMS += ui/MainWindow.ui \
     ui/RuleDialog.ui \
     ui/ScriptDialog.ui \

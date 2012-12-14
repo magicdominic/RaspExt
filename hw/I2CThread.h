@@ -36,7 +36,7 @@ public:
 
     void addInputPCF8575(HWInput* hw, int slaveAddress, unsigned int port);
     void removeInputPCF8575(HWInput* hw, int slaveAddress);
-    PCF8575I2C* addOutputPCF8575(HWOutput* hw, int slaveAddress, unsigned int port);
+    void addOutputPCF8575(HWOutput* hw, int slaveAddress, unsigned int port);
     void removeOutputPCF8575(HWOutput* hw, int slaveAddress);
 
     // TODO: ATTENTION!!! USE ONLY IN I2CTHREAD!!!!

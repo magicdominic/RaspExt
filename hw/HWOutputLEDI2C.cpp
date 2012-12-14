@@ -134,7 +134,7 @@ void HWOutputLEDI2C::init(ConfigManager *config)
     m_i2cThread->addOutput(std::bind(&HWOutputLEDI2C::setupI2C, this, std::placeholders::_1));
 }
 
-void HWOutputLEDI2C::deinit()
+void HWOutputLEDI2C::deinit(ConfigManager* config)
 {
     m_i2cThread = NULL;
 }

@@ -72,7 +72,7 @@ void HWOutputGPOI2C::init(ConfigManager *config)
 
 }
 
-void HWOutputGPOI2C::deinit()
+void HWOutputGPOI2C::deinit(ConfigManager* config)
 {
     m_i2cThread->removeOutputPCF8575(this, m_slaveAddress);
     m_i2cThread = NULL;

@@ -58,7 +58,7 @@ void HWOutputStepperI2C::init(ConfigManager *config)
     m_i2cThread->addInput(this, 1);
 }
 
-void HWOutputStepperI2C::deinit()
+void HWOutputStepperI2C::deinit(ConfigManager* config)
 {
     m_i2cThread->removeInput(this);
 

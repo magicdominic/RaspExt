@@ -140,7 +140,7 @@ void HWOutputLEDBt::init(ConfigManager *config)
     m_btThread->addOutput(std::bind(&HWOutputLEDBt::setupI2CBt, this, std::placeholders::_1));
 }
 
-void HWOutputLEDBt::deinit()
+void HWOutputLEDBt::deinit(ConfigManager* config)
 {
     m_btThread = NULL;
 }

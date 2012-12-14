@@ -133,7 +133,7 @@ void HWOutputRelayI2C::init(ConfigManager *config)
     m_i2cThread->addOutput( std::bind(&HWOutputRelayI2C::setupI2C, this, std::placeholders::_1) );
 }
 
-void HWOutputRelayI2C::deinit()
+void HWOutputRelayI2C::deinit(ConfigManager* config)
 {
     m_i2cThread = NULL;
 }

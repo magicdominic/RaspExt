@@ -89,7 +89,7 @@ void ConfigManager::deinit()
 
     for(std::list<HWOutput*>::iterator it = m_listOutput.begin(); it != m_listOutput.end(); it++)
     {
-        (*it)->deinit();
+        (*it)->deinit(this);
     }
 
     delete m_gpioThread;

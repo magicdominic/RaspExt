@@ -1,6 +1,7 @@
 
 #include "hw/BTThread.h"
 #include "hw/HWInputButtonBtGPIO.h"
+#include "hw/PCF8575Bt.h"
 #include "util/Config.h"
 #include "util/Debug.h"
 
@@ -233,6 +234,99 @@ void BTThread::reconnectBt()
 
     this->disconnectBt();
     this->connectBt();
+}
+
+
+void BTThread::addInputPCF8575(HWInput* hw, int slaveAddress, unsigned int port)
+{
+    // first check if we already have an Object for this slave address
+    for(std::list<PCF8575Bt*>::iterator it = m_listPCF8575.begin(); it != m_listPCF8575.end(); it++)
+    {
+        if( (*it)->getSlaveAddress() == slaveAddress )
+        {
+            // we found it
+            (*it)->addInput((HWInputButtonBt*)hw, port);
+            return;
+        }
+    }
+
+    // we did not found an object for this slave address, so create a new one
+    PCF8575Bt* pcf = new PCF8575Bt(slaveAddress);
+    m_listPCF8575.push_back(pcf);
+
+    pcf->init(this);
+
+    pcf->addInput((HWInputButtonBt*)hw, port);
+}
+
+void BTThread::removeInputPCF8575(HWInput* hw, int slaveAddress)
+{
+    // search for the corresponding pcf object
+    for(std::list<PCF8575Bt*>::iterator it = m_listPCF8575.begin(); it != m_listPCF8575.end(); it++)
+    {
+        if( (*it)->getSlaveAddress() == slaveAddress )
+        {
+            // we found it
+            (*it)->removeInput((HWInputButtonBt*)hw);
+
+            // check if the pcf object is empty now
+            if((*it)->empty())
+            {
+                (*it)->deinit();
+                delete *it;
+
+                m_listPCF8575.erase(it);
+            }
+
+            return;
+        }
+    }
+}
+
+void BTThread::addOutputPCF8575(HWOutput* hw, int slaveAddress, unsigned int port)
+{
+    // first check if we already have an Object for this slave address
+    for(std::list<PCF8575Bt*>::iterator it = m_listPCF8575.begin(); it != m_listPCF8575.end(); it++)
+    {
+        if( (*it)->getSlaveAddress() == slaveAddress )
+        {
+            // we found it
+            (*it)->addOutput((HWOutputGPO*)hw, port);
+            return;
+        }
+    }
+
+    // we did not found an object for this slave address, so create a new one
+    PCF8575Bt* pcf = new PCF8575Bt(slaveAddress);
+    m_listPCF8575.push_back(pcf);
+
+    pcf->init(this);
+
+    pcf->addOutput((HWOutputGPO*)hw, port);
+}
+
+void BTThread::removeOutputPCF8575(HWOutput* hw, int slaveAddress)
+{
+    // search for the corresponding pcf object
+    for(std::list<PCF8575Bt*>::iterator it = m_listPCF8575.begin(); it != m_listPCF8575.end(); it++)
+    {
+        if( (*it)->getSlaveAddress() == slaveAddress )
+        {
+            // we found it
+            (*it)->removeOutput((HWOutputGPO*)hw);
+
+            // check if the pcf object is empty now
+            if((*it)->empty())
+            {
+                (*it)->deinit();
+                delete *it;
+
+                m_listPCF8575.erase(it);
+            }
+
+            return;
+        }
+    }
 }
 
 void BTThread::run()
@@ -692,7 +786,9 @@ void BTI2CPacket::assemble(char* buf, unsigned int length)
     {
         // the packet is a read
         buf[1] = this->request << 7 | this->error << 6 | this->readLength;
-        memcpy(&buf[2], this->commandBuffer, this->commandLength);
+
+        if(this->commandLength != 0)
+            memcpy(&buf[2], this->commandBuffer, this->commandLength);
 
         if(!this->request)
         {

@@ -141,7 +141,7 @@ void I2CThread::removeInputPCF8575(HWInput* hw, int slaveAddress)
     }
 }
 
-PCF8575I2C* I2CThread::addOutputPCF8575(HWOutput* hw, int slaveAddress, unsigned int port)
+void I2CThread::addOutputPCF8575(HWOutput* hw, int slaveAddress, unsigned int port)
 {
     // first check if we already have an Object for this slave address
     for(std::list<PCF8575I2C*>::iterator it = m_listPCF8575.begin(); it != m_listPCF8575.end(); it++)
@@ -150,7 +150,7 @@ PCF8575I2C* I2CThread::addOutputPCF8575(HWOutput* hw, int slaveAddress, unsigned
         {
             // we found it
             (*it)->addOutput((HWOutputGPO*)hw, port);
-            return (*it);
+            return;
         }
     }
 
@@ -161,8 +161,6 @@ PCF8575I2C* I2CThread::addOutputPCF8575(HWOutput* hw, int slaveAddress, unsigned
     pcf->init(this);
 
     pcf->addOutput((HWOutputGPO*)hw, port);
-
-    return pcf;
 }
 
 void I2CThread::removeOutputPCF8575(HWOutput* hw, int slaveAddress)

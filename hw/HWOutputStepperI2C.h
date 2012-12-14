@@ -11,7 +11,7 @@ public:
     HWOutputStepperI2C();
 
     void init(ConfigManager* config);
-    void deinit();
+    void deinit(ConfigManager* config);
 
     static HWOutput* load(QDomElement* root);
     virtual QDomElement save(QDomElement* root, QDomDocument* document);

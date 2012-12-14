@@ -26,7 +26,7 @@ void HWOutput::init(ConfigManager *config)
 
 }
 
-void HWOutput::deinit()
+void HWOutput::deinit(ConfigManager *config)
 {
 
 }

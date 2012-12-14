@@ -12,7 +12,7 @@ public:
     HWOutputLEDBt();
 
     virtual void init(ConfigManager* config);
-    virtual void deinit();
+    virtual void deinit(ConfigManager* config);
 
     static HWOutput* load(QDomElement* root);
     virtual QDomElement save(QDomElement* root, QDomDocument* document);
