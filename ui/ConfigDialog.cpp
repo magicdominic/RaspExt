@@ -83,7 +83,28 @@ int ConfigDialog::i2cScan()
 
     m_configManager->getI2CThread()->addOutput( std::bind(&I2CScanDialog::i2cScan, &dialog, std::placeholders::_1) );
 
-    dialog.exec();
+    if( dialog.exec() == QDialog::Accepted)
+        return dialog.getAddress();
+
+    return -1;
+}
+
+int ConfigDialog::btI2CScan(std::string name)
+{
+    BTThread* btThread = m_configManager->getBTThreadByName(name);
+
+    if(btThread != NULL)
+    {
+        I2CScanDialog dialog(this);
+
+        btThread->addOutput( std::bind(&I2CScanDialog::btI2CScan, &dialog, std::placeholders::_1) );
+
+        if( dialog.exec() == QDialog::Accepted)
+            return dialog.getAddress();
+    }
+
+    // TODO: this currently only works if the selected bluetooth board is already present in the selected config
+    // this should be changed that it works with arbitrary bluetooth boards which are only present in config which we currently edit
 
     return -1;
 }
@@ -735,6 +756,9 @@ void ConfigInputButtonWidget::i2cScan()
     {
     case HWInput::I2C:
         slaveAddress = m_configDialog->i2cScan();
+        break;
+    case HWInput::BtI2C:
+        slaveAddress = m_configDialog->btI2CScan( m_comboBtBoard->currentText().toStdString() );
         break;
     }
 

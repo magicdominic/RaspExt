@@ -27,6 +27,7 @@ public:
     ~ConfigDialog();
 
     int i2cScan();
+    int btI2CScan(std::string name);
 
     const std::list<BTThread*>* getListBTThread() const { return &m_config.m_listBTThread;}
 private slots:
