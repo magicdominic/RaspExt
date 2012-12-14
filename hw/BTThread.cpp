@@ -467,12 +467,6 @@ void BTThread::packetHandler(char* buffer, unsigned int length)
             bool err = (buffer[3] & 0x40) != 0;
             unsigned char pinGroup = buffer[3] & 0x1F;
 
-            if(req)
-            {
-                pi_warn("Malformed packet received in GPIO status update");
-                return;
-            }
-
             // error occurred, ignoring packet
             if(err)
                 return;

@@ -81,9 +81,9 @@ int ConfigDialog::i2cScan()
 {
     I2CScanDialog dialog(this);
 
-    dialog.exec();
-
     m_configManager->getI2CThread()->addOutput( std::bind(&I2CScanDialog::i2cScan, &dialog, std::placeholders::_1) );
+
+    dialog.exec();
 
     return -1;
 }
