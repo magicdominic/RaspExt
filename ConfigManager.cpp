@@ -484,3 +484,14 @@ BTThread* ConfigManager::getBTThreadByName(std::string str)
 
     return NULL;
 }
+
+BTThread* ConfigManager::getBTThreadByAddr(std::string addr)
+{
+    for(std::list<BTThread*>::iterator it = m_listBTThread.begin(); it != m_listBTThread.end(); it++)
+    {
+        if(strcasecmp((*it)->getBTAddr().c_str(), addr.c_str()) == 0)
+            return *it;
+    }
+
+    return NULL;
+}

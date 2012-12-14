@@ -91,22 +91,53 @@ int ConfigDialog::i2cScan()
 
 int ConfigDialog::btI2CScan(std::string name)
 {
-    BTThread* btThread = m_configManager->getBTThreadByName(name);
+    std::string addr;
 
-    if(btThread != NULL)
+    // first find the address for this name
+    for(std::list<BTThread*>::iterator it = m_config.m_listBTThread.begin(); it != m_config.m_listBTThread.end(); it++)
     {
-        I2CScanDialog dialog(this);
-
-        btThread->addOutput( std::bind(&I2CScanDialog::btI2CScan, &dialog, std::placeholders::_1) );
-
-        if( dialog.exec() == QDialog::Accepted)
-            return dialog.getAddress();
+        if( strcasecmp((*it)->getName().c_str(), name.c_str()) == 0 )
+        {
+            addr = (*it)->getBTAddr();
+            break;
+        }
     }
 
-    // TODO: this currently only works if the selected bluetooth board is already present in the selected config
-    // this should be changed that it works with arbitrary bluetooth boards which are only present in config which we currently edit
+    // give up if we did not find an address, this means that we have been given an invalid argument
+    if(addr.empty())
+        return -1;
 
-    return -1;
+    // look in existing threads if we find this address
+    BTThread* btThread = m_configManager->getBTThreadByAddr(addr);
+    bool bOwn = false;
+
+    if(btThread == NULL)
+    {
+        // apparently we did not find it, so we must create it ourselfs
+        bOwn = true;
+
+        btThread = new BTThread();
+        btThread->setBTAddr(addr);
+
+        btThread->start();
+    }
+
+    I2CScanDialog dialog(this);
+
+    btThread->addOutput( std::bind(&I2CScanDialog::btI2CScan, &dialog, std::placeholders::_1) );
+
+    int slaveAddress = -1;
+    if( dialog.exec() == QDialog::Accepted)
+        slaveAddress = dialog.getAddress();
+
+    if(bOwn)
+    {
+        // since we have created it only for this purpose we have to delete it now
+        btThread->kill();
+        delete btThread;
+    }
+
+    return slaveAddress;
 }
 
 void ConfigDialog::addInput()
