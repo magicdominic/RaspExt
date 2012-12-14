@@ -5,18 +5,7 @@
 
 ConfigTableModel::ConfigTableModel(QObject* parent) : QAbstractTableModel(parent)
 {
-    QDir directory = QDir("config/");
-    QStringList entries = directory.entryList(QStringList("*.xml"));
-
-    for(QStringList::iterator it = entries.begin(); it != entries.end(); it++)
-    {
-        QString name = (*it);
-
-        // remove ".xml" ending
-        name.chop(4);
-
-        m_vec.push_back(name.toStdString());
-    }
+    this->refresh();
 }
 
 int ConfigTableModel::rowCount(const QModelIndex &parent) const
@@ -73,5 +62,45 @@ std::string ConfigTableModel::get(unsigned int row) const
     if(row < m_vec.size())
         return m_vec.at(row);
 
-    return NULL;
+    return "";
+}
+
+void ConfigTableModel::refresh()
+{
+    m_vec.clear();
+
+    QDir directory = QDir("config/");
+    QStringList entries = directory.entryList(QStringList("*.xml"));
+
+    for(QStringList::iterator it = entries.begin(); it != entries.end(); it++)
+    {
+        QString name = (*it);
+
+        // remove ".xml" ending
+        name.chop(4);
+
+        m_vec.push_back(name.toStdString());
+    }
+
+   emit layoutChanged();
+}
+
+bool ConfigTableModel::removeRow(int row, const QModelIndex &parent)
+{
+    Q_UNUSED(parent);
+
+    QString filename = "config/";
+    filename.append( m_vec.at(row).c_str() );
+    filename.append(".xml");
+
+    // delete the actual file
+    QFile::remove(filename);
+
+    beginRemoveRows(QModelIndex(), row, row);
+
+    m_vec.erase(m_vec.begin() + row);
+
+    endRemoveRows();
+
+    return true;
 }

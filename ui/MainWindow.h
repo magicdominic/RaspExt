@@ -46,6 +46,7 @@ protected slots:
     void createConfig();
     void editConfig();
     void selectConfig();
+    void deleteConfig();
 
 private:
     void updateScriptState();

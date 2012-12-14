@@ -68,6 +68,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->buttonCreateConfig, SIGNAL(clicked()), this, SLOT(createConfig()));
     connect(ui->buttonEditConfig, SIGNAL(clicked()), this, SLOT(editConfig()));
     connect(ui->buttonSelectConfig, SIGNAL(clicked()), this, SLOT(selectConfig()));
+    connect(ui->buttonDeleteConfig, SIGNAL(clicked()), this, SLOT(deleteConfig()));
 
     connect(ui->buttonStop, SIGNAL(clicked()), this, SLOT(stopScript()));
     connect(ui->buttonPlayPause, SIGNAL(clicked()), this, SLOT(startPauseScript()));
@@ -522,7 +523,8 @@ void MainWindow::createConfig()
 {
     ConfigDialog* dialog = new ConfigDialog(this, "", &m_config);
 
-    dialog->exec();
+    if( dialog->exec() == QDialog::Accepted)
+        m_configTableModel.refresh();
 }
 
 void MainWindow::editConfig()
@@ -535,7 +537,8 @@ void MainWindow::editConfig()
 
         ConfigDialog* dialog = new ConfigDialog(this, name, &m_config);
 
-        dialog->exec();
+        if( dialog->exec() == QDialog::Accepted)
+            m_configTableModel.refresh();
     }
 }
 
@@ -558,5 +561,22 @@ void MainWindow::selectConfig()
 
             ui->labelConfig->setText( QString::fromStdString(name) );
         }
+    }
+}
+
+void MainWindow::deleteConfig()
+{
+    QModelIndexList indices = ui->tableConfig->selectionModel()->selection().indexes();
+
+    if(indices.size() != 0)
+    {
+        // check if config is selected, if yes, then display a warning and don't do anything
+        if(m_config.getActiveScript() == m_scriptsModel.getScript(indices.front().row()))
+        {
+            QMessageBox(QMessageBox::Warning, "Warning", "Cannot delete config because it is selected.\nPlease select a different config fisrt", QMessageBox::Ok, this).exec();
+            return;
+        }
+
+        m_configTableModel.removeRow(indices.front().row());
     }
 }

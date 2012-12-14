@@ -22,7 +22,9 @@ public:
     void setValue(bool value);
 
     unsigned int getPin() { return m_pin;}
+    void setPin(unsigned int pin) { m_pin = pin;}
     unsigned int getPinGroup() { return m_pinGroup;}
+    void setPinGroup(unsigned int pinGroup) { m_pinGroup = pinGroup;}
 
 private:
     unsigned int m_pinGroup;

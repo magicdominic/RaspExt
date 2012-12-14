@@ -216,6 +216,8 @@ void ConfigDialog::okPressed()
         return;
     }
 
+    m_config.setName( ui->editName->text().toStdString() );
+
     m_config.save();
 
     this->done(Accepted);
@@ -607,7 +609,10 @@ HWInput* ConfigInputDialog::assemble() const
     if(m_baseWidget != NULL)
         hw = m_baseWidget->assemble();
 
-    hw->setName( ui->editName->text().toStdString() );
+    if(hw != NULL)
+    {
+        hw->setName( ui->editName->text().toStdString() );
+    }
 
     return hw;
 }
@@ -777,8 +782,10 @@ void ConfigInputButtonWidget::edit(HWInput *hw)
         m_spinPort->setValue( ((HWInputButtonI2C*)hw)->getPort() );
         break;
     case HWInput::BtI2C:
+        // TODO
         break;
     case HWInput::Bt:
+        m_spinPort->setValue( ((HWInputButtonBtGPIO*)hw)->getPin() );
         break;
     }
 }
@@ -803,6 +810,8 @@ HWInput* ConfigInputButtonWidget::assemble()
         break;
     case HWInput::Bt:
         hw = new HWInputButtonBtGPIO();
+        ((HWInputButtonBtGPIO*)hw)->setPinGroup(2); // set to 2 as its the only one supported as of now
+        ((HWInputButtonBtGPIO*)hw)->setPin( m_spinPort->value() );
         // TODO
         break;
     }

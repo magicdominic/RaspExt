@@ -156,5 +156,5 @@ void I2CScanTableModel::set(int row, int column, bool used)
 
     m_matrix[row][column] = used;
 
-    emit dataChanged(this->index(row, 0), this->index(row, this->columnCount()));
+    emit dataChanged(this->index(row, column), this->index(row, column));
 }

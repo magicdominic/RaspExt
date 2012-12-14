@@ -17,6 +17,9 @@ public:
     QVariant headerData(int section, Qt::Orientation orientation, int role) const;
 
     std::string get(unsigned int row) const;
+    void refresh();
+    bool removeRow(int row, const QModelIndex &parent = QModelIndex());
+
 private:
     std::vector<std::string> m_vec;
 };
