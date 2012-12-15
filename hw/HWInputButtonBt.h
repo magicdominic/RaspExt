@@ -8,7 +8,7 @@ class HWInputButtonBt : public HWInputButton
 public:
     HWInputButtonBt();
 
-    HWType getHWType() const { return Bt;}
+    HWType getHWType() const { return BtI2C;}
 
     bool init(ConfigManager* config);
     void deinit(ConfigManager* config);
@@ -23,6 +23,9 @@ public:
 
     int getSlaveAddress() const { return m_slaveAddress;}
     void setSlaveAddress(int slaveAddress) { m_slaveAddress = slaveAddress;}
+
+    std::string getBTName() const { return m_btName;}
+    void setBTName(std::string name) { m_btName = name;}
 private:
     int m_slaveAddress;
     unsigned int m_port;

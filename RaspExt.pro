@@ -92,7 +92,9 @@ SOURCES += main.cpp \
     hw/HWInputButtonBt.cpp \
     hw/PCF8575Bt.cpp \
     hw/HWOutputGPOBt.cpp \
-    ui/BTScanDialog.cpp
+    ui/BTScanDialog.cpp \
+    hw/HWOutputRelayBt.cpp \
+    hw/HWOutputStepperBt.cpp
 HEADERS += ui/MainWindow.h \
     ui/InputFaderFrame.h \
     ui/ScriptsTableModel.h \
@@ -183,7 +185,9 @@ HEADERS += ui/MainWindow.h \
     hw/HWInputButtonBt.h \
     hw/PCF8575Bt.h \
     hw/HWOutputGPOBt.h \
-    ui/BTScanDialog.h
+    ui/BTScanDialog.h \
+    hw/HWOutputRelayBt.h \
+    hw/HWOutputStepperBt.h
 FORMS += ui/MainWindow.ui \
     ui/RuleDialog.ui \
     ui/ScriptDialog.ui \

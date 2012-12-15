@@ -8,8 +8,6 @@
 class HWOutputStepperI2C : public HWOutputStepper, public I2CPolling
 {
 public:
-    HWOutputStepperI2C();
-
     void init(ConfigManager* config);
     void deinit(ConfigManager* config);
 

@@ -26,6 +26,8 @@ public:
     unsigned int getPinGroup() { return m_pinGroup;}
     void setPinGroup(unsigned int pinGroup) { m_pinGroup = pinGroup;}
 
+    std::string getBTName() const { return m_btName;}
+    void setBTName(std::string name) { m_btName = name;}
 private:
     unsigned int m_pinGroup;
     unsigned int m_pin;

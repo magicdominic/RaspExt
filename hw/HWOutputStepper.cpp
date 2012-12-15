@@ -1,6 +1,7 @@
 
 #include "hw/HWOutputStepper.h"
 #include "hw/HWOutputStepperI2C.h"
+#include "hw/HWOutputStepperBt.h"
 #include "util/Debug.h"
 
 #include <QDomElement>
@@ -22,6 +23,10 @@ HWOutput* HWOutputStepper::load(QDomElement* root)
             if(elem.text().toLower().compare("i2c") == 0)
             {
                 hw = (HWOutputStepper*)HWOutputStepperI2C::load(root);
+            }
+            else if(elem.text().toLower().compare("bt") == 0)
+            {
+                hw = (HWOutputStepper*)HWOutputStepperBt::load(root);
             }
         }
         elem = elem.nextSiblingElement();

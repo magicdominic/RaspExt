@@ -18,8 +18,8 @@ public:
     virtual QDomElement save(QDomElement* root, QDomDocument* document);
 private:
     void outputChanged();
-    void setI2CBt(BTThread* btThread);
 
+    void setI2CBt(BTThread* btThread);
     void setupI2CBt(BTThread* btThread);
 
     int m_slaveAddress;

@@ -1,19 +1,19 @@
-#ifndef HWOUTPUTRELAYI2C_H
-#define HWOUTPUTRELAYI2C_H
+#ifndef HWOUTPUTRELAYBT_H
+#define HWOUTPUTRELAYBT_H
 
 #include "hw/HWOutputRelay.h"
 
-class I2CThread;
+class BTThread;
 
-/** HWOutputRelayI2C is essentially the same as HWOutputLEDI2C, as both use the same chip.
+/** HWOutputRelayBt is essentially the same as HWOutputLEDBt, as both use the same chip.
  * However, with the led implementation one can control the individual brightness of each led,
  * whereas with this implementation one can only control if it is fully on or fully off (relay mode).
  * This implementation is specific for TLC59116, it will not work for other led drivers!
  */
-class HWOutputRelayI2C : public HWOutputRelay
+class HWOutputRelayBt : public HWOutputRelay
 {
 public:
-    HWOutputRelayI2C();
+    HWOutputRelayBt();
 
     virtual void init(ConfigManager* config);
     virtual void deinit(ConfigManager* config);
@@ -23,12 +23,13 @@ public:
 private:
     void outputChanged();
 
-    void setI2C(I2CThread* i2cThread);
-    void setupI2C(I2CThread* i2cThread);
+    void setI2CBt(BTThread* btThread);
+    void setupI2CBt(BTThread* btThread);
 
     int m_slaveAddress;
     unsigned int m_channel;
-    I2CThread* m_i2cThread;
+    std::string m_btName;
+    BTThread* m_btThread;
 };
 
-#endif // HWOUTPUTRELAYI2C_H
+#endif // HWOUTPUTRELAYBT_H

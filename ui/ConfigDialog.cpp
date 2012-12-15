@@ -710,9 +710,7 @@ ConfigInputButtonWidget::ConfigInputButtonWidget(QWidget *parent, ConfigDialog* 
     // add all bluetooth boards to the combo box
     const std::list<BTThread*>* listBT = m_configDialog->getListBTThread();
     for(std::list<BTThread*>::const_iterator it = listBT->begin(); it != listBT->end(); it++)
-    {
         m_comboBtBoard->addItem( QString::fromStdString( (*it)->getName() ) );
-    }
 
     m_labelI2CAddr = new QLabel("Select I2C address", this);
     m_spinI2CAddr = new QSpinBox(this);
@@ -823,6 +821,7 @@ void ConfigInputButtonWidget::edit(HWInput *hw)
 {
     m_comboType->setCurrentIndex( hw->getHWType() );
 
+    const char* btName = NULL;
     switch(hw->getHWType())
     {
     case HWInput::I2C:
@@ -832,13 +831,26 @@ void ConfigInputButtonWidget::edit(HWInput *hw)
     case HWInput::BtI2C:
         m_spinI2CAddr->setValue( ((HWInputButtonBt*)hw)->getSlaveAddress() );
         m_spinPort->setValue( ((HWInputButtonBt*)hw)->getPort() );
+        btName = ((HWInputButtonBt*)hw)->getBTName().c_str();
         break;
     case HWInput::Bt:
         m_spinPort->setValue( ((HWInputButtonBtGPIO*)hw)->getPin() );
+        btName = ((HWInputButtonBtGPIO*)hw)->getBTName().c_str();
         break;
     }
 
-    // TODO: select correct bluetooth device
+
+    if(btName != NULL)
+    {
+        for(unsigned int i = 0; i < m_comboBtBoard->count();i ++)
+        {
+            if(m_comboBtBoard->itemText(i).compare( btName ) == 0)
+            {
+                m_comboBtBoard->setCurrentIndex(i);
+                break;
+            }
+        }
+    }
 }
 
 HWInput* ConfigInputButtonWidget::assemble()
@@ -860,15 +872,15 @@ HWInput* ConfigInputButtonWidget::assemble()
         hw = new HWInputButtonBt();
         ((HWInputButtonBt*)hw)->setPort( m_spinPort->value() );
         ((HWInputButtonBt*)hw)->setSlaveAddress( m_spinI2CAddr->value() );
+        ((HWInputButtonBt*)hw)->setBTName( m_comboBtBoard->currentText().toStdString() );
         break;
     case HWInput::Bt:
         hw = new HWInputButtonBtGPIO();
         ((HWInputButtonBtGPIO*)hw)->setPinGroup(2); // set to 2 as its the only one supported as of now
         ((HWInputButtonBtGPIO*)hw)->setPin( m_spinPort->value() );
+        ((HWInputButtonBtGPIO*)hw)->setBTName( m_comboBtBoard->currentText().toStdString() );
         break;
     }
-
-    // TODO: select correct bluetooth device
 
     return hw;
 }
