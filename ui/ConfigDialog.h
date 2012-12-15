@@ -131,6 +131,9 @@ public:
 
     BTThread* assemble() const;
 
+private slots:
+    void btScan();
+
 private:
     Ui::ConfigBTDialog* ui;
 };

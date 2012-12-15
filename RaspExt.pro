@@ -91,7 +91,8 @@ SOURCES += main.cpp \
     ui/I2CScanDialog.cpp \
     hw/HWInputButtonBt.cpp \
     hw/PCF8575Bt.cpp \
-    hw/HWOutputGPOBt.cpp
+    hw/HWOutputGPOBt.cpp \
+    ui/BTScanDialog.cpp
 HEADERS += ui/MainWindow.h \
     ui/InputFaderFrame.h \
     ui/ScriptsTableModel.h \
@@ -181,7 +182,8 @@ HEADERS += ui/MainWindow.h \
     ui/I2CScanDialog.h \
     hw/HWInputButtonBt.h \
     hw/PCF8575Bt.h \
-    hw/HWOutputGPOBt.h
+    hw/HWOutputGPOBt.h \
+    ui/BTScanDialog.h
 FORMS += ui/MainWindow.ui \
     ui/RuleDialog.ui \
     ui/ScriptDialog.ui \
@@ -201,7 +203,8 @@ FORMS += ui/MainWindow.ui \
     ui/ConfigDialog.ui \
     ui/ConfigBTDialog.ui \
     ui/ConfigInputDialog.ui \
-    ui/I2CScanDialog.ui
+    ui/I2CScanDialog.ui \
+    ui/BTScanDialog.ui
 
 OTHER_FILES += \
     TODO.txt

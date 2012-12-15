@@ -9,9 +9,11 @@
 
 #include "hw/HWInputButton.h"
 #include "hw/HWInputButtonI2C.h"
+#include "hw/HWInputButtonBt.h"
 #include "hw/HWInputButtonBtGPIO.h"
 
 #include "ui/I2CScanDialog.h"
+#include "ui/BTScanDialog.h"
 
 #include "ui_ConfigBTDialog.h"
 #include "ui_ConfigDialog.h"
@@ -568,6 +570,8 @@ ConfigBTDialog::ConfigBTDialog(QWidget *parent) :
     ui->setupUi(this);
 
     // connect all signals - slots
+    connect(ui->buttonScan, SIGNAL(clicked()), this, SLOT(btScan()));
+
     connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
     connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(close()));
 
@@ -578,6 +582,19 @@ ConfigBTDialog::ConfigBTDialog(QWidget *parent) :
 ConfigBTDialog::~ConfigBTDialog()
 {
     delete ui;
+}
+
+void ConfigBTDialog::btScan()
+{
+    BTScanDialog dialog(this);
+
+    if( dialog.exec() == QDialog::Accepted)
+    {
+        std::pair<std::string, std::string> pair = dialog.getNameAddr();
+
+        ui->editName->setText( QString::fromStdString( pair.first ) );
+        ui->editAddr->setText( QString::fromStdString( pair.second ) );
+    }
 }
 
 void ConfigBTDialog::edit(BTThread *btThread)
@@ -813,12 +830,15 @@ void ConfigInputButtonWidget::edit(HWInput *hw)
         m_spinPort->setValue( ((HWInputButtonI2C*)hw)->getPort() );
         break;
     case HWInput::BtI2C:
-        // TODO
+        m_spinI2CAddr->setValue( ((HWInputButtonBt*)hw)->getSlaveAddress() );
+        m_spinPort->setValue( ((HWInputButtonBt*)hw)->getPort() );
         break;
     case HWInput::Bt:
         m_spinPort->setValue( ((HWInputButtonBtGPIO*)hw)->getPin() );
         break;
     }
+
+    // TODO: select correct bluetooth device
 }
 
 HWInput* ConfigInputButtonWidget::assemble()
@@ -837,15 +857,18 @@ HWInput* ConfigInputButtonWidget::assemble()
         ((HWInputButtonI2C*)hw)->setSlaveAddress( m_spinI2CAddr->value() );
         break;
     case HWInput::BtI2C:
-        // TODO
+        hw = new HWInputButtonBt();
+        ((HWInputButtonBt*)hw)->setPort( m_spinPort->value() );
+        ((HWInputButtonBt*)hw)->setSlaveAddress( m_spinI2CAddr->value() );
         break;
     case HWInput::Bt:
         hw = new HWInputButtonBtGPIO();
         ((HWInputButtonBtGPIO*)hw)->setPinGroup(2); // set to 2 as its the only one supported as of now
         ((HWInputButtonBtGPIO*)hw)->setPin( m_spinPort->value() );
-        // TODO
         break;
     }
+
+    // TODO: select correct bluetooth device
 
     return hw;
 }
