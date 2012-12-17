@@ -34,7 +34,7 @@ RuleDialog::RuleDialog(QWidget *parent, Rule* rule, Script *script) :
     connect(ui->buttonUp, SIGNAL(clicked()), this, SLOT(actionUp()));
     connect(ui->buttonDown, SIGNAL(clicked()), this, SLOT(actionDown()));
 
-    connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(closePressed()));
+    connect(ui->buttonClose, SIGNAL(clicked()), this, SLOT(closePressed()));
 }
 
 RuleDialog::~RuleDialog()

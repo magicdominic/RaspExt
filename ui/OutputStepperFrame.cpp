@@ -38,12 +38,12 @@ void OutputStepperFrame::detailsClicked()
 
 void OutputStepperFrame::runVelocityClicked()
 {
-    m_hw->runVelocity();
+    m_hw->runVelocity(true);
 }
 
 void OutputStepperFrame::softStopClicked()
 {
-    m_hw->softStop();
+    m_hw->softStop(true);
 }
 
 void OutputStepperFrame::onOutputChangedGUI()

@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>RASP</string>
+   <string>RASP - Raspberry Actuar &amp; Sensor Platform</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <property name="sizePolicy">

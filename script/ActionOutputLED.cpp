@@ -41,7 +41,7 @@ QDomElement ActionOutputLED::save(QDomElement* root, QDomDocument* document)
     QDomText valueText = document->createTextNode( QString::number( m_value ) );
     value.appendChild(valueText);
 
-    action.appendChild(subtype);
+    action.appendChild(value);
 
     return action;
 }
