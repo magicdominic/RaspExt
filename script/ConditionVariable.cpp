@@ -31,13 +31,13 @@ Condition* ConditionVariable::load(QDomElement* root)
         {
             QString trigger = elem.text().toLower();
             if( trigger.compare("equal") == 0)
-            {
                 condition->setTrigger(Equal);
-            }
             else if( trigger.compare("nolongerequal") == 0)
-            {
                 condition->setTrigger(NoLongerEqual);
-            }
+            else if( trigger.compare("greaterthan") == 0)
+                condition->setTrigger(GreaterThan);
+            else if( trigger.compare("lessthan") == 0)
+                condition->setTrigger(LessThan);
         }
 
         elem = elem.nextSiblingElement();
@@ -80,6 +80,12 @@ QDomElement ConditionVariable::save(QDomElement* root, QDomDocument* document)
     case NoLongerEqual:
         triggerValue.setNodeValue("NoLongerEqual");
         break;
+    case GreaterThan:
+        triggerValue.setNodeValue("GreaterThan");
+        break;
+    case LessThan:
+        triggerValue.setNodeValue("LessThan");
+        break;
     }
 
     trigger.appendChild(triggerValue);
@@ -121,10 +127,16 @@ void ConditionVariable::onVariableChanged(Variable *var)
 {
     pi_assert(m_var == var);
 
-    bool isFulfilled = var->getValue() == m_triggerValue;
+    bool isFulfilled = false;
 
-    if(m_trigger == NoLongerEqual)
-        isFulfilled = !isFulfilled;
+    if(m_trigger == Equal)
+        isFulfilled = var->getValue() == m_triggerValue;
+    else if(m_trigger == NoLongerEqual)
+        isFulfilled = var->getValue() != m_triggerValue;
+    else if(m_trigger == GreaterThan)
+        isFulfilled = var->getValue() > m_triggerValue;
+    else if(m_trigger == LessThan)
+        isFulfilled = var->getValue() < m_triggerValue;
 
     if(m_isFulfilled != isFulfilled)
     {
@@ -141,6 +153,10 @@ std::string ConditionVariable::getDescription() const
     str.append( m_varName );
     if(m_trigger == Equal)
         str.append(" is equal to ");
+    else if(m_trigger == GreaterThan)
+        str.append(" is greater than ");
+    else if(m_trigger == LessThan)
+        str.append(" is less than ");
     else // m_trigger == NoLongerEqual
         str.append(" is no longer equal to ");
     str.append( std::to_string(m_triggerValue) );

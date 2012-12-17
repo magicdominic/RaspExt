@@ -299,6 +299,8 @@ ConditionVariableWidget::ConditionVariableWidget(QWidget* parent, Script *script
     m_comboTrigger = new QComboBox(this);
     m_comboTrigger->addItem("equal to");
     m_comboTrigger->addItem("no longer equal to");
+    m_comboTrigger->addItem("greater than to");
+    m_comboTrigger->addItem("Less than to");
 
     m_labelTrigger = new QLabel("If value is ", this);
 

@@ -11,7 +11,8 @@ public:
     {
         Equal = 0,
         NoLongerEqual = 1,
-
+        GreaterThan = 2,
+        LessThan = 3,
         EINVALID
     };
 
