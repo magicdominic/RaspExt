@@ -1,5 +1,6 @@
 #include "script/ActionOutput.h"
 #include "script/ActionOutputRelay.h"
+#include "script/ActionOutputLED.h"
 #include "script/ActionOutputDCMotor.h"
 #include "script/ActionOutputStepper.h"
 #include "script/ActionOutputGPO.h"
@@ -19,6 +20,8 @@ Action* ActionOutput::load(QDomElement* root)
         {
             if(elem.text().toLower().compare("relay") == 0)
                 action = (ActionOutput*)ActionOutputRelay::load(root);
+            else if(elem.text().toLower().compare("led") == 0)
+                action = (ActionOutput*)ActionOutputLED::load(root);
             else if(elem.text().toLower().compare("dcmotor") == 0)
                 action = (ActionOutput*)ActionOutputDCMotor::load(root);
             else if(elem.text().toLower().compare("stepper") == 0)
