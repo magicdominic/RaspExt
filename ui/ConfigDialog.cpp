@@ -11,6 +11,9 @@
 #include "hw/HWInputButtonI2C.h"
 #include "hw/HWInputButtonBt.h"
 #include "hw/HWInputButtonBtGPIO.h"
+#include "hw/HWInputFader.h"
+#include "hw/HWInputFaderI2C.h"
+#include "hw/HWInputFaderBt.h"
 
 #include "ui/I2CScanDialog.h"
 #include "ui/BTScanDialog.h"
@@ -18,6 +21,7 @@
 #include "ui_ConfigBTDialog.h"
 #include "ui_ConfigDialog.h"
 #include "ui_ConfigInputDialog.h"
+#include "ui_ConfigOutputDialog.h"
 
 #include <QMessageBox>
 
@@ -57,6 +61,8 @@ ConfigDialog::ConfigDialog(QWidget *parent, std::string name, ConfigManager* con
     connect(ui->buttonAddInput, SIGNAL(clicked()), this, SLOT(addInput()));
     connect(ui->buttonEditInput, SIGNAL(clicked()), this, SLOT(editInput()));
     connect(ui->buttonDeleteInput, SIGNAL(clicked()), this, SLOT(deleteInput()));
+    connect(ui->buttonAddOutput, SIGNAL(clicked()), this, SLOT(addOutput()));
+    connect(ui->buttonEditOutput, SIGNAL(clicked()), this, SLOT(editOutput()));
     connect(ui->buttonDeleteOutput, SIGNAL(clicked()), this, SLOT(deleteOutput()));
     connect(ui->buttonAddBt, SIGNAL(clicked()), this, SLOT(addBt()));
     connect(ui->buttonEditBt, SIGNAL(clicked()), this, SLOT(editBt()));
@@ -180,6 +186,35 @@ void ConfigDialog::deleteInput()
         int row = indices.front().row();
 
         m_inputTableModel->removeRow(row);
+    }
+}
+
+void ConfigDialog::addOutput()
+{
+    ConfigOutputDialog dialog(this);
+
+    if( dialog.exec() == QDialog::Accepted)
+    {
+        m_outputTableModel->add( dialog.assemble() );
+    }
+}
+
+void ConfigDialog::editOutput()
+{
+    QModelIndexList indices = ui->tableOutputs->selectionModel()->selection().indexes();
+
+    if(indices.size() != 0)
+    {
+        int row = indices.front().row();
+
+        ConfigOutputDialog dialog(this);
+
+        dialog.edit( m_outputTableModel->get(row) );
+
+        if( dialog.exec() == QDialog::Accepted)
+        {
+            m_outputTableModel->modifyRow(row, dialog.assemble());
+        }
     }
 }
 
@@ -447,6 +482,40 @@ bool ConfigOutputTableModel::removeRow(int row, const QModelIndex &parent)
     return true;
 }
 
+HWOutput* ConfigOutputTableModel::get(int row) const
+{
+    return *std::next(m_config->m_listOutput.begin(), row);
+}
+
+void ConfigOutputTableModel::add(HWOutput *hw)
+{
+    if(hw != NULL)
+    {
+        beginInsertRows(QModelIndex(), this->rowCount(), this->rowCount());
+
+        m_config->m_listOutput.push_back(hw);
+
+        endInsertRows();
+    }
+    else
+    {
+        pi_warn("Received null argument");
+    }
+}
+
+void ConfigOutputTableModel::modifyRow(int row, HWOutput *hw)
+{
+    std::list<HWOutput*>::iterator it = std::next(m_config->m_listOutput.begin(), row);
+    HWOutput* old = *it;
+
+    if(hw != old)
+        delete old;
+
+    *it = hw;
+
+    emit dataChanged(this->index(row, 0), this->index(row, this->columnCount()));
+}
+
 
 ConfigBTThreadTableModel::ConfigBTThreadTableModel(QObject *parent, Config *config) : QAbstractTableModel(parent)
 {
@@ -682,6 +751,85 @@ void ConfigInputDialog::comboChanged(int index)
         m_baseWidget = new ConfigInputButtonWidget(this, (ConfigDialog*)this->parent());
         break;
     case HWInput::Fader:
+        m_baseWidget = new ConfigInputFaderWidget(this, (ConfigDialog*)this->parent());
+        break;
+    }
+
+    // add new baseWidget, this should never be NULL. If it is, somewhere something went wrong
+    if(m_baseWidget != NULL)
+    {
+        ui->gridLayout->addWidget(m_baseWidget, 2, 0, 1, 2);
+    }
+}
+
+
+ConfigOutputDialog::ConfigOutputDialog(ConfigDialog *parent) :
+    QDialog(parent),
+    ui(new Ui::ConfigOutputDialog)
+{
+    m_baseWidget = NULL;
+
+    ui->setupUi(this);
+
+    // connect all signals - slots
+    connect(ui->comboType, SIGNAL(currentIndexChanged(int)), this, SLOT(comboChanged(int)));
+    connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(close()));
+
+    // default values
+    this->comboChanged( ui->comboType->currentIndex() );
+}
+
+ConfigOutputDialog::~ConfigOutputDialog()
+{
+    if(m_baseWidget != NULL)
+        delete m_baseWidget;
+
+    delete ui;
+}
+
+void ConfigOutputDialog::edit(HWOutput *hw)
+{
+    ui->editName->setText( QString::fromStdString( hw->getName() ) );
+    ui->comboType->setCurrentIndex( hw->getType() );
+
+    if(m_baseWidget != NULL)
+    {
+        m_baseWidget->edit(hw);
+    }
+}
+
+HWOutput* ConfigOutputDialog::assemble() const
+{
+    HWOutput* hw = NULL;
+
+    if(m_baseWidget != NULL)
+        hw = m_baseWidget->assemble();
+
+    if(hw != NULL)
+    {
+        hw->setName( ui->editName->text().toStdString() );
+    }
+
+    return hw;
+}
+
+void ConfigOutputDialog::comboChanged(int index)
+{
+    // delete old baseWidget if it exists
+    if(m_baseWidget != NULL)
+    {
+        ui->gridLayout->removeWidget(m_baseWidget);
+        delete m_baseWidget;
+        m_baseWidget = NULL;
+    }
+
+    HWOutput::HWOutputType type = (HWOutput::HWOutputType)index;
+    switch( type )
+    {
+    case HWOutput::DCMotor:
+        break;
+    case HWOutput::Stepper:
         break;
     }
 
@@ -879,6 +1027,178 @@ HWInput* ConfigInputButtonWidget::assemble()
         ((HWInputButtonBtGPIO*)hw)->setPinGroup(2); // set to 2 as its the only one supported as of now
         ((HWInputButtonBtGPIO*)hw)->setPin( m_spinPort->value() );
         ((HWInputButtonBtGPIO*)hw)->setBTName( m_comboBtBoard->currentText().toStdString() );
+        break;
+    }
+
+    return hw;
+}
+
+ConfigInputFaderWidget::ConfigInputFaderWidget(QWidget *parent, ConfigDialog* configDialog) : IConfigInputWidget(parent)
+{
+    m_configDialog = configDialog;
+
+    QLabel* label = new QLabel("Select hardware", this);
+    m_comboType = new QComboBox(this);
+    m_comboType->addItem("Dummy");
+    m_comboType->addItem("I2C");
+    m_comboType->addItem("Bluetooth I2C");
+
+    m_labelBtBoard = new QLabel("Select bluetooth board", this);
+    m_comboBtBoard = new QComboBox(this);
+
+    // add all bluetooth boards to the combo box
+    const std::list<BTThread*>* listBT = m_configDialog->getListBTThread();
+    for(std::list<BTThread*>::const_iterator it = listBT->begin(); it != listBT->end(); it++)
+        m_comboBtBoard->addItem( QString::fromStdString( (*it)->getName() ) );
+
+    m_labelI2CAddr = new QLabel("Select I2C address", this);
+    m_spinI2CAddr = new QSpinBox(this);
+    m_spinI2CAddr->setMinimum(0);
+    m_spinI2CAddr->setMaximum(127);
+
+    m_labelChannel = new QLabel("Select channel", this);
+    m_spinChannel = new QSpinBox(this);
+    m_spinChannel->setMinimum(0);
+    m_spinChannel->setMaximum(7);
+
+    m_buttonI2CScan = new QPushButton("Scan I2C", this);
+
+
+    QGridLayout* layout = new QGridLayout(this);
+
+    // remove spacing around widget, it looks kind of odd otherwise
+    layout->setContentsMargins(0, 0, 0, 0);
+
+    // now add everything to the layout
+    layout->addWidget(label, 0, 0);
+    layout->addWidget(m_comboType, 0, 1);
+
+    layout->addWidget(m_labelBtBoard, 1, 0);
+    layout->addWidget(m_comboBtBoard, 1, 1);
+    layout->addWidget(m_labelI2CAddr, 2, 0);
+    layout->addWidget(m_spinI2CAddr, 2, 1);
+    layout->addWidget(m_labelChannel, 3, 0);
+    layout->addWidget(m_spinChannel, 3, 1);
+
+    layout->addWidget(m_buttonI2CScan, 4, 1);
+
+
+    this->setLayout(layout);
+
+    // now connect all signals - slots
+    connect(m_comboType, SIGNAL(currentIndexChanged(int)), this, SLOT(typeChanged(int)));
+    connect(m_buttonI2CScan, SIGNAL(clicked()), this, SLOT(i2cScan()));
+
+    // set default
+    this->typeChanged( m_comboType->currentIndex() );
+}
+
+void ConfigInputFaderWidget::typeChanged(int index)
+{
+    HWInput::HWType type = (HWInput::HWType)index;
+    switch(type)
+    {
+    case HWInput::Dummy:
+        m_labelBtBoard->hide();
+        m_comboBtBoard->hide();
+        m_labelI2CAddr->hide();
+        m_spinI2CAddr->hide();
+        m_labelChannel->hide();
+        m_spinChannel->hide();
+        m_buttonI2CScan->hide();
+        break;
+    case HWInput::I2C:
+        m_labelBtBoard->hide();
+        m_comboBtBoard->hide();
+        m_labelI2CAddr->show();
+        m_spinI2CAddr->show();
+        m_labelChannel->show();
+        m_spinChannel->show();
+        m_buttonI2CScan->show();
+        break;
+    case HWInput::BtI2C:
+        m_labelBtBoard->show();
+        m_comboBtBoard->show();
+        m_labelI2CAddr->show();
+        m_spinI2CAddr->show();
+        m_labelChannel->show();
+        m_spinChannel->show();
+        m_buttonI2CScan->show();
+        break;
+    }
+}
+
+void ConfigInputFaderWidget::i2cScan()
+{
+    int slaveAddress = -1;
+
+    HWInput::HWType type = (HWInput::HWType)m_comboType->currentIndex();
+    switch(type)
+    {
+    case HWInput::I2C:
+        slaveAddress = m_configDialog->i2cScan();
+        break;
+    case HWInput::BtI2C:
+        slaveAddress = m_configDialog->btI2CScan( m_comboBtBoard->currentText().toStdString() );
+        break;
+    }
+
+    if(slaveAddress != -1)
+        m_spinI2CAddr->setValue( slaveAddress );
+}
+
+void ConfigInputFaderWidget::edit(HWInput *hw)
+{
+    m_comboType->setCurrentIndex( hw->getHWType() );
+
+    const char* btName = NULL;
+    switch(hw->getHWType())
+    {
+    case HWInput::I2C:
+        m_spinI2CAddr->setValue( ((HWInputFaderI2C*)hw)->getSlaveAddress() );
+        m_spinChannel->setValue( ((HWInputFaderI2C*)hw)->getChannel() );
+        break;
+    case HWInput::BtI2C:
+        m_spinI2CAddr->setValue( ((HWInputFaderBt*)hw)->getSlaveAddress() );
+        m_spinChannel->setValue( ((HWInputFaderBt*)hw)->getChannel() );
+        btName = ((HWInputFaderBt*)hw)->getBTName().c_str();
+        break;
+    }
+
+
+    if(btName != NULL)
+    {
+        for(unsigned int i = 0; i < m_comboBtBoard->count();i ++)
+        {
+            if(m_comboBtBoard->itemText(i).compare( btName ) == 0)
+            {
+                m_comboBtBoard->setCurrentIndex(i);
+                break;
+            }
+        }
+    }
+}
+
+HWInput* ConfigInputFaderWidget::assemble()
+{
+    HWInputFader* hw = NULL;
+
+    HWInput::HWType type = (HWInput::HWType)m_comboType->currentIndex();
+    switch(type)
+    {
+    case HWInput::Dummy:
+        hw = new HWInputFader();
+        break;
+    case HWInput::I2C:
+        hw = new HWInputFaderI2C();
+        ((HWInputFaderI2C*)hw)->setChannel( m_spinChannel->value() );
+        ((HWInputFaderI2C*)hw)->setSlaveAddress( m_spinI2CAddr->value() );
+        break;
+    case HWInput::BtI2C:
+        hw = new HWInputFaderBt();
+        ((HWInputFaderBt*)hw)->setChannel( m_spinChannel->value() );
+        ((HWInputFaderBt*)hw)->setSlaveAddress( m_spinI2CAddr->value() );
+        ((HWInputFaderBt*)hw)->setBTName( m_comboBtBoard->currentText().toStdString() );
         break;
     }
 

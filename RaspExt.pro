@@ -208,7 +208,8 @@ FORMS += ui/MainWindow.ui \
     ui/ConfigBTDialog.ui \
     ui/ConfigInputDialog.ui \
     ui/I2CScanDialog.ui \
-    ui/BTScanDialog.ui
+    ui/BTScanDialog.ui \
+    ui/ConfigOutputDialog.ui
 
 OTHER_FILES += \
     TODO.txt

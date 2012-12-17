@@ -21,15 +21,15 @@ HWInput* HWInputFaderBt::load(QDomElement *root)
     {
         if( elem.tagName().toLower().compare("slaveaddress") == 0 )
         {
-            hw->m_slaveAddress = elem.text().toInt();
+            hw->setSlaveAddress( elem.text().toInt() );
         }
         else if( elem.tagName().toLower().compare("channel") == 0 )
         {
-            hw->m_channel = elem.text().toInt();
+            hw->setChannel( elem.text().toInt() );
         }
         else if( elem.tagName().toLower().compare("btboard") == 0 )
         {
-            hw->m_btName = elem.text().toStdString();
+            hw->setBTName( elem.text().toStdString() );
         }
 
         elem = elem.nextSiblingElement();

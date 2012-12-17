@@ -21,11 +21,11 @@ HWInput* HWInputFaderI2C::load(QDomElement *root)
     {
         if( elem.tagName().toLower().compare("slaveaddress") == 0 )
         {
-            hw->m_slaveAddress = elem.text().toInt();
+            hw->setSlaveAddress( elem.text().toInt() );
         }
         else if( elem.tagName().toLower().compare("channel") == 0 )
         {
-            hw->m_channel = elem.text().toInt();
+            hw->setChannel( elem.text().toInt() );
         }
         elem = elem.nextSiblingElement();
     }

@@ -23,6 +23,13 @@ public:
         EINVALID
     };
 
+    enum HWType
+    {
+        Dummy = 0,
+        I2C = 1,
+        BtI2C = 2,
+    };
+
     static std::string HWOutputTypeToString(HWOutputType type);
     static HWOutputType StringToHWOutputType(std::string str);
 
@@ -36,6 +43,7 @@ public:
     virtual QDomElement save(QDomElement* root, QDomDocument* document);
 
     HWOutputType getType() const { return m_type;}
+    virtual HWType getHWType() const { return Dummy;}
     void setName(std::string str);
     std::string getName() const;
     void setOverride(bool b);

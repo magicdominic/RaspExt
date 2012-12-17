@@ -13,6 +13,7 @@ namespace Ui {
     class ConfigDialog;
     class ConfigBTDialog;
     class ConfigInputDialog;
+    class ConfigOutputDialog;
 }
 
 class ConfigManager;
@@ -35,6 +36,8 @@ private slots:
     void editInput();
     void deleteInput();
 
+    void addOutput();
+    void editOutput();
     void deleteOutput();
 
     void addBt();
@@ -72,7 +75,7 @@ public:
     bool removeRow(int row, const QModelIndex &parent = QModelIndex());
     HWInput* get(int row) const;
     void add(HWInput* btThread);
-    void modifyRow(int row, HWInput *btThread);
+    void modifyRow(int row, HWInput *hw);
 
 private:
     Config* m_config;
@@ -92,6 +95,8 @@ public:
 
     bool removeRow(int row, const QModelIndex &parent = QModelIndex());
     HWOutput* get(int row) const;
+    void add(HWOutput* btThread);
+    void modifyRow(int row, HWOutput *hw);
 
 private:
     Config* m_config;
@@ -147,7 +152,7 @@ public:
     ConfigInputDialog(ConfigDialog *parent);
     ~ConfigInputDialog();
 
-    void edit(HWInput* btThread);
+    void edit(HWInput* hw);
 
     HWInput* assemble() const;
 
@@ -160,6 +165,27 @@ private:
     IConfigInputWidget* m_baseWidget;
 };
 
+class IConfigOutputWidget;
+
+class ConfigOutputDialog : public QDialog
+{
+    Q_OBJECT
+public:
+    ConfigOutputDialog(ConfigDialog *parent);
+    ~ConfigOutputDialog();
+
+    void edit(HWOutput* hw);
+
+    HWOutput* assemble() const;
+
+private slots:
+    void comboChanged(int index);
+
+private:
+    Ui::ConfigOutputDialog* ui;
+
+    IConfigOutputWidget* m_baseWidget;
+};
 
 
 
@@ -200,6 +226,46 @@ private:
     QSpinBox* m_spinPort;
 
     QPushButton* m_buttonI2CScan;
+};
+
+
+class ConfigInputFaderWidget : public IConfigInputWidget
+{
+    Q_OBJECT
+public:
+    ConfigInputFaderWidget(QWidget* parent, ConfigDialog* configDialog);
+
+    HWInput* assemble();
+    void edit(HWInput* hw);
+
+private slots:
+    void typeChanged(int index);
+    void i2cScan();
+
+private:
+    ConfigDialog* m_configDialog;
+
+    QComboBox* m_comboType;
+
+    QLabel* m_labelBtBoard;
+    QComboBox* m_comboBtBoard;
+
+    QLabel* m_labelI2CAddr;
+    QSpinBox* m_spinI2CAddr;
+
+    QLabel* m_labelChannel;
+    QSpinBox* m_spinChannel;
+
+    QPushButton* m_buttonI2CScan;
+};
+
+
+class IConfigOutputWidget : public QWidget
+{
+public:
+    IConfigOutputWidget(QWidget* parent) : QWidget(parent) {};
+    virtual HWOutput* assemble() = 0;
+    virtual void edit(HWOutput* hw) = 0;
 };
 
 #endif // CONFIGDIALOG_H
