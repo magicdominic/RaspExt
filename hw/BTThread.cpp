@@ -565,7 +565,8 @@ void BTThread::packetHandler(char* buffer, unsigned int length)
             if(err)
                 return;
 
-            printf("State of GPIOs is: %x\n", buffer[4]);
+            // TODO: remove
+            // printf("State of GPIOs is: %x\n", buffer[4]);
 
             // now lets see if anything has changed, and if yes, inform the respective object
             for(std::list<GPInput>::iterator it = m_listGPInput.begin(); it != m_listGPInput.end(); it++)

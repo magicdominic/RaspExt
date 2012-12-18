@@ -322,4 +322,96 @@ private:
     QPushButton* m_buttonI2CScan;
 };
 
+class ConfigOutputLEDWidget : public IConfigOutputWidget
+{
+    Q_OBJECT
+public:
+    ConfigOutputLEDWidget(QWidget* parent, ConfigDialog* configDialog);
+
+    HWOutput* assemble();
+    void edit(HWOutput* hw);
+
+private slots:
+    void typeChanged(int index);
+    void i2cScan();
+
+private:
+    ConfigDialog* m_configDialog;
+
+    QComboBox* m_comboType;
+
+    QLabel* m_labelBtBoard;
+    QComboBox* m_comboBtBoard;
+
+    QLabel* m_labelI2CAddr;
+    QSpinBox* m_spinI2CAddr;
+
+    QLabel* m_labelChannel;
+    QSpinBox* m_spinChannel;
+
+    QPushButton* m_buttonI2CScan;
+};
+
+
+class ConfigOutputRelayWidget : public IConfigOutputWidget
+{
+    Q_OBJECT
+public:
+    ConfigOutputRelayWidget(QWidget* parent, ConfigDialog* configDialog);
+
+    HWOutput* assemble();
+    void edit(HWOutput* hw);
+
+private slots:
+    void typeChanged(int index);
+    void i2cScan();
+
+private:
+    ConfigDialog* m_configDialog;
+
+    QComboBox* m_comboType;
+
+    QLabel* m_labelBtBoard;
+    QComboBox* m_comboBtBoard;
+
+    QLabel* m_labelI2CAddr;
+    QSpinBox* m_spinI2CAddr;
+
+    QLabel* m_labelChannel;
+    QSpinBox* m_spinChannel;
+
+    QPushButton* m_buttonI2CScan;
+};
+
+
+class ConfigOutputGPOWidget : public IConfigOutputWidget
+{
+    Q_OBJECT
+public:
+    ConfigOutputGPOWidget(QWidget* parent, ConfigDialog* configDialog);
+
+    HWOutput* assemble();
+    void edit(HWOutput* hw);
+
+private slots:
+    void typeChanged(int index);
+    void i2cScan();
+
+private:
+    ConfigDialog* m_configDialog;
+
+    QComboBox* m_comboType;
+
+    QLabel* m_labelBtBoard;
+    QComboBox* m_comboBtBoard;
+
+    QLabel* m_labelI2CAddr;
+    QSpinBox* m_spinI2CAddr;
+
+    QLabel* m_labelPort;
+    QSpinBox* m_spinPort;
+
+    QPushButton* m_buttonI2CScan;
+};
+
 #endif // CONFIGDIALOG_H

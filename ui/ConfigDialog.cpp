@@ -21,6 +21,15 @@
 #include "hw/HWOutputStepper.h"
 #include "hw/HWOutputStepperI2C.h"
 #include "hw/HWOutputStepperBt.h"
+#include "hw/HWOutputLED.h"
+#include "hw/HWOutputLEDI2C.h"
+#include "hw/HWOutputLEDBt.h"
+#include "hw/HWOutputRelay.h"
+#include "hw/HWOutputRelayI2C.h"
+#include "hw/HWOutputRelayBt.h"
+#include "hw/HWOutputGPO.h"
+#include "hw/HWOutputGPOI2C.h"
+#include "hw/HWOutputGPOBt.h"
 
 #include "ui/I2CScanDialog.h"
 #include "ui/BTScanDialog.h"
@@ -840,6 +849,15 @@ void ConfigOutputDialog::comboChanged(int index)
     case HWOutput::Stepper:
         m_baseWidget = new ConfigOutputStepperWidget(this, (ConfigDialog*)this->parent());
         break;
+    case HWOutput::LED:
+        m_baseWidget = new ConfigOutputLEDWidget(this, (ConfigDialog*)this->parent());
+        break;
+    case HWOutput::Relay:
+        m_baseWidget = new ConfigOutputRelayWidget(this, (ConfigDialog*)this->parent());
+        break;
+    case HWOutput::GPO:
+        m_baseWidget = new ConfigOutputGPOWidget(this, (ConfigDialog*)this->parent());
+        break;
     }
 
     // add new baseWidget, this should never be NULL. If it is, somewhere something went wrong
@@ -944,8 +962,8 @@ void ConfigInputButtonWidget::typeChanged(int index)
         m_buttonI2CScan->show();
         break;
     case HWInput::Bt:
-        m_labelBtBoard->hide();
-        m_comboBtBoard->hide();
+        m_labelBtBoard->show();
+        m_comboBtBoard->show();
         m_labelI2CAddr->hide();
         m_spinI2CAddr->hide();
         m_labelPort->show();
@@ -1522,6 +1540,528 @@ HWOutput* ConfigOutputStepperWidget::assemble()
         hw = new HWOutputStepperBt();
         ((HWOutputStepperBt*)hw)->setSlaveAddress( m_spinI2CAddr->value() );
         ((HWOutputStepperBt*)hw)->setBTName( m_comboBtBoard->currentText().toStdString() );
+        break;
+    }
+
+    return hw;
+}
+
+
+ConfigOutputLEDWidget::ConfigOutputLEDWidget(QWidget *parent, ConfigDialog* configDialog) : IConfigOutputWidget(parent)
+{
+    m_configDialog = configDialog;
+
+    QLabel* label = new QLabel("Select hardware", this);
+    m_comboType = new QComboBox(this);
+    m_comboType->addItem("Dummy");
+    m_comboType->addItem("I2C");
+    m_comboType->addItem("Bluetooth I2C");
+
+    m_labelBtBoard = new QLabel("Select bluetooth board", this);
+    m_comboBtBoard = new QComboBox(this);
+
+    // add all bluetooth boards to the combo box
+    const std::list<BTThread*>* listBT = m_configDialog->getListBTThread();
+    for(std::list<BTThread*>::const_iterator it = listBT->begin(); it != listBT->end(); it++)
+        m_comboBtBoard->addItem( QString::fromStdString( (*it)->getName() ) );
+
+    m_labelI2CAddr = new QLabel("Select I2C address", this);
+    m_spinI2CAddr = new QSpinBox(this);
+    m_spinI2CAddr->setMinimum(0);
+    m_spinI2CAddr->setMaximum(127);
+
+    m_labelChannel = new QLabel("Select channel", this);
+    m_spinChannel = new QSpinBox(this);
+    m_spinChannel->setMinimum(0);
+    m_spinChannel->setMaximum(15);
+
+    m_buttonI2CScan = new QPushButton("Scan I2C", this);
+
+
+    QGridLayout* layout = new QGridLayout(this);
+
+    // remove spacing around widget, it looks kind of odd otherwise
+    layout->setContentsMargins(0, 0, 0, 0);
+
+    // now add everything to the layout
+    layout->addWidget(label, 0, 0);
+    layout->addWidget(m_comboType, 0, 1);
+
+    layout->addWidget(m_labelBtBoard, 1, 0);
+    layout->addWidget(m_comboBtBoard, 1, 1);
+    layout->addWidget(m_labelI2CAddr, 2, 0);
+    layout->addWidget(m_spinI2CAddr, 2, 1);
+
+    layout->addWidget(m_labelChannel, 3, 0);
+    layout->addWidget(m_spinChannel, 3, 1);
+
+    layout->addWidget(m_buttonI2CScan, 4, 1);
+
+
+    this->setLayout(layout);
+
+    // now connect all signals - slots
+    connect(m_comboType, SIGNAL(currentIndexChanged(int)), this, SLOT(typeChanged(int)));
+    connect(m_buttonI2CScan, SIGNAL(clicked()), this, SLOT(i2cScan()));
+
+    // set default
+    this->typeChanged( m_comboType->currentIndex() );
+}
+
+void ConfigOutputLEDWidget::typeChanged(int index)
+{
+    HWOutput::HWType type = (HWOutput::HWType)index;
+    switch(type)
+    {
+    case HWOutput::Dummy:
+        m_labelBtBoard->hide();
+        m_comboBtBoard->hide();
+        m_labelI2CAddr->hide();
+        m_spinI2CAddr->hide();
+        m_labelChannel->hide();
+        m_spinChannel->hide();
+        m_buttonI2CScan->hide();
+        break;
+    case HWOutput::I2C:
+        m_labelBtBoard->hide();
+        m_comboBtBoard->hide();
+        m_labelI2CAddr->show();
+        m_spinI2CAddr->show();
+        m_labelChannel->show();
+        m_spinChannel->show();
+        m_buttonI2CScan->show();
+        break;
+    case HWOutput::BtI2C:
+        m_labelBtBoard->show();
+        m_comboBtBoard->show();
+        m_labelI2CAddr->show();
+        m_spinI2CAddr->show();
+        m_labelChannel->show();
+        m_spinChannel->show();
+        m_buttonI2CScan->show();
+        break;
+    }
+}
+
+void ConfigOutputLEDWidget::i2cScan()
+{
+    int slaveAddress = -1;
+
+    HWOutput::HWType type = (HWOutput::HWType)m_comboType->currentIndex();
+    switch(type)
+    {
+    case HWOutput::I2C:
+        slaveAddress = m_configDialog->i2cScan();
+        break;
+    case HWOutput::BtI2C:
+        slaveAddress = m_configDialog->btI2CScan( m_comboBtBoard->currentText().toStdString() );
+        break;
+    }
+
+    if(slaveAddress != -1)
+        m_spinI2CAddr->setValue( slaveAddress );
+}
+
+void ConfigOutputLEDWidget::edit(HWOutput *hw)
+{
+    m_comboType->setCurrentIndex( hw->getHWType() );
+
+    const char* btName = NULL;
+    switch(hw->getHWType())
+    {
+    case HWOutput::I2C:
+        m_spinI2CAddr->setValue( ((HWOutputLEDI2C*)hw)->getSlaveAddress() );
+        m_spinChannel->setValue( ((HWOutputLEDI2C*)hw)->getChannel() );
+        break;
+    case HWOutput::BtI2C:
+        m_spinI2CAddr->setValue( ((HWOutputLEDBt*)hw)->getSlaveAddress() );
+        m_spinChannel->setValue( ((HWOutputLEDBt*)hw)->getChannel() );
+        btName = ((HWOutputLEDBt*)hw)->getBTName().c_str();
+        break;
+    }
+
+
+    if(btName != NULL)
+    {
+        for(unsigned int i = 0; i < m_comboBtBoard->count();i ++)
+        {
+            if(m_comboBtBoard->itemText(i).compare( btName ) == 0)
+            {
+                m_comboBtBoard->setCurrentIndex(i);
+                break;
+            }
+        }
+    }
+}
+
+HWOutput* ConfigOutputLEDWidget::assemble()
+{
+    HWOutputLED* hw = NULL;
+
+    HWOutput::HWType type = (HWOutput::HWType)m_comboType->currentIndex();
+    switch(type)
+    {
+    case HWOutput::Dummy:
+        hw = new HWOutputLED();
+        break;
+    case HWOutput::I2C:
+        hw = new HWOutputLEDI2C();
+        ((HWOutputLEDI2C*)hw)->setSlaveAddress( m_spinI2CAddr->value() );
+        ((HWOutputLEDI2C*)hw)->setChannel( m_spinChannel->value() );
+        break;
+    case HWOutput::BtI2C:
+        hw = new HWOutputLEDBt();
+        ((HWOutputLEDBt*)hw)->setSlaveAddress( m_spinI2CAddr->value() );
+        ((HWOutputLEDBt*)hw)->setChannel( m_spinChannel->value() );
+        ((HWOutputLEDBt*)hw)->setBTName( m_comboBtBoard->currentText().toStdString() );
+        break;
+    }
+
+    return hw;
+}
+
+
+ConfigOutputRelayWidget::ConfigOutputRelayWidget(QWidget *parent, ConfigDialog* configDialog) : IConfigOutputWidget(parent)
+{
+    m_configDialog = configDialog;
+
+    QLabel* label = new QLabel("Select hardware", this);
+    m_comboType = new QComboBox(this);
+    m_comboType->addItem("Dummy");
+    m_comboType->addItem("I2C");
+    m_comboType->addItem("Bluetooth I2C");
+
+    m_labelBtBoard = new QLabel("Select bluetooth board", this);
+    m_comboBtBoard = new QComboBox(this);
+
+    // add all bluetooth boards to the combo box
+    const std::list<BTThread*>* listBT = m_configDialog->getListBTThread();
+    for(std::list<BTThread*>::const_iterator it = listBT->begin(); it != listBT->end(); it++)
+        m_comboBtBoard->addItem( QString::fromStdString( (*it)->getName() ) );
+
+    m_labelI2CAddr = new QLabel("Select I2C address", this);
+    m_spinI2CAddr = new QSpinBox(this);
+    m_spinI2CAddr->setMinimum(0);
+    m_spinI2CAddr->setMaximum(127);
+
+    m_labelChannel = new QLabel("Select channel", this);
+    m_spinChannel = new QSpinBox(this);
+    m_spinChannel->setMinimum(0);
+    m_spinChannel->setMaximum(15);
+
+    m_buttonI2CScan = new QPushButton("Scan I2C", this);
+
+
+    QGridLayout* layout = new QGridLayout(this);
+
+    // remove spacing around widget, it looks kind of odd otherwise
+    layout->setContentsMargins(0, 0, 0, 0);
+
+    // now add everything to the layout
+    layout->addWidget(label, 0, 0);
+    layout->addWidget(m_comboType, 0, 1);
+
+    layout->addWidget(m_labelBtBoard, 1, 0);
+    layout->addWidget(m_comboBtBoard, 1, 1);
+    layout->addWidget(m_labelI2CAddr, 2, 0);
+    layout->addWidget(m_spinI2CAddr, 2, 1);
+
+    layout->addWidget(m_labelChannel, 3, 0);
+    layout->addWidget(m_spinChannel, 3, 1);
+
+    layout->addWidget(m_buttonI2CScan, 4, 1);
+
+
+    this->setLayout(layout);
+
+    // now connect all signals - slots
+    connect(m_comboType, SIGNAL(currentIndexChanged(int)), this, SLOT(typeChanged(int)));
+    connect(m_buttonI2CScan, SIGNAL(clicked()), this, SLOT(i2cScan()));
+
+    // set default
+    this->typeChanged( m_comboType->currentIndex() );
+}
+
+void ConfigOutputRelayWidget::typeChanged(int index)
+{
+    HWOutput::HWType type = (HWOutput::HWType)index;
+    switch(type)
+    {
+    case HWOutput::Dummy:
+        m_labelBtBoard->hide();
+        m_comboBtBoard->hide();
+        m_labelI2CAddr->hide();
+        m_spinI2CAddr->hide();
+        m_labelChannel->hide();
+        m_spinChannel->hide();
+        m_buttonI2CScan->hide();
+        break;
+    case HWOutput::I2C:
+        m_labelBtBoard->hide();
+        m_comboBtBoard->hide();
+        m_labelI2CAddr->show();
+        m_spinI2CAddr->show();
+        m_labelChannel->show();
+        m_spinChannel->show();
+        m_buttonI2CScan->show();
+        break;
+    case HWOutput::BtI2C:
+        m_labelBtBoard->show();
+        m_comboBtBoard->show();
+        m_labelI2CAddr->show();
+        m_spinI2CAddr->show();
+        m_labelChannel->show();
+        m_spinChannel->show();
+        m_buttonI2CScan->show();
+        break;
+    }
+}
+
+void ConfigOutputRelayWidget::i2cScan()
+{
+    int slaveAddress = -1;
+
+    HWOutput::HWType type = (HWOutput::HWType)m_comboType->currentIndex();
+    switch(type)
+    {
+    case HWOutput::I2C:
+        slaveAddress = m_configDialog->i2cScan();
+        break;
+    case HWOutput::BtI2C:
+        slaveAddress = m_configDialog->btI2CScan( m_comboBtBoard->currentText().toStdString() );
+        break;
+    }
+
+    if(slaveAddress != -1)
+        m_spinI2CAddr->setValue( slaveAddress );
+}
+
+void ConfigOutputRelayWidget::edit(HWOutput *hw)
+{
+    m_comboType->setCurrentIndex( hw->getHWType() );
+
+    const char* btName = NULL;
+    switch(hw->getHWType())
+    {
+    case HWOutput::I2C:
+        m_spinI2CAddr->setValue( ((HWOutputRelayI2C*)hw)->getSlaveAddress() );
+        m_spinChannel->setValue( ((HWOutputRelayI2C*)hw)->getChannel() );
+        break;
+    case HWOutput::BtI2C:
+        m_spinI2CAddr->setValue( ((HWOutputRelayBt*)hw)->getSlaveAddress() );
+        m_spinChannel->setValue( ((HWOutputRelayBt*)hw)->getChannel() );
+        btName = ((HWOutputRelayBt*)hw)->getBTName().c_str();
+        break;
+    }
+
+
+    if(btName != NULL)
+    {
+        for(unsigned int i = 0; i < m_comboBtBoard->count();i ++)
+        {
+            if(m_comboBtBoard->itemText(i).compare( btName ) == 0)
+            {
+                m_comboBtBoard->setCurrentIndex(i);
+                break;
+            }
+        }
+    }
+}
+
+HWOutput* ConfigOutputRelayWidget::assemble()
+{
+    HWOutputRelay* hw = NULL;
+
+    HWOutput::HWType type = (HWOutput::HWType)m_comboType->currentIndex();
+    switch(type)
+    {
+    case HWOutput::Dummy:
+        hw = new HWOutputRelay();
+        break;
+    case HWOutput::I2C:
+        hw = new HWOutputRelayI2C();
+        ((HWOutputRelayI2C*)hw)->setSlaveAddress( m_spinI2CAddr->value() );
+        ((HWOutputRelayI2C*)hw)->setChannel( m_spinChannel->value() );
+        break;
+    case HWOutput::BtI2C:
+        hw = new HWOutputRelayBt();
+        ((HWOutputRelayBt*)hw)->setSlaveAddress( m_spinI2CAddr->value() );
+        ((HWOutputRelayBt*)hw)->setChannel( m_spinChannel->value() );
+        ((HWOutputRelayBt*)hw)->setBTName( m_comboBtBoard->currentText().toStdString() );
+        break;
+    }
+
+    return hw;
+}
+
+
+ConfigOutputGPOWidget::ConfigOutputGPOWidget(QWidget *parent, ConfigDialog* configDialog) : IConfigOutputWidget(parent)
+{
+    m_configDialog = configDialog;
+
+    QLabel* label = new QLabel("Select hardware", this);
+    m_comboType = new QComboBox(this);
+    m_comboType->addItem("Dummy");
+    m_comboType->addItem("I2C");
+    m_comboType->addItem("Bluetooth I2C");
+
+    m_labelBtBoard = new QLabel("Select bluetooth board", this);
+    m_comboBtBoard = new QComboBox(this);
+
+    // add all bluetooth boards to the combo box
+    const std::list<BTThread*>* listBT = m_configDialog->getListBTThread();
+    for(std::list<BTThread*>::const_iterator it = listBT->begin(); it != listBT->end(); it++)
+        m_comboBtBoard->addItem( QString::fromStdString( (*it)->getName() ) );
+
+    m_labelI2CAddr = new QLabel("Select I2C address", this);
+    m_spinI2CAddr = new QSpinBox(this);
+    m_spinI2CAddr->setMinimum(0);
+    m_spinI2CAddr->setMaximum(127);
+
+    m_labelPort = new QLabel("Select channel", this);
+    m_spinPort = new QSpinBox(this);
+    m_spinPort->setMinimum(0);
+    m_spinPort->setMaximum(15);
+
+    m_buttonI2CScan = new QPushButton("Scan I2C", this);
+
+
+    QGridLayout* layout = new QGridLayout(this);
+
+    // remove spacing around widget, it looks kind of odd otherwise
+    layout->setContentsMargins(0, 0, 0, 0);
+
+    // now add everything to the layout
+    layout->addWidget(label, 0, 0);
+    layout->addWidget(m_comboType, 0, 1);
+
+    layout->addWidget(m_labelBtBoard, 1, 0);
+    layout->addWidget(m_comboBtBoard, 1, 1);
+    layout->addWidget(m_labelI2CAddr, 2, 0);
+    layout->addWidget(m_spinI2CAddr, 2, 1);
+
+    layout->addWidget(m_labelPort, 3, 0);
+    layout->addWidget(m_spinPort, 3, 1);
+
+    layout->addWidget(m_buttonI2CScan, 4, 1);
+
+
+    this->setLayout(layout);
+
+    // now connect all signals - slots
+    connect(m_comboType, SIGNAL(currentIndexChanged(int)), this, SLOT(typeChanged(int)));
+    connect(m_buttonI2CScan, SIGNAL(clicked()), this, SLOT(i2cScan()));
+
+    // set default
+    this->typeChanged( m_comboType->currentIndex() );
+}
+
+void ConfigOutputGPOWidget::typeChanged(int index)
+{
+    HWOutput::HWType type = (HWOutput::HWType)index;
+    switch(type)
+    {
+    case HWOutput::Dummy:
+        m_labelBtBoard->hide();
+        m_comboBtBoard->hide();
+        m_labelI2CAddr->hide();
+        m_spinI2CAddr->hide();
+        m_labelPort->hide();
+        m_spinPort->hide();
+        m_buttonI2CScan->hide();
+        break;
+    case HWOutput::I2C:
+        m_labelBtBoard->hide();
+        m_comboBtBoard->hide();
+        m_labelI2CAddr->show();
+        m_spinI2CAddr->show();
+        m_labelPort->show();
+        m_spinPort->show();
+        m_buttonI2CScan->show();
+        break;
+    case HWOutput::BtI2C:
+        m_labelBtBoard->show();
+        m_comboBtBoard->show();
+        m_labelI2CAddr->show();
+        m_spinI2CAddr->show();
+        m_labelPort->show();
+        m_spinPort->show();
+        m_buttonI2CScan->show();
+        break;
+    }
+}
+
+void ConfigOutputGPOWidget::i2cScan()
+{
+    int slaveAddress = -1;
+
+    HWOutput::HWType type = (HWOutput::HWType)m_comboType->currentIndex();
+    switch(type)
+    {
+    case HWOutput::I2C:
+        slaveAddress = m_configDialog->i2cScan();
+        break;
+    case HWOutput::BtI2C:
+        slaveAddress = m_configDialog->btI2CScan( m_comboBtBoard->currentText().toStdString() );
+        break;
+    }
+
+    if(slaveAddress != -1)
+        m_spinI2CAddr->setValue( slaveAddress );
+}
+
+void ConfigOutputGPOWidget::edit(HWOutput *hw)
+{
+    m_comboType->setCurrentIndex( hw->getHWType() );
+
+    const char* btName = NULL;
+    switch(hw->getHWType())
+    {
+    case HWOutput::I2C:
+        m_spinI2CAddr->setValue( ((HWOutputGPOI2C*)hw)->getSlaveAddress() );
+        m_spinPort->setValue( ((HWOutputGPOI2C*)hw)->getPort() );
+        break;
+    case HWOutput::BtI2C:
+        m_spinI2CAddr->setValue( ((HWOutputGPOBt*)hw)->getSlaveAddress() );
+        m_spinPort->setValue( ((HWOutputGPOBt*)hw)->getPort() );
+        btName = ((HWOutputGPOBt*)hw)->getBTName().c_str();
+        break;
+    }
+
+
+    if(btName != NULL)
+    {
+        for(unsigned int i = 0; i < m_comboBtBoard->count();i ++)
+        {
+            if(m_comboBtBoard->itemText(i).compare( btName ) == 0)
+            {
+                m_comboBtBoard->setCurrentIndex(i);
+                break;
+            }
+        }
+    }
+}
+
+HWOutput* ConfigOutputGPOWidget::assemble()
+{
+    HWOutputGPO* hw = NULL;
+
+    HWOutput::HWType type = (HWOutput::HWType)m_comboType->currentIndex();
+    switch(type)
+    {
+    case HWOutput::Dummy:
+        hw = new HWOutputGPO();
+        break;
+    case HWOutput::I2C:
+        hw = new HWOutputGPOI2C();
+        ((HWOutputGPOI2C*)hw)->setSlaveAddress( m_spinI2CAddr->value() );
+        ((HWOutputGPOI2C*)hw)->setPort( m_spinPort->value() );
+        break;
+    case HWOutput::BtI2C:
+        hw = new HWOutputGPOBt();
+        ((HWOutputGPOBt*)hw)->setSlaveAddress( m_spinI2CAddr->value() );
+        ((HWOutputGPOBt*)hw)->setPort( m_spinPort->value() );
+        ((HWOutputGPOBt*)hw)->setBTName( m_comboBtBoard->currentText().toStdString() );
         break;
     }
 

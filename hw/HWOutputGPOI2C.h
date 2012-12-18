@@ -14,6 +14,8 @@ class HWOutputGPOI2C : public HWOutputGPO
 public:
     HWOutputGPOI2C();
 
+    HWType getHWType() const { return I2C;}
+
     virtual void init(ConfigManager* config);
     virtual void deinit(ConfigManager* config);
 
@@ -21,6 +23,10 @@ public:
     virtual QDomElement save(QDomElement* root, QDomDocument* document);
 
     unsigned int getPort() const { return m_port;}
+    void setPort(unsigned int port) { m_port = port;}
+
+    int getSlaveAddress() const { return m_slaveAddress;}
+    void setSlaveAddress(int slaveAddress) { m_slaveAddress = slaveAddress;}
 private:
     int m_slaveAddress;
     unsigned int m_port;
