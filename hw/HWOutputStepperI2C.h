@@ -8,6 +8,8 @@
 class HWOutputStepperI2C : public HWOutputStepper, public I2CPolling
 {
 public:
+    HWType getHWType() const { return I2C;}
+
     void init(ConfigManager* config);
     void deinit(ConfigManager* config);
 
@@ -22,6 +24,9 @@ public:
     void runVelocity(bool override);
     void setParam(Param param, bool override);
     void refreshFullStatus();
+
+    int getSlaveAddress() const { return m_slaveAddress;}
+    void setSlaveAddress(int slaveAddress) { m_slaveAddress = slaveAddress;}
 private:
     void poll(I2CThread* i2cThread);
 

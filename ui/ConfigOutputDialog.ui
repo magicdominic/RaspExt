@@ -57,12 +57,12 @@
       <widget class="QComboBox" name="comboType">
        <item>
         <property name="text">
-         <string>DC motor</string>
+         <string>Relay</string>
         </property>
        </item>
        <item>
         <property name="text">
-         <string>Stepper</string>
+         <string>DC motor</string>
         </property>
        </item>
        <item>
@@ -72,7 +72,7 @@
        </item>
        <item>
         <property name="text">
-         <string>Relay</string>
+         <string>Stepper</string>
         </property>
        </item>
        <item>

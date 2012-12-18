@@ -8,6 +8,8 @@
 class HWOutputStepperBt : public HWOutputStepper, public BTI2CPolling
 {
 public:
+    HWType getHWType() const { return BtI2C;}
+
     void init(ConfigManager* config);
     void deinit(ConfigManager* config);
 
@@ -22,6 +24,12 @@ public:
     void runVelocity(bool override);
     void setParam(Param param, bool override);
     void refreshFullStatus();
+
+    int getSlaveAddress() const { return m_slaveAddress;}
+    void setSlaveAddress(int slaveAddress) { m_slaveAddress = slaveAddress;}
+
+    std::string getBTName() const { return m_btName;}
+    void setBTName(std::string name) { m_btName = name;}
 private:
     void poll(BTThread* i2cThread);
     void getFullStatus1Callback(BTThread* btThread, BTI2CPacket* packet);

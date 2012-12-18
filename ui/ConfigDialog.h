@@ -268,4 +268,58 @@ public:
     virtual void edit(HWOutput* hw) = 0;
 };
 
+class ConfigOutputDCMotorWidget : public IConfigOutputWidget
+{
+    Q_OBJECT
+public:
+    ConfigOutputDCMotorWidget(QWidget* parent, ConfigDialog* configDialog);
+
+    HWOutput* assemble();
+    void edit(HWOutput* hw);
+
+private slots:
+    void typeChanged(int index);
+    void i2cScan();
+
+private:
+    ConfigDialog* m_configDialog;
+
+    QComboBox* m_comboType;
+
+    QLabel* m_labelBtBoard;
+    QComboBox* m_comboBtBoard;
+
+    QLabel* m_labelI2CAddr;
+    QSpinBox* m_spinI2CAddr;
+
+    QPushButton* m_buttonI2CScan;
+};
+
+class ConfigOutputStepperWidget : public IConfigOutputWidget
+{
+    Q_OBJECT
+public:
+    ConfigOutputStepperWidget(QWidget* parent, ConfigDialog* configDialog);
+
+    HWOutput* assemble();
+    void edit(HWOutput* hw);
+
+private slots:
+    void typeChanged(int index);
+    void i2cScan();
+
+private:
+    ConfigDialog* m_configDialog;
+
+    QComboBox* m_comboType;
+
+    QLabel* m_labelBtBoard;
+    QComboBox* m_comboBtBoard;
+
+    QLabel* m_labelI2CAddr;
+    QSpinBox* m_spinI2CAddr;
+
+    QPushButton* m_buttonI2CScan;
+};
+
 #endif // CONFIGDIALOG_H
