@@ -221,6 +221,10 @@ void BTThread::connectBt()
     while(status == -1);
 
     pi_message("Connected to bluetooth board %s\n", m_name.c_str());
+
+    // do a status update for pin group 2
+    // TODO: check all registered pins for their pin groups and send a status update for each
+    this->addOutput(std::bind(&BTThread::sendGPUpdateRequest, this, 2, std::placeholders::_1));
 }
 
 void BTThread::disconnectBt()
