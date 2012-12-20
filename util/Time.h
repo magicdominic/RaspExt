@@ -42,4 +42,16 @@ timespecGreaterThanZero(timespec lhs)
     return lhs.tv_sec >= 0 && lhs.tv_nsec > 0;
 }
 
+inline timespec
+timspecAddMiliseconds(timespec lhs, unsigned int ms)
+{
+    lhs.tv_nsec += (ms % 1000) * 1000000;
+    if(lhs.tv_nsec >= 1000000000)
+        lhs.tv_sec += ms / 1000 + 1;
+    else
+        lhs.tv_sec += ms / 1000;
+
+    return lhs;
+}
+
 #endif // TIME_H

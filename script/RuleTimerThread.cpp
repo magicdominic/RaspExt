@@ -79,12 +79,7 @@ void RuleTimerThread::addRule(Rule* rule, unsigned int start, unsigned int waitM
 
     // set timer
     clock_gettime(CLOCK_MONOTONIC, &element.time);
-    element.time.tv_nsec += waitMs * 1000000;
-    if(element.time.tv_nsec >= 1000000000)
-    {
-        element.time.tv_sec += element.time.tv_nsec / 1000000000;
-        element.time.tv_nsec %= 1000000000;
-    }
+    element.time = timspecAddMiliseconds(element.time, waitMs);
 
     // add element to queue
     m_mutex.lock();
