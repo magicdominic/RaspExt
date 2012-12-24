@@ -30,6 +30,12 @@ ConfigManager::~ConfigManager()
     this->clear();
 }
 
+/**
+ * @brief ConfigManager::init initializes all the hardware given by the currently selected config.
+ * Hardware not in the current config does not get initialized and therefore cannot be used.
+ * ConfigManager::deinit must be called to deinitialize the hardware.
+ * ConfigManager::init must not be called more than once before calling ConfigManager::deinit.
+ */
 void ConfigManager::init()
 {
     for(std::list<HWInput*>::iterator it = m_listInput.begin(); it != m_listInput.end(); it++)
@@ -53,6 +59,10 @@ void ConfigManager::init()
     m_soundManager = new SoundManager();
 }
 
+/**
+ * @brief ConfigManager::deinit deinitializes the hardware given by the currently selected config.
+ * ConfigManager::deinit must not be called more than once before calling ConfigManager::init again
+ */
 void ConfigManager::deinit()
 {
     // stop active script before killing and deleting all the threads,
@@ -105,6 +115,10 @@ void ConfigManager::deinit()
     m_soundManager = NULL;
 }
 
+/**
+ * @brief ConfigManager::clear clears the complete currently loaded config.
+ * The hardware must be deinitialized to do this, otherwise undefined behaviour may result.
+ */
 void ConfigManager::clear()
 {
     for(std::list<HWInput*>::iterator it = m_listInput.begin(); it != m_listInput.end(); it++)
@@ -125,7 +139,6 @@ void ConfigManager::clear()
     }
     m_listOutput.clear();
 
-    // TODO: is this really a good idea?!?
     for(std::list<Variable*>::iterator it = m_listVariable.begin(); it != m_listVariable.end(); it++)
     {
         if(m_mainWindow != NULL)
@@ -142,6 +155,11 @@ void ConfigManager::clear()
     m_listBTThread.clear();
 }
 
+/**
+ * @brief ConfigManager::load loads the configuration given by name.
+ * @param name
+ * @return
+ */
 bool ConfigManager::load(std::string name)
 {
     std::string filename = "config/";
@@ -216,6 +234,11 @@ bool ConfigManager::load(std::string name)
     return true;
 }
 
+/**
+ * @brief ConfigManager::save saves the currently loaded configuration under the same name under which it was loaded.
+ * TODO: is this a useless function? The configuration cannot be changed as long as it is loaded
+ * @return
+ */
 bool ConfigManager::save()
 {
     std::string filename = "config/";

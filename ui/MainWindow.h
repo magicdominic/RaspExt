@@ -19,6 +19,10 @@ namespace Ui {
     class MainWindow;
 }
 
+/**
+ * @brief The MainWindow class opens a window containing all relevant information for RASP,
+ * like a live overview, script selecting and editing and config.
+ */
 class MainWindow : public QMainWindow {
     Q_OBJECT
 public:
@@ -32,7 +36,7 @@ public:
     void removeOutput(HWOutput* hw);
     void removeVariable(Variable* var);
 
-protected slots:
+private slots:
     void updateScriptConfig();
 
     void createScript();

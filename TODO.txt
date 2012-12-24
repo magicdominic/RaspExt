@@ -1,5 +1,4 @@
 
-* Config GUI
 * Documentation
 * Stepper can be improved
 * Bluetooth testing

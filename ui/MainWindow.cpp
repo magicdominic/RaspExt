@@ -414,6 +414,11 @@ void MainWindow::getRequiredList(std::list<Rule::RequiredInput>* listInput,
     }
 }
 
+/**
+ * @brief MainWindow::addInput adds the input given by hw to the GUI,
+ * displays a frame containing infos about it in the overview tab and registers the GUI element on the input to receive updates.
+ * @param hw the HWInput object to display in the GUI
+ */
 void MainWindow::addInput(HWInput* hw)
 {
     InputFrame* frame = NULL;
@@ -440,6 +445,11 @@ void MainWindow::addInput(HWInput* hw)
     }
 }
 
+/**
+ * @brief MainWindow::addOutput adds the output given by hw to the GUI,
+ * displays a frame containing infos about it in the overview tab and registers the GUI element on the output to receive updates.
+ * @param hw the HWOutput object to display in the GUI
+ */
 void MainWindow::addOutput(HWOutput* hw)
 {
     OutputFrame* frame = NULL;
@@ -473,6 +483,11 @@ void MainWindow::addOutput(HWOutput* hw)
     }
 }
 
+/**
+ * @brief MainWindow::addVariable adds the variable given by var to the GUI,
+ * displays a frame containing infos about it in the overview tab and registers the GUI element on the variable to receive updates.
+ * @param var the Variable object to display in the GUI
+ */
 void MainWindow::addVariable(Variable* var)
 {
     VariableFrame* frame = new VariableFrame(var);
@@ -480,6 +495,10 @@ void MainWindow::addVariable(Variable* var)
     m_listVarFrame.push_back( frame );
 }
 
+/**
+ * @brief MainWindow::removeInput unregisters the GUI element from the object and removes the input object from the GUI.
+ * @param hw the object to be removed from the GUI
+ */
 void MainWindow::removeInput(HWInput* hw)
 {
     for(std::list<InputFrame*>::iterator it = m_listInputFrame.begin(); it != m_listInputFrame.end(); it++)
@@ -493,6 +512,10 @@ void MainWindow::removeInput(HWInput* hw)
     }
 }
 
+/**
+ * @brief MainWindow::removeOutput unregisters the GUI element from the object and removes the output object from the GUI.
+ * @param hw the object to be removed from the GUI
+ */
 void MainWindow::removeOutput(HWOutput* hw)
 {
     for(std::list<OutputFrame*>::iterator it = m_listOutputFrame.begin(); it != m_listOutputFrame.end(); it++)
@@ -506,6 +529,10 @@ void MainWindow::removeOutput(HWOutput* hw)
     }
 }
 
+/**
+ * @brief MainWindow::removeVariable unregisters the GUI element from the object and removes the variable object from the GUI.
+ * @param var the object to be removed from the GUI
+ */
 void MainWindow::removeVariable(Variable* var)
 {
     for(std::list<VariableFrame*>::iterator it = m_listVarFrame.begin(); it != m_listVarFrame.end(); it++)
@@ -540,6 +567,8 @@ void MainWindow::editConfig()
         if( dialog->exec() == QDialog::Accepted)
             m_configTableModel.refresh();
     }
+
+    // TODO: think about a warning here if user has loaded this config
 }
 
 void MainWindow::selectConfig()
@@ -550,7 +579,7 @@ void MainWindow::selectConfig()
     {
         std::string name = m_configTableModel.get(indices.front().row());
 
-        // we only allow modifications on the config if no script is loaded
+        // we only allow modifications on the config if no script is loaded and the current config is not selected
         if(m_config.getActiveScriptState() == ConfigManager::Inactive && name.compare(m_config.getName()) != 0)
         {
             m_config.deinit();
@@ -561,7 +590,18 @@ void MainWindow::selectConfig()
 
             ui->labelConfig->setText( QString::fromStdString(name) );
         }
+        else
+        {
+            QMessageBox(QMessageBox::Warning,
+                        "Warning",
+                        "Cannot select config because a script is running.\nPlease stop this script first first",
+                        QMessageBox::Ok,
+                        this).exec();
+            return;
+        }
     }
+
+    // TODO: think about what to do if the user selects the already loaded config
 }
 
 void MainWindow::deleteConfig()
@@ -573,7 +613,7 @@ void MainWindow::deleteConfig()
         // check if config is selected, if yes, then display a warning and don't do anything
         if(m_config.getActiveScript() == m_scriptsModel.getScript(indices.front().row()))
         {
-            QMessageBox(QMessageBox::Warning, "Warning", "Cannot delete config because it is selected.\nPlease select a different config fisrt", QMessageBox::Ok, this).exec();
+            QMessageBox(QMessageBox::Warning, "Warning", "Cannot delete config because it is selected.\nPlease select a different config first", QMessageBox::Ok, this).exec();
             return;
         }
 
