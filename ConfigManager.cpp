@@ -38,18 +38,18 @@ ConfigManager::~ConfigManager()
  */
 void ConfigManager::init()
 {
-    for(std::list<HWInput*>::iterator it = m_listInput.begin(); it != m_listInput.end(); it++)
+    for(std::list<HWInput*>::iterator it = m_config.m_listInput.begin(); it != m_config.m_listInput.end(); it++)
     {
         (*it)->init(this);
     }
 
-    for(std::list<HWOutput*>::iterator it = m_listOutput.begin(); it != m_listOutput.end(); it++)
+    for(std::list<HWOutput*>::iterator it = m_config.m_listOutput.begin(); it != m_config.m_listOutput.end(); it++)
     {
         (*it)->init(this);
     }
 
     // start Bluetooth threads
-    for(std::list<BTThread*>::iterator it = m_listBTThread.begin(); it != m_listBTThread.end(); it++)
+    for(std::list<BTThread*>::iterator it = m_config.m_listBTThread.begin(); it != m_config.m_listBTThread.end(); it++)
     {
         (*it)->start();
     }
@@ -87,17 +87,17 @@ void ConfigManager::deinit()
         m_i2cThread->kill();
     }
 
-    for(std::list<BTThread*>::iterator it = m_listBTThread.begin(); it != m_listBTThread.end(); it++)
+    for(std::list<BTThread*>::iterator it = m_config.m_listBTThread.begin(); it != m_config.m_listBTThread.end(); it++)
     {
         (*it)->kill();
     }
 
-    for(std::list<HWInput*>::iterator it = m_listInput.begin(); it != m_listInput.end(); it++)
+    for(std::list<HWInput*>::iterator it = m_config.m_listInput.begin(); it != m_config.m_listInput.end(); it++)
     {
         (*it)->deinit(this);
     }
 
-    for(std::list<HWOutput*>::iterator it = m_listOutput.begin(); it != m_listOutput.end(); it++)
+    for(std::list<HWOutput*>::iterator it = m_config.m_listOutput.begin(); it != m_config.m_listOutput.end(); it++)
     {
         (*it)->deinit(this);
     }
@@ -121,23 +121,17 @@ void ConfigManager::deinit()
  */
 void ConfigManager::clear()
 {
-    for(std::list<HWInput*>::iterator it = m_listInput.begin(); it != m_listInput.end(); it++)
+    for(std::list<HWInput*>::iterator it = m_config.m_listInput.begin(); it != m_config.m_listInput.end(); it++)
     {
-        // delete Pointer, we must clean the list afterwards immediatly!
         if(m_mainWindow != NULL)
             m_mainWindow->removeInput(*it);
-        delete (*it);
     }
-    m_listInput.clear();
 
-    for(std::list<HWOutput*>::iterator it = m_listOutput.begin(); it != m_listOutput.end(); it++)
+    for(std::list<HWOutput*>::iterator it = m_config.m_listOutput.begin(); it != m_config.m_listOutput.end(); it++)
     {
-        // delete Pointer, we must clean the list afterwards immediatly!
         if(m_mainWindow != NULL)
             m_mainWindow->removeOutput(*it);
-        delete (*it);
     }
-    m_listOutput.clear();
 
     for(std::list<Variable*>::iterator it = m_listVariable.begin(); it != m_listVariable.end(); it++)
     {
@@ -146,13 +140,7 @@ void ConfigManager::clear()
     }
     m_listVariable.clear();
 
-
-    for(std::list<BTThread*>::iterator it = m_listBTThread.begin(); it != m_listBTThread.end(); it++)
-    {
-        // delete Pointer, we must clean the list afterwards immediatly!
-        delete (*it);
-    }
-    m_listBTThread.clear();
+    m_config.clear();
 }
 
 /**
@@ -162,156 +150,20 @@ void ConfigManager::clear()
  */
 bool ConfigManager::load(std::string name)
 {
-    std::string filename = "config/";
-    filename.append(name);
-    filename.append(".xml");
-
-    QFile file(filename.c_str());
-    if(!file.open(QIODevice::ReadOnly))
-    {
-        pi_warn("Could not open file");
+    if( !m_config.load(name) )
         return false;
-    }
 
-    QDomDocument document;
-    document.setContent(&file);
-
-    QDomElement docElem = document.documentElement();
-
-    // check if this is a valid configuration file
-    if(docElem.tagName().toLower().compare("config") != 0)
+    for(std::list<HWInput*>::iterator it = m_config.m_listInput.begin(); it != m_config.m_listInput.end(); it++)
     {
-        pi_warn("Invalid configuration file: tag \"config\" is missing");
-        return false;
+        if(m_mainWindow != NULL)
+            m_mainWindow->addInput(*it);
     }
 
-    // now set the filename
-    m_name = name;
-
-    // load xml data
-    QDomElement elem = docElem.firstChildElement();
-
-    while(!elem.isNull())
+    for(std::list<HWOutput*>::iterator it = m_config.m_listOutput.begin(); it != m_config.m_listOutput.end(); it++)
     {
-        if(elem.tagName().toLower().compare("input") == 0)
-        {
-            HWInput* hw = HWInput::load(&elem);
-            if(hw != NULL)
-            {
-                // if addInput returns false, the input is not accepted, so we better delete it
-                if(!this->addInput(hw))
-                {
-                    delete hw;
-                }
-            }
-        }
-        else if(elem.tagName().toLower().compare("output") == 0)
-        {
-            HWOutput* hw = HWOutput::load(&elem);
-            if(hw != NULL)
-            {
-                // if addOutput returns false, the output is not accepted, so we better delete it
-                if(!this->addOutput(hw))
-                {
-                    delete hw;
-                }
-            }
-        }
-        else if(elem.tagName().toLower().compare("bluetooth") == 0)
-        {
-            BTThread* bt = BTThread::load(&elem);
-            if(bt != NULL)
-            {
-                m_listBTThread.push_back(bt);
-            }
-        }
-
-        elem = elem.nextSiblingElement();
+        if(m_mainWindow != NULL)
+            m_mainWindow->addOutput(*it);
     }
-
-    file.close();
-
-    return true;
-}
-
-/**
- * @brief ConfigManager::save saves the currently loaded configuration under the same name under which it was loaded.
- * TODO: is this a useless function? The configuration cannot be changed as long as it is loaded
- * @return
- */
-bool ConfigManager::save()
-{
-    std::string filename = "config/";
-    filename.append(m_name);
-    filename.append(".xml");
-
-    QFile file(filename.c_str());
-    if(!file.open(QIODevice::WriteOnly))
-    {
-        pi_warn("Could not open file");
-        return false;
-    }
-
-    QDomDocument document;
-
-    QDomElement config = document.createElement("config");
-
-    document.appendChild(config);
-
-
-    for(std::list<HWInput*>::iterator it = m_listInput.begin(); it != m_listInput.end(); it++)
-    {
-        (*it)->save(&config, &document);
-    }
-
-    for(std::list<HWOutput*>::iterator it = m_listOutput.begin(); it != m_listOutput.end(); it++)
-    {
-        (*it)->save(&config, &document);
-    }
-
-    // save BT Parameters
-    for(std::list<BTThread*>::iterator it = m_listBTThread.begin(); it != m_listBTThread.end(); it++)
-    {
-        (*it)->save(&config, &document);
-    }
-
-
-    file.write(document.toByteArray(4));
-
-    file.close();
-
-    return true;
-}
-
-bool ConfigManager::addInput(HWInput *hw)
-{
-    // check if already in list, if yes then return false
-    for(std::list<HWInput*>::iterator it = m_listInput.begin(); it != m_listInput.end(); it++)
-    {
-        if(strcasecmp((*it)->getName().c_str(), hw->getName().c_str()) == 0)
-            return false;
-    }
-
-    m_listInput.push_back(hw);
-
-    if(m_mainWindow != NULL)
-        m_mainWindow->addInput(hw);
-
-    return true;
-}
-
-bool ConfigManager::addOutput(HWOutput *hw)
-{
-    for(std::list<HWOutput*>::iterator it = m_listOutput.begin(); it != m_listOutput.end(); it++)
-    {
-        if(strcasecmp((*it)->getName().c_str(), hw->getName().c_str()) == 0)
-            return false;
-    }
-
-    m_listOutput.push_back(hw);
-
-    if(m_mainWindow != NULL)
-        m_mainWindow->addOutput(hw);
 
     return true;
 }
@@ -425,12 +277,12 @@ void ConfigManager::continueActiveScript()
 
 std::list<HWInput*> ConfigManager::getInputList() const
 {
-    return m_listInput;
+    return m_config.m_listInput;
 }
 
 std::list<HWOutput*> ConfigManager::getOutputList() const
 {
-    return m_listOutput;
+    return m_config.m_listOutput;
 }
 
 /**
@@ -440,7 +292,7 @@ std::list<HWOutput*> ConfigManager::getOutputList() const
  */
 HWInput* ConfigManager::getInputByName(std::string str)
 {
-    for(std::list<HWInput*>::iterator it = m_listInput.begin(); it != m_listInput.end(); it++)
+    for(std::list<HWInput*>::iterator it = m_config.m_listInput.begin(); it != m_config.m_listInput.end(); it++)
     {
         if(strcasecmp((*it)->getName().c_str(), str.c_str()) == 0)
             return *it;
@@ -456,7 +308,7 @@ HWInput* ConfigManager::getInputByName(std::string str)
  */
 HWOutput* ConfigManager::getOutputByName(std::string str)
 {
-    for(std::list<HWOutput*>::iterator it = m_listOutput.begin(); it != m_listOutput.end(); it++)
+    for(std::list<HWOutput*>::iterator it = m_config.m_listOutput.begin(); it != m_config.m_listOutput.end(); it++)
     {
         if(strcasecmp((*it)->getName().c_str(), str.c_str()) == 0)
             return *it;
@@ -499,7 +351,7 @@ RuleTimerThread* ConfigManager::getRuleTimerThread()
 
 BTThread* ConfigManager::getBTThreadByName(std::string str)
 {
-    for(std::list<BTThread*>::iterator it = m_listBTThread.begin(); it != m_listBTThread.end(); it++)
+    for(std::list<BTThread*>::iterator it = m_config.m_listBTThread.begin(); it != m_config.m_listBTThread.end(); it++)
     {
         if(strcasecmp((*it)->getName().c_str(), str.c_str()) == 0)
             return *it;
@@ -510,7 +362,7 @@ BTThread* ConfigManager::getBTThreadByName(std::string str)
 
 BTThread* ConfigManager::getBTThreadByAddr(std::string addr)
 {
-    for(std::list<BTThread*>::iterator it = m_listBTThread.begin(); it != m_listBTThread.end(); it++)
+    for(std::list<BTThread*>::iterator it = m_config.m_listBTThread.begin(); it != m_config.m_listBTThread.end(); it++)
     {
         if(strcasecmp((*it)->getBTAddr().c_str(), addr.c_str()) == 0)
             return *it;

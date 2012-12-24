@@ -15,12 +15,20 @@ class HWOutput;
 class PCF8575I2C;
 class I2CThread;
 
+/**
+ * @brief The I2CPolling class is an interface which all HWInput classes which use I2C implement.
+ * The method poll is then used by the I2CThread.
+ */
 class I2CPolling
 {
 public:
     virtual void poll(I2CThread* i2cThread) = 0;
 };
 
+/**
+ * @brief The I2CThread class does the actual communication with the devices on the I2C bus.
+ * A HWInput or HWOutput object uses an I2CThread object to read or write to/from devices on the bus.
+ */
 class I2CThread
 {
 public:

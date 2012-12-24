@@ -25,6 +25,10 @@ enum BTPacketType
     GPIO = 1
 };
 
+/**
+ * @brief The BTI2CPacket class is used to represent an I2C Bluetooth packet.
+ * This class can also be used to assemble and parse an actual packet.
+ */
 class BTI2CPacket
 {
 public:
@@ -49,12 +53,21 @@ public:
     std::function<void (BTThread*, BTI2CPacket*)> callbackFunc; // used for processing errors and read responses
 };
 
+/**
+ * @brief The BTI2CPolling class is an interface which all HWInput classes which use Bluetooth implement.
+ * The method poll is then used by the BTThread.
+ */
 class BTI2CPolling
 {
 public:
     virtual void poll(BTThread* btThread) = 0;
 };
 
+/**
+ * @brief The BTThread class does the actual communication with the devices on the Bluetooth boarrd.
+ * A HWInput or HWOutput object uses an BTThread object to read or write to/from devices on Bluetooth.
+ * There is a seperate BTThread object for each Bluetooth board.
+ */
 class BTThread
 {
 public:

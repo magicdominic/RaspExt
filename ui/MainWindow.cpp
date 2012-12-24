@@ -134,8 +134,6 @@ MainWindow::~MainWindow()
         file.close();
     }
 
-    // DEBUG CODE: remove the following line
-    m_config.save();
     m_config.deinit();
     m_config.clear(); // has to be cleared before ui is deleted, otherwise ui widgets are no longer available and this would lead to a segfault
 
@@ -594,7 +592,7 @@ void MainWindow::selectConfig()
         {
             QMessageBox(QMessageBox::Warning,
                         "Warning",
-                        "Cannot select config because a script is running.\nPlease stop this script first first",
+                        "Cannot select config because a script is running.\nPlease stop this script first",
                         QMessageBox::Ok,
                         this).exec();
             return;

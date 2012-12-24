@@ -4,6 +4,7 @@
 #include "hw/HWInput.h"
 #include "hw/HWOutput.h"
 #include "script/Variable.h"
+#include "hw/Config.h"
 
 #include <list>
 #include <QFrame>
@@ -39,9 +40,8 @@ public:
     void deinit();
 
     bool load(std::string name);
-    bool save();
     void clear();
-    std::string getName() const { return m_name;}
+    std::string getName() const { return m_config.getName();}
 
     ScriptState getActiveScriptState() const { return m_scriptState;}
     void stopActiveScript();
@@ -66,23 +66,17 @@ public:
     SoundManager* getSoundManager() const { return m_soundManager;}
 
 private:
-    bool addInput(HWInput* hw);
-    bool addOutput(HWOutput* hw);
     bool addVariable(Variable* var);
 
     void removeVariable(Variable* var);
-
-    std::string m_name;
 
     ScriptState m_scriptState;
     Script* m_activeScript;
 
     MainWindow* m_mainWindow;
-    std::list<HWInput*> m_listInput;
-    std::list<HWOutput*> m_listOutput;
+    Config m_config;
     std::list<Variable*> m_listVariable;
 
-    std::list<BTThread*> m_listBTThread;
     GPIOInterruptThread* m_gpioThread;
     I2CThread* m_i2cThread;
     RuleTimerThread* m_ruleTimer;
