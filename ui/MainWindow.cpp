@@ -577,8 +577,12 @@ void MainWindow::selectConfig()
     {
         std::string name = m_configTableModel.get(indices.front().row());
 
+        // Do nothing if the selected script is currently loaded script
+        if(name.compare(m_config.getName()) == 0)
+            return;
+
         // we only allow modifications on the config if no script is loaded and the current config is not selected
-        if(m_config.getActiveScriptState() == ConfigManager::Inactive && name.compare(m_config.getName()) != 0)
+        if(m_config.getActiveScriptState() == ConfigManager::Inactive)
         {
             m_config.deinit();
             m_config.clear();

@@ -568,9 +568,7 @@ void BTThread::packetHandler(char* buffer, unsigned int length)
             // error occurred, ignoring packet
             if(err)
                 return;
-
-            // TODO: remove
-            // printf("State of GPIOs is: %x\n", buffer[4]);
+            // TODO: the lines above have to be removed
 
             // now lets see if anything has changed, and if yes, inform the respective object
             for(std::list<GPInput>::iterator it = m_listGPInput.begin(); it != m_listGPInput.end(); it++)
@@ -638,6 +636,14 @@ void BTThread::addOutput(std::function<void (BTThread*)> func)
         pthread_kill(m_thread, SIGUSR1);
 }
 
+/**
+ * @brief BTThread::sendI2CPackets actually sends the amount of packets given by num over Bluetooth.
+ * Attention: This method can only be called by the Bluetooth thread. If it is called by any other thread undefined behaviour may result!
+ * Each packet given by packets is sent in a seperate bluetooth packet,
+ * altough it would be possible to send more than one packet in one bluetooth packet, we do not use it right now.
+ * @param packets
+ * @param num
+ */
 void BTThread::sendI2CPackets(BTI2CPacket *packets, unsigned int num)
 {
     // the following code sends multiple i2c packets in one big l2cap packet. Our bluetooth board currently does not support this

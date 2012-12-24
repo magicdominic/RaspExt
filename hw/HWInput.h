@@ -11,7 +11,9 @@ class QDomElement;
 class QDomDocument;
 
 
-// Basis Klasse, von der alle HWInput-Klassen erben
+/**
+ * @brief The HWInput class implements all important methods to load, save, initialize, deinitialize and use an input object.
+ */
 class HWInput
 {
 public:
@@ -43,8 +45,8 @@ public:
 
     virtual HWInputType getType() const = 0;
     virtual HWType getHWType() const { return Dummy;}
-    void setName(std::string str);
-    std::string getName() const;
+    void setName(std::string name) { m_name = name;}
+    std::string getName() const { return m_name;}
     void setOverride(bool b);
     bool getOverride() const;
 
@@ -52,7 +54,7 @@ public:
     void unregisterInputListener(HWInputListener* listener);
 
 protected:
-    void inputChanged();
+    virtual void inputChanged();
 
     bool m_bOverride;
     std::string m_name;

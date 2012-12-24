@@ -9,7 +9,9 @@ class ConfigManager;
 class QDomElement;
 class QDomDocument;
 
-// Basis Klasse, von der alle HWInput-Klassen erben
+/**
+ * @brief The HWOuptut class implements all important methods to load, save, initialize, deinitialize and use an output object.
+ */
 class HWOutput
 {
 public:
@@ -44,8 +46,8 @@ public:
 
     HWOutputType getType() const { return m_type;}
     virtual HWType getHWType() const { return Dummy;}
-    void setName(std::string str);
-    std::string getName() const;
+    void setName(std::string name) { m_name = name;}
+    std::string getName() const { return m_name;}
     void setOverride(bool b);
     bool getOverride() const;
 

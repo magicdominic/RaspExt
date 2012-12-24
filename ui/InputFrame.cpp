@@ -14,7 +14,6 @@ void InputFrame::onInputChanged(HWInput *hw)
 {
     pi_assert(hw == m_hw);
 
-    // TODO: check if this really can be done without a mutex
     if(!m_GUIUpdatePending)
     {
         m_GUIUpdatePending = true;

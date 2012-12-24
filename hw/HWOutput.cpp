@@ -105,22 +105,12 @@ QDomElement HWOutput::save(QDomElement *root, QDomDocument *document)
 
 void HWOutput::setOverride(bool b)
 {
-    this->m_bOverride = b;
+    m_bOverride = b;
 }
 
 bool HWOutput::getOverride() const
 {
-    return this->m_bOverride;
-}
-
-void HWOutput::setName(std::string str)
-{
-    this->m_name = str;
-}
-
-std::string HWOutput::getName() const
-{
-    return this->m_name;
+    return m_bOverride;
 }
 
 /**
@@ -148,6 +138,9 @@ void HWOutput::unregisterOutputListener(HWOutputListener *listener)
     m_listListeners.remove(listener);
 }
 
+/**
+ * @brief HWInput::outputChanged calls all registered outputListener, so that they can detect that this output has changed.
+ */
 void HWOutput::outputChanged()
 {
     for(std::list<HWOutputListener*>::iterator it = m_listListeners.begin(); it != m_listListeners.end(); it++)

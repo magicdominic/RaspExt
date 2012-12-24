@@ -4,6 +4,8 @@
 #include "hw/BTThread.h"
 #include "ui_I2CScanDialog.h"
 
+#include <QMessageBox>
+
 I2CScanDialog::I2CScanDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::I2CScanDialog)
@@ -78,8 +80,14 @@ void I2CScanDialog::okPressed()
         // Only accept if the user has choosen an address
         this->done(Accepted);
     }
-
-    // todo: warn the user that he did not select anything
+    else
+    {
+        QMessageBox(QMessageBox::Warning,
+                    "Warning",
+                    "You did not select an address",
+                    QMessageBox::Ok,
+                    this).exec();
+    }
 }
 
 

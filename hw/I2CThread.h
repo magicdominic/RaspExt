@@ -47,7 +47,7 @@ public:
     void addOutputPCF8575(HWOutput* hw, int slaveAddress, unsigned int port);
     void removeOutputPCF8575(HWOutput* hw, int slaveAddress);
 
-    // TODO: ATTENTION!!! USE ONLY IN I2CTHREAD!!!!
+    // ATTENTION: USE ONLY IN I2CTHREAD!!!!
     bool setSlaveAddress(int slaveAddress);
     bool write(void* buffer, unsigned int size);
     bool read(void* buffer, unsigned int size);

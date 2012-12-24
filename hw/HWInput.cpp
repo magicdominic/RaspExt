@@ -11,7 +11,7 @@
 
 HWInput::HWInput()
 {
-    this->m_bOverride = false;
+    m_bOverride = false;
 }
 
 HWInput::~HWInput()
@@ -94,22 +94,12 @@ QDomElement HWInput::save(QDomElement *root, QDomDocument *document)
 
 void HWInput::setOverride(bool b)
 {
-    this->m_bOverride = b;
+    m_bOverride = b;
 }
 
 bool HWInput::getOverride() const
 {
-    return this->m_bOverride;
-}
-
-void HWInput::setName(std::string str)
-{
-    this->m_name = str;
-}
-
-std::string HWInput::getName() const
-{
-    return this->m_name;
+    return m_bOverride;
 }
 
 /**
@@ -137,6 +127,9 @@ void HWInput::unregisterInputListener(HWInputListener *listener)
     m_listListeners.remove(listener);
 }
 
+/**
+ * @brief HWInput::inputChanged calls all registered inputListener, so that they can detect that this input has changed.
+ */
 void HWInput::inputChanged()
 {
     for(std::list<HWInputListener*>::iterator it = m_listListeners.begin(); it != m_listListeners.end(); it++)

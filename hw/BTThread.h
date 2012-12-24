@@ -100,7 +100,7 @@ public:
 
 
 
-    // TODO: ATTENTION!!! USE ONLY IN BTTHREAD!!!!
+    // ATTENTION: USE ONLY IN BTTHREAD!!!!
     void sendI2CPackets(BTI2CPacket* packets, unsigned int num);
 
 private:

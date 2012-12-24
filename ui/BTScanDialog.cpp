@@ -3,6 +3,8 @@
 
 #include "ui_BTScanDialog.h"
 
+#include <QMessageBox>
+
 #include <unistd.h>
 #include <bluetooth/bluetooth.h>
 #include <bluetooth/hci.h>
@@ -85,8 +87,14 @@ void BTScanDialog::okPressed()
         // Only accept if the user has choosen a device
         this->done(Accepted);
     }
-
-    // todo: warn the user that he did not select anything
+    else
+    {
+        QMessageBox(QMessageBox::Warning,
+                    "Warning",
+                    "You did not select an address",
+                    QMessageBox::Ok,
+                    this).exec();
+    }
 }
 
 std::pair<std::string, std::string> BTScanDialog::getNameAddr() const

@@ -2,6 +2,7 @@
 #include "hw/PCF8575Bt.h"
 #include "hw/HWInputButtonBt.h"
 #include "hw/HWOutputGPO.h"
+#include "hw/HWOutputGPOBt.h"
 #include "hw/BTThread.h"
 #include "ConfigManager.h"
 #include "util/Debug.h"
@@ -135,13 +136,12 @@ void PCF8575Bt::deinit()
 }
 
 void PCF8575Bt::onOutputChanged(HWOutput *hw)
-{/*
-    HWOutputGPOI2C* hw_i2c = (HWOutputGPOI2C*)hw;
+{
+    HWOutputGPOBt* hw_i2c = (HWOutputGPOBt*)hw;
 
     unsigned int port =  hw_i2c->getPort();
     m_portMask = (m_portMask & ~(1 << port)) | (hw_i2c->getValue() ? 1 << port : 0);
 
     // after we have set the new port mask, we have to update the device as well
-    this->updateI2C();*/
-    // TODO
+    this->updateI2C();
 }

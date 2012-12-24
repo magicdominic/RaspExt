@@ -327,7 +327,8 @@ void* I2CThread::run_internal(void* arg)
 
 /**
  * @brief I2CThread::write writes to the I2C file descriptor.
- * On error it repeats the write command I2C_WRITE_REPEATCOUNT times
+ * On error it repeats the write command I2C_WRITE_REPEATCOUNT times.
+ * Attention: This method can only be called by the I2C thread. If it is called by any other thread undefined behaviour may result!
  * @param buffer
  * @param size
  * @return returns true if the write succeeded (even if repeated), false otherwise
@@ -349,7 +350,8 @@ bool I2CThread::write(void *buffer, unsigned int size)
 
 /**
  * @brief I2CThread::read reads from the I2C file descriptor.
- * On error it repeats the read command I2C_READ_REPEATCOUNT times
+ * On error it repeats the read command I2C_READ_REPEATCOUNT times.
+ * Attention: This method can only be called by the I2C thread. If it is called by any other thread undefined behaviour may result!
  * @param buffer
  * @param size
  * @return returns true if the read succeeded (even if repeated), false otherwise
@@ -370,7 +372,8 @@ bool I2CThread::read(void *buffer, unsigned int size)
 }
 
 /**
- * @brief I2CThread::setSlaveAddress sets the slave address for the following writes and/or reads
+ * @brief I2CThread::setSlaveAddress sets the slave address for the following writes and/or reads.
+ * Attention: This method can only be called by the I2C thread. If it is called by any other thread undefined behaviour may result!
  * @param slaveAddress
  * @return
  */
