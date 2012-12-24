@@ -13,6 +13,11 @@ Config::~Config()
     this->clear();
 }
 
+/**
+ * @brief Config::load loads the configuration given by name
+ * @param name
+ * @return
+ */
 bool Config::load(std::string name)
 {
     std::string filename = "config/";
@@ -73,6 +78,10 @@ bool Config::load(std::string name)
     return true;
 }
 
+/**
+ * @brief Config::save saves the configuration
+ * @return
+ */
 bool Config::save()
 {
 
@@ -118,6 +127,9 @@ bool Config::save()
     return true;
 }
 
+/**
+ * @brief Config::clear clears the whole list of inputs, outputs, variables and BTThreads
+ */
 void Config::clear()
 {
     for(std::list<HWInput*>::iterator it = m_listInput.begin(); it != m_listInput.end(); it++)

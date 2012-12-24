@@ -40,15 +40,8 @@ public:
 
     bool load(std::string name);
     bool save();
-
-    std::string getName() const { return m_name;}
-
-    bool addInput(HWInput* hw);
-    bool addOutput(HWOutput* hw);
-    bool addVariable(Variable* var);
-
-    void removeVariable(Variable* var);
     void clear();
+    std::string getName() const { return m_name;}
 
     ScriptState getActiveScriptState() const { return m_scriptState;}
     void stopActiveScript();
@@ -73,6 +66,12 @@ public:
     SoundManager* getSoundManager() const { return m_soundManager;}
 
 private:
+    bool addInput(HWInput* hw);
+    bool addOutput(HWOutput* hw);
+    bool addVariable(Variable* var);
+
+    void removeVariable(Variable* var);
+
     std::string m_name;
 
     ScriptState m_scriptState;
