@@ -1,4 +1,4 @@
-RaspExt
+RASP: Raspberry Actuator & Sensor Platform
 =======
 
 How to compile RASP on the Raspberry Pi (similar on Desktop):

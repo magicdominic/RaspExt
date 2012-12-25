@@ -8,6 +8,11 @@
 
 class Rule;
 
+/**
+ * @brief The RuleTimerThread class is used to execute rules which contain a sleep action.
+ * As threads should not be blocked by a sleep action, they add the rule conaining the sleep action to this thread,
+ * which continues to execute them as soon as the time given by the sleep action has elapsed.
+ */
 class RuleTimerThread
 {
 public:

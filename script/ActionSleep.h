@@ -5,6 +5,9 @@
 
 class RuleTimerThread;
 
+/**
+ * @brief The ActionSleep class is a special action which can be used to pause execution of a rule for a certain time.
+ */
 class ActionSleep : public Action
 {
 public:

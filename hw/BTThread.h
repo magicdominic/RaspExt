@@ -83,12 +83,12 @@ public:
     void addInput(BTI2CPolling* hw, unsigned int freq);
     void removeInput(BTI2CPolling* hw);
 
+    void addOutput(std::function<void (BTThread*)> func);
+
     void addInputPCF8575(HWInput* hw, int slaveAddress, unsigned int port);
     void removeInputPCF8575(HWInput* hw, int slaveAddress);
     void addOutputPCF8575(HWOutput* hw, int slaveAddress, unsigned int port);
     void removeOutputPCF8575(HWOutput* hw, int slaveAddress);
-
-    void addOutput(std::function<void (BTThread*)> func);
 
     void addGPInput(HWInputButtonBtGPIO* hw);
     void removeGPInput(HWInputButtonBtGPIO* hw);

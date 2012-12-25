@@ -5,6 +5,11 @@
 
 class SoundManager;
 
+/**
+ * @brief The ActionMusic class is the action which controls the music. Music can only be started and stopped.
+ * Pausing and continuing is not possible. Also there can only be one song playing.
+ * If a second one is started, this stops the first one first and then starts the second one.
+ */
 class ActionMusic : public Action
 {
 public:

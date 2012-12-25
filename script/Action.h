@@ -8,6 +8,9 @@
 
 class ConfigManager;
 
+/**
+ * @brief The Action class is the base class for all actions
+ */
 class Action
 {
 public:

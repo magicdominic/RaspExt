@@ -41,6 +41,10 @@ BTThread::~BTThread()
         this->kill();
 }
 
+/**
+ * @brief BTThread::start starts this bluetooth thread.
+ * The thread is automatically killed as soon as it is deleted, or it can be killed manually by BTThread::kill
+ */
 void BTThread::start()
 {
     pi_assert(m_thread == 0);
@@ -51,6 +55,9 @@ void BTThread::start()
     pthread_create(&m_thread, NULL, BTThread::run_internal, (void*)this);
 }
 
+/**
+ * @brief BTThread::kill kills this thread.
+ */
 void BTThread::kill()
 {
     // set stop to true, so the thread should exit soon
@@ -65,6 +72,13 @@ void BTThread::kill()
     m_thread = 0;
 }
 
+/**
+ * @brief BTThread::load loads the necessary information from an XML file.
+ * The param root must be a XML node under which the information for this thread are stored.
+ * If this method does not find all necessary information and thus cannot be loaded it returns NULL
+ * @param root
+ * @return returns NULL if an error occurred or an instance of BTThread
+ */
 BTThread* BTThread::load(QDomElement* root)
 {
     BTThread* btthread = new BTThread();
@@ -88,11 +102,19 @@ BTThread* BTThread::load(QDomElement* root)
     {
         pi_warn("Could not load bluetooth, name and/or address for this module were empty");
         delete btthread;
+        return NULL;
     }
 
     return btthread;
 }
 
+/**
+ * @brief BTThread::save saves this instance of BTThread to an XML file.
+ * The param root must contain an XML node under wich the informations should be stored.
+ * @param root
+ * @param document
+ * @return
+ */
 QDomElement BTThread::save(QDomElement* root, QDomDocument* document)
 {
     QDomElement output = document->createElement("bluetooth");
@@ -114,6 +136,11 @@ QDomElement BTThread::save(QDomElement* root, QDomDocument* document)
     return output;
 }
 
+/**
+ * @brief BTThread::setBTAddr sets the bluetooth address of this BTThread.
+ * The format of addr must be 11:22:33:44:55:66, otherwise it is rejected
+ * @param addr
+ */
 void BTThread::setBTAddr(std::string addr)
 {
     // convert to upper case
@@ -144,10 +171,14 @@ void BTThread::setBTAddr(std::string addr)
         return;
     }
 
-    // TODO: check format and only save if it is correct
     m_btaddr = addr;
 }
 
+/**
+ * @brief BTThread::addInput adds an input to this thread which is polled with frequency freq.
+ * @param hw
+ * @param freq
+ */
 void BTThread::addInput(BTI2CPolling *hw, unsigned int freq)
 {
     InputElement element;
@@ -164,6 +195,11 @@ void BTThread::addInput(BTI2CPolling *hw, unsigned int freq)
         pthread_kill(m_thread, SIGUSR1);
 }
 
+/**
+ * @brief BTThread::removeInput removes an input from this thread which is then no longer polled.
+ * For example if configuration has changed and the input is no longer needed.
+ * @param hw
+ */
 void BTThread::removeInput(BTI2CPolling *hw)
 {
     // we only use this element to remove the corresponding element from the queue
@@ -622,6 +658,12 @@ void BTThread::removeGPInput(HWInputButtonBtGPIO *hw)
     }
 }
 
+/**
+ * @brief BTThread::addOutput adds an output to this thread.
+ * The function specified by func will be executed as soon as it is on top of the queue.
+ * So there might be a little delay between this function call and the execution of the function.
+ * @param func
+ */
 void BTThread::addOutput(std::function<void (BTThread*)> func)
 {
     OutputElement el;
@@ -774,6 +816,10 @@ BTI2CPacket::~BTI2CPacket()
         free(readBuffer);
 }
 
+/**
+ * @brief BTI2CPacket::size
+ * @return returns the size this BTI2CPacket would have if it were assembled
+ */
 unsigned int BTI2CPacket::size() const
 {
     if(this->readBuffer != NULL)
@@ -815,6 +861,12 @@ void BTI2CPacket::assemble(char* buf, unsigned int length)
     }
 }
 
+/**
+ * @brief BTI2CPacket::parse parses the packet given by buf. If the packet contains an error, this method returns false.
+ * @param buf the buffer containing the packet.
+ * @param i2cSize the size of the buffer buf
+ * @return returns false on error, true otherwise
+ */
 bool BTI2CPacket::parse(char *buf, unsigned int i2cSize)
 {
     if(i2cSize <= 2) // if a packet is smaller than or equal to 2 byte it cannot contain any information at all

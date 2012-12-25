@@ -31,6 +31,9 @@ RuleTimerThread::~RuleTimerThread()
         this->kill();
 }
 
+/**
+ * @brief RuleTimerThread::start starts this thread
+ */
 void RuleTimerThread::start()
 {
     pi_assert(m_thread == 0);
@@ -41,6 +44,9 @@ void RuleTimerThread::start()
     pthread_create(&m_thread, NULL, RuleTimerThread::run_internal, (void*)this);
 }
 
+/**
+ * @brief RuleTimerThread::kill kills this thread. If this thread is deleted it is killed automatically.
+ */
 void RuleTimerThread::kill()
 {
     // only do something if this thread is really started
@@ -59,8 +65,9 @@ void RuleTimerThread::kill()
     m_thread = 0;
 }
 
-/**     clear() is used to clear the queue of RuleTimerThread
- *      All queued operations are deleted immediatly. The thread must be stopped to do this
+/**
+ * @brief RuleTimerThread::clear is used to clear the queue of RuleTimerThread.
+ * All queued operations are deleted immediatly. The thread must be stopped to do this!
  */
 void RuleTimerThread::clear()
 {
@@ -71,6 +78,12 @@ void RuleTimerThread::clear()
     m_mutex.unlock();
 }
 
+/**
+ * @brief RuleTimerThread::addRule adds a rule to this thread which should continue to be executed as soon as waitMs miliseconds have elapsed.
+ * @param rule the rule which should be executed
+ * @param start the last action which was executed
+ * @param waitMs the time in miliseconds for which we should wait
+ */
 void RuleTimerThread::addRule(Rule* rule, unsigned int start, unsigned int waitMs)
 {
     Element element;
@@ -91,6 +104,9 @@ void RuleTimerThread::addRule(Rule* rule, unsigned int start, unsigned int waitM
     pthread_kill(m_thread, SIGUSR1);
 }
 
+/**
+ * @brief RuleTimerThread::continueTimer continues a timer which was paused by RuleTimerThread::pauseTimer before.
+ */
 void RuleTimerThread::continueTimer()
 {
     if(m_bPaused)
@@ -110,6 +126,9 @@ void RuleTimerThread::continueTimer()
     }
 }
 
+/**
+ * @brief RuleTimerThread::pauseTimer pauses a timer. It can later be continued by RuleTimerThread::continueTimer
+ */
 void RuleTimerThread::pauseTimer()
 {
     if(!m_bPaused)

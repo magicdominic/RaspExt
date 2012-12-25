@@ -5,6 +5,9 @@
 
 #include <string>
 
+/**
+ * @brief The Condition class is the base class for all conditions
+ */
 class Condition
 {
 public:

@@ -55,6 +55,11 @@ void I2CThread::kill()
     m_thread = 0;
 }
 
+/**
+ * @brief I2CThread::addInput adds an input to this thread which is polled with frequency freq.
+ * @param hw
+ * @param freq
+ */
 void I2CThread::addInput(I2CPolling *hw, unsigned int freq)
 {
     InputElement element;
@@ -71,6 +76,11 @@ void I2CThread::addInput(I2CPolling *hw, unsigned int freq)
     pthread_kill(m_thread, SIGUSR1);
 }
 
+/**
+ * @brief I2CThread::removeInput removes an input from this thread which is then no longer polled.
+ * For example if configuration has changed and the input is no longer needed.
+ * @param hw
+ */
 void I2CThread::removeInput(I2CPolling *hw)
 {
     // we only use this element to remove the corresponding element from the queue
@@ -82,6 +92,12 @@ void I2CThread::removeInput(I2CPolling *hw)
     m_mutex.unlock();
 }
 
+/**
+ * @brief I2CThread::addOutput adds an output to this thread.
+ * The function specified by func will be executed as soon as it is on top of the queue.
+ * So there might be a little delay between this function call and the execution of the function.
+ * @param func
+ */
 void I2CThread::addOutput(std::function<void (I2CThread*)> func)
 {
     OutputElement element;

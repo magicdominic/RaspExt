@@ -6,7 +6,11 @@ class Variable;
 class VariableListener
 {
 public:
-    virtual void onVariableChanged(Variable* var) = 0; // gets called, if a variable has changed its value
+    /**
+     * @brief onVariableChanged gets called from the variable object, if the variable has changed
+     * @param var the variable object which generated the event
+     */
+    virtual void onVariableChanged(Variable* var) = 0;
 };
 
 #endif // VARIABLELISTENER_H

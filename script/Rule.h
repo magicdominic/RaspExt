@@ -11,6 +11,10 @@ class Condition;
 class Action;
 class ConfigManager;
 
+/**
+ * @brief The Rule class contains a list of conditions which all must be true,
+ * so that the elements in the list of actions are executed sequentially.
+ */
 class Rule
 {
 public:

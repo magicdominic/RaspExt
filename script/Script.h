@@ -10,6 +10,10 @@ class HWInput;
 class HWOutput;
 class ConfigManager;
 
+/**
+ * @brief The Script class contains a list of rules. This is useful to have different scripts for different applications
+ * and the user can select the script for the application he wants to run right now.
+ */
 class Script
 {
 public:

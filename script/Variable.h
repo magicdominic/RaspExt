@@ -7,6 +7,10 @@
 
 class VariableListener;
 
+/**
+ * @brief The Variable class is special type of input and output, as it can be used as both.
+ * A variable has an integer value which can be manipulated by actions and used as conditions.
+ */
 class Variable
 {
 public:
