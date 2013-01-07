@@ -5,7 +5,7 @@ QMAKE_CXXFLAGS += -std=c++0x
 QT += xml
 LIBS += -lbluetooth
 LIBS += -lSDL_mixer
-TARGET = RaspExt
+TARGET = RASP
 TEMPLATE = app
 SOURCES += main.cpp \
     ui/MainWindow.cpp \
