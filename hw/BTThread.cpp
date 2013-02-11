@@ -258,6 +258,9 @@ void BTThread::connectBt()
 
     pi_message("Connected to bluetooth board %s\n", m_name.c_str());
 
+    // clean lists as the information in them is most likely invalid now
+    m_listSeq.clear();
+
     // do a status update for pin group 2
     // TODO: check all registered pins for their pin groups and send a status update for each
     this->addOutput(std::bind(&BTThread::sendGPUpdateRequest, this, 2, std::placeholders::_1));
@@ -369,6 +372,31 @@ void BTThread::removeOutputPCF8575(HWOutput* hw, int slaveAddress)
     }
 }
 
+void BTThread::readBlocking()
+{
+    char buffer[256];
+    memset(buffer, 0, sizeof(buffer));
+    int readBytes = recv(m_socket, buffer, sizeof(buffer), 0);
+
+    // TODO: check if this is enough error checking
+    if(readBytes == 0)
+    {
+        // if read returns 0 this means end of file => we have lost connection and need to reconnect
+        this->reconnectBt();
+    }
+    else if(readBytes == -1)
+    {
+        perror("Error occurred while doing read");
+        if(errno == ENOTCONN)
+            this->reconnectBt();
+    }
+    else
+    {
+        // we have received the packet, now we have to parse it and call the apropriate functions
+        this->packetHandler(buffer, readBytes);
+    }
+}
+
 void BTThread::run()
 {
 #ifdef USE_BLUETOOTH
@@ -401,28 +429,7 @@ void BTThread::run()
         if(dataReady == 1)
         {
             // there is data ready to be read, so read it!
-            char buffer[256];
-            memset(buffer, 0, sizeof(buffer));
-            int readBytes = recv(m_socket, buffer, sizeof(buffer), 0);
-
-            // TODO: check if this is enough error checking
-            if(readBytes == 0)
-            {
-                // if read returns 0 this means end of file => we have lost connection and need to reconnect
-                this->reconnectBt();
-            }
-
-            if(readBytes == -1)
-            {
-                perror("Error occurred while doing read");
-                if(errno == ENOTCONN)
-                    this->reconnectBt();
-
-                continue;
-            }
-
-            // we have to read data, now we have to parse the packet and call the apropriate functions
-            this->packetHandler(buffer, readBytes);
+            this->readBlocking();
         }
 
 
@@ -578,14 +585,14 @@ void BTThread::packetHandler(char* buffer, unsigned int length)
             }
 
             // now lets see if there is a callback function for this sequence number
-            for(std::list<SeqCallback>::iterator it = m_listCallback.begin(); it != m_listCallback.end(); it++)
+            for(std::list<PacketSeq>::iterator it = m_listSeq.begin(); it != m_listSeq.end(); it++)
             {
                 if(it->seq == seqAck)
                 {
                     // we have found our callback function
                     packet.callbackFunc = it->callbackFunc;
 
-                    m_listCallback.erase(it);
+                    m_listSeq.erase(it);
 
                     break;
                 }
@@ -723,11 +730,11 @@ void BTThread::sendI2CPackets(BTI2CPacket *packets, unsigned int num)
     //        // add the callback function (if any) to the list of callback functions for later matching of the response
     //        if(packets[i].callbackFunc)
     //        {
-    //            SeqCallback seqCallback;
+    //            PacketSeq seqCallback;
     //            seqCallback.seq = seq;
     //            seqCallback.callbackFunc = packets[i].callbackFunc;
 
-    //            m_listCallback.push_back(seqCallback);
+    //            m_listSeq.push_back(seqCallback);
     //        }
     //    }
 
@@ -755,15 +762,15 @@ void BTThread::sendI2CPackets(BTI2CPacket *packets, unsigned int num)
 
         packets[i].assemble(buffer + 3, totalSize - 3);
 
+
+        PacketSeq seqCallback;
+        seqCallback.seq = seq;
+
         // add the callback function (if any) to the list of callback functions for later matching of the response
         if(packets[i].callbackFunc)
-        {
-            SeqCallback seqCallback;
-            seqCallback.seq = seq;
             seqCallback.callbackFunc = packets[i].callbackFunc;
 
-            m_listCallback.push_back(seqCallback);
-        }
+        m_listSeq.push_back(seqCallback);
 
         this->send(buffer, totalSize);
 
@@ -779,6 +786,9 @@ void BTThread::sendI2CPackets(BTI2CPacket *packets, unsigned int num)
  */
 void BTThread::send(char *buffer, unsigned int length)
 {
+    while(m_listSeq.size() > 5)
+        readBlocking();
+
     int ret = write(m_socket, buffer, length);
     if(ret != length)
     {

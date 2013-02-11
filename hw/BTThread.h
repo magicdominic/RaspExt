@@ -134,6 +134,8 @@ private:
     void disconnectBt();
     void reconnectBt();
 
+    void readBlocking();
+
     bool readWait(timespec timeout);
     void packetHandler(char* buffer, unsigned int length);
     unsigned short seqInc() { m_seq = (m_seq + 1) % 0xFF; return m_seq;}
@@ -163,13 +165,13 @@ private:
 
     std::list<GPInput> m_listGPInput;
 
-    struct SeqCallback
+    struct PacketSeq
     {
         unsigned char seq;
         std::function<void (BTThread*, BTI2CPacket*)> callbackFunc;
 
     };
 
-    std::list<SeqCallback> m_listCallback;
+    std::list<PacketSeq> m_listSeq;
 };
 #endif // BTTHREAD_H

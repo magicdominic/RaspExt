@@ -78,7 +78,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QFile file( "defaults.xml" );
     if(!file.open(QIODevice::ReadOnly))
     {
-        pi_warn("Could not open file");
+        pi_warn("Could not open defaults file. Does it exist?");
         return;
     }
 
@@ -99,14 +99,15 @@ MainWindow::MainWindow(QWidget *parent) :
     {
         if(elem.tagName().toLower().compare("config") == 0)
         {
-            m_config.load( elem.text().toStdString() );
+            // only try to load new config if this string is not empty, otherwise this call would fail anyway
+            if(!elem.text().isEmpty())
+                m_config.load( elem.text().toStdString() );
         }
         elem = elem.nextSiblingElement();
     }
 
     file.close();
 
-    //m_config.load("config_test01");
     m_config.init();
 
     ui->labelConfig->setText( QString::fromStdString( m_config.getName() ) );
@@ -132,6 +133,10 @@ MainWindow::~MainWindow()
         file.write(document.toByteArray(4));
 
         file.close();
+    }
+    else
+    {
+        pi_warn("Could not open defaults file. Do you have read-write permissions to ./defaults.xml?");
     }
 
     m_config.deinit();
@@ -560,13 +565,22 @@ void MainWindow::editConfig()
     {
         std::string name = m_configTableModel.get(indices.front().row());
 
+        if(m_config.getName().compare(name) == 0)
+        {
+            QMessageBox(QMessageBox::Warning,
+                        "Warning",
+                        "Cannot edit config because this config is currently selected.\nPlease select a different config first.",
+                        QMessageBox::Ok,
+                        this).exec();
+
+            return;
+        }
+
         ConfigDialog* dialog = new ConfigDialog(this, name, &m_config);
 
         if( dialog->exec() == QDialog::Accepted)
             m_configTableModel.refresh();
     }
-
-    // TODO: think about a warning here if user has loaded this config
 }
 
 void MainWindow::selectConfig()
