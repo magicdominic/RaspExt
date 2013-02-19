@@ -8,7 +8,10 @@ timespecAdd(timespec lhs, timespec rhs)
 {
     lhs.tv_nsec += rhs.tv_nsec;
     if(lhs.tv_nsec > 1000000000)
+    {
+        lhs.tv_nsec -= 1000000000;
         lhs.tv_sec += rhs.tv_sec + 1;
+    }
     else
         lhs.tv_sec += rhs.tv_sec;
 
@@ -47,7 +50,10 @@ timspecAddMiliseconds(timespec lhs, unsigned int ms)
 {
     lhs.tv_nsec += (ms % 1000) * 1000000;
     if(lhs.tv_nsec >= 1000000000)
+    {
+        lhs.tv_nsec -= 1000000000;
         lhs.tv_sec += ms / 1000 + 1;
+    }
     else
         lhs.tv_sec += ms / 1000;
 
