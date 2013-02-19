@@ -81,7 +81,7 @@ QDomElement HWInputFaderBt::save(QDomElement* root, QDomDocument* document)
 bool HWInputFaderBt::init(ConfigManager* config)
 {
     m_btThread = config->getBTThreadByName(m_btName);
-    m_btThread->addInput(this, 1); // TODO: DEBUG set this to 50
+    m_btThread->addInput(this, 50); // TODO: DEBUG set this to 50
 
     return true;
 }
