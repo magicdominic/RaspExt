@@ -89,7 +89,7 @@ void HWOutputDCMotorBt::init(ConfigManager *config)
 
     if(m_btThread == NULL)
     {
-        pi_message("Bluetooth board does not exist");
+        pi_warn("Bluetooth board does not exist");
     }
 }
 
