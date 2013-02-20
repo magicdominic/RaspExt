@@ -81,7 +81,7 @@ void HWOutputGPOBt::init(ConfigManager *config)
     // if we cannot find the bluetooth board, it does not exist and we should fail
     if(btThread == NULL)
     {
-        pi_error("Bluetooth board does not exist");
+        pi_message("Bluetooth board does not exist");
 
         return;
     }
