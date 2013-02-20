@@ -77,6 +77,15 @@ QDomElement HWOutputGPOBt::save(QDomElement* root, QDomDocument* document)
 void HWOutputGPOBt::init(ConfigManager *config)
 {
     BTThread* btThread = config->getBTThreadByName(m_btName);
+
+    // if we cannot find the bluetooth board, it does not exist and we should fail
+    if(btThread == NULL)
+    {
+        pi_error("Bluetooth board does not exist");
+
+        return;
+    }
+
     btThread->addOutputPCF8575(this, m_slaveAddress, m_port);
 
 }
@@ -84,5 +93,7 @@ void HWOutputGPOBt::init(ConfigManager *config)
 void HWOutputGPOBt::deinit(ConfigManager* config)
 {
     BTThread* btThread = config->getBTThreadByName(m_btName);
-    btThread->removeOutputPCF8575(this, m_slaveAddress);
+
+    if(btThread != NULL)
+        btThread->removeOutputPCF8575(this, m_slaveAddress);
 }

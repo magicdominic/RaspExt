@@ -61,19 +61,31 @@ void HWOutputStepperBt::init(ConfigManager *config)
 {
     m_btThread = config->getBTThreadByName(m_btName);
 
+    // if we cannot find the bluetooth board, it does not exist and we should fail
+    if(m_btThread == NULL)
+    {
+        pi_error("Bluetooth board does not exist");
+
+        return;
+    }
+
     m_btThread->addInput(this, 1); // 1 Hertz polling frequency
 }
 
 void HWOutputStepperBt::deinit(ConfigManager* config)
 {
-    m_btThread->removeInput(this);
+    if(m_btThread != NULL)
+    {
+        m_btThread->removeInput(this);
 
-    m_btThread = NULL;
+        m_btThread = NULL;
+    }
 }
 
 void HWOutputStepperBt::testBemf()
 {
-    m_btThread->addOutput(std::bind(&HWOutputStepperBt::testBemfI2C, this, std::placeholders::_1));
+    if(m_btThread != NULL)
+        m_btThread->addOutput(std::bind(&HWOutputStepperBt::testBemfI2C, this, std::placeholders::_1));
 }
 
 void HWOutputStepperBt::softStop(bool override)
@@ -81,7 +93,8 @@ void HWOutputStepperBt::softStop(bool override)
     if(override != this->getOverride())
         return;
 
-    m_btThread->addOutput(std::bind(&HWOutputStepperBt::softStopI2C, this, std::placeholders::_1, override));
+    if(m_btThread != NULL)
+        m_btThread->addOutput(std::bind(&HWOutputStepperBt::softStopI2C, this, std::placeholders::_1, override));
 }
 
 void HWOutputStepperBt::setPosition(short position, bool override)
@@ -89,7 +102,8 @@ void HWOutputStepperBt::setPosition(short position, bool override)
     if(override != this->getOverride())
         return;
 
-    m_btThread->addOutput(std::bind(&HWOutputStepperBt::setPositionI2C, this, std::placeholders::_1, position, override));
+    if(m_btThread != NULL)
+        m_btThread->addOutput(std::bind(&HWOutputStepperBt::setPositionI2C, this, std::placeholders::_1, position, override));
 }
 
 void HWOutputStepperBt::setDualPosition(short position1, short position2, unsigned char vmin, unsigned char vmax, bool override)
@@ -97,7 +111,8 @@ void HWOutputStepperBt::setDualPosition(short position1, short position2, unsign
     if(override != this->getOverride())
         return;
 
-    m_btThread->addOutput(std::bind(&HWOutputStepperBt::setDualPositionI2C,
+    if(m_btThread != NULL)
+        m_btThread->addOutput(std::bind(&HWOutputStepperBt::setDualPositionI2C,
                                      this,
                                      std::placeholders::_1,
                                      position1,
@@ -112,7 +127,8 @@ void HWOutputStepperBt::resetPosition(bool override)
     if(override != this->getOverride())
         return;
 
-    m_btThread->addOutput(std::bind(&HWOutputStepperBt::resetPositionI2C, this, std::placeholders::_1, override));
+    if(m_btThread != NULL)
+        m_btThread->addOutput(std::bind(&HWOutputStepperBt::resetPositionI2C, this, std::placeholders::_1, override));
 }
 
 void HWOutputStepperBt::runVelocity(bool override)
@@ -120,7 +136,8 @@ void HWOutputStepperBt::runVelocity(bool override)
     if(override != this->getOverride())
         return;
 
-    m_btThread->addOutput(std::bind(&HWOutputStepperBt::runVelocityI2C, this, std::placeholders::_1, override));
+    if(m_btThread != NULL)
+        m_btThread->addOutput(std::bind(&HWOutputStepperBt::runVelocityI2C, this, std::placeholders::_1, override));
 }
 
 void HWOutputStepperBt::setParam(Param param, bool override)
@@ -128,12 +145,14 @@ void HWOutputStepperBt::setParam(Param param, bool override)
     if(override != this->getOverride())
         return;
 
-    m_btThread->addOutput(std::bind(&HWOutputStepperBt::setParamI2C, this, std::placeholders::_1, param, override));
+    if(m_btThread != NULL)
+        m_btThread->addOutput(std::bind(&HWOutputStepperBt::setParamI2C, this, std::placeholders::_1, param, override));
 }
 
 void HWOutputStepperBt::refreshFullStatus()
 {
-    m_btThread->addOutput(std::bind(&HWOutputStepperBt::poll, this, std::placeholders::_1));
+    if(m_btThread != NULL)
+        m_btThread->addOutput(std::bind(&HWOutputStepperBt::poll, this, std::placeholders::_1));
 }
 
 void HWOutputStepperBt::poll(BTThread *btThread)
@@ -164,7 +183,8 @@ void HWOutputStepperBt::poll(BTThread *btThread)
     packets[1].readLength = 8;
     packets[1].callbackFunc = std::bind(&HWOutputStepperBt::getFullStatus2Callback, this, std::placeholders::_1, std::placeholders::_2);
 
-    m_btThread->sendI2CPackets(packets, 2);
+    if(m_btThread != NULL)
+        m_btThread->sendI2CPackets(packets, 2);
 }
 
 void HWOutputStepperBt::getFullStatus1Callback(BTThread* btThread, BTI2CPacket* packet)
@@ -237,7 +257,8 @@ void HWOutputStepperBt::testBemfI2C(BTThread *btThread)
 
     packet.commandBuffer[0] = 0x9F; // send command byte (see page 51 of datasheet)
 
-    m_btThread->sendI2CPackets(&packet, 1);
+    if(m_btThread != NULL)
+        m_btThread->sendI2CPackets(&packet, 1);
 }
 
 void HWOutputStepperBt::softStopI2C(BTThread *btThread, bool override)
@@ -254,7 +275,8 @@ void HWOutputStepperBt::softStopI2C(BTThread *btThread, bool override)
 
     packet.commandBuffer[0] = 0x8F; // send command byte (see page 44 of datasheet)
 
-    m_btThread->sendI2CPackets(&packet, 1);
+    if(m_btThread != NULL)
+        m_btThread->sendI2CPackets(&packet, 1);
 }
 
 void HWOutputStepperBt::setPositionI2C(BTThread *btThread, short position, bool override)
@@ -276,7 +298,8 @@ void HWOutputStepperBt::setPositionI2C(BTThread *btThread, short position, bool 
     packet.commandBuffer[3] = (position & 0xFF00) >> 8;
     packet.commandBuffer[4] = (position & 0x00FF);
 
-    m_btThread->sendI2CPackets(&packet, 1);
+    if(m_btThread != NULL)
+        m_btThread->sendI2CPackets(&packet, 1);
 }
 
 void HWOutputStepperBt::setDualPositionI2C(BTThread *i2cThread,
@@ -306,7 +329,8 @@ void HWOutputStepperBt::setDualPositionI2C(BTThread *i2cThread,
     packet.commandBuffer[6] = (position2 & 0xFF00) >> 8;
     packet.commandBuffer[7] = (position2 & 0x00FF);
 
-    m_btThread->sendI2CPackets(&packet, 1);
+    if(m_btThread != NULL)
+        m_btThread->sendI2CPackets(&packet, 1);
 }
 
 void HWOutputStepperBt::resetPositionI2C(BTThread *btThread, bool override)
@@ -342,7 +366,8 @@ void HWOutputStepperBt::runVelocityI2C(BTThread *btThread, bool override)
     // send command byte (see page 44 of datasheet)
     packet.commandBuffer[0] = 0x97;
 
-    m_btThread->sendI2CPackets(&packet, 1);
+    if(m_btThread != NULL)
+        m_btThread->sendI2CPackets(&packet, 1);
 }
 
 void HWOutputStepperBt::setParamI2C(BTThread *btThread, Param param, bool override)
@@ -407,5 +432,6 @@ void HWOutputStepperBt::setParamI2C(BTThread *btThread, Param param, bool overri
     buf[7] = buf[7] | ( (param.stepModeSet ? param.stepMode : m_fullStatus.stepMode) << 2 ); // stepMode
     buf[7] = buf[7] | (param.PWMJitterEnableSet ? param.PWMJitterEnable : m_fullStatus.PWMJitterEnable); // PWMJitterEnable
 
-    m_btThread->sendI2CPackets(packets, 1);
+    if(m_btThread != NULL)
+        m_btThread->sendI2CPackets(packets, 1);
 }

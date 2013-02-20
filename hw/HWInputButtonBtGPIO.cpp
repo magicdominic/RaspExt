@@ -81,6 +81,14 @@ bool HWInputButtonBtGPIO::init(ConfigManager* config)
 {
     m_btThread = config->getBTThreadByName(m_btName);
 
+    // if we cannot find the bluetooth board, it does not exist and we should fail
+    if(m_btThread == NULL)
+    {
+        pi_error("Bluetooth board does not exist");
+
+        return false;
+    }
+
     m_btThread->addGPInput(this);
 
     return true;
@@ -88,9 +96,12 @@ bool HWInputButtonBtGPIO::init(ConfigManager* config)
 
 void HWInputButtonBtGPIO::deinit(ConfigManager* config)
 {
-    m_btThread->removeGPInput(this);
+    if(m_btThread != NULL)
+    {
+        m_btThread->removeGPInput(this);
 
-    m_btThread = NULL;
+        m_btThread = NULL;
+    }
 }
 
 void HWInputButtonBtGPIO::setValue(bool value)

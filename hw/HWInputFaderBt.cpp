@@ -81,6 +81,15 @@ QDomElement HWInputFaderBt::save(QDomElement* root, QDomDocument* document)
 bool HWInputFaderBt::init(ConfigManager* config)
 {
     m_btThread = config->getBTThreadByName(m_btName);
+
+    // if we cannot find the bluetooth board, it does not exist and we should fail
+    if(m_btThread == NULL)
+    {
+        pi_error("Bluetooth board does not exist");
+
+        return false;
+    }
+
     m_btThread->addInput(this, 50); // TODO: DEBUG set this to 50
 
     return true;

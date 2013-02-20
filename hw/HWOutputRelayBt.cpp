@@ -136,6 +136,14 @@ void HWOutputRelayBt::init(ConfigManager *config)
 {
     m_btThread = config->getBTThreadByName(m_btName);
 
+    // if we cannot find the bluetooth board, it does not exist and we should fail
+    if(m_btThread == NULL)
+    {
+        pi_error("Bluetooth board does not exist");
+
+        return;
+    }
+
     // setup I2C device
     m_btThread->addOutput(std::bind(&HWOutputRelayBt::setupI2CBt, this, std::placeholders::_1));
 }
@@ -149,5 +157,6 @@ void HWOutputRelayBt::outputChanged()
 {
     HWOutputRelay::outputChanged();
 
-    m_btThread->addOutput(std::bind(&HWOutputRelayBt::setI2CBt, this, std::placeholders::_1));
+    if(m_btThread != NULL)
+        m_btThread->addOutput(std::bind(&HWOutputRelayBt::setI2CBt, this, std::placeholders::_1));
 }

@@ -78,6 +78,15 @@ QDomElement HWInputButtonBt::save(QDomElement* root, QDomDocument* document)
 bool HWInputButtonBt::init(ConfigManager* config)
 {
     BTThread* btThread = config->getBTThreadByName(m_btName);
+
+    // if we cannot find the bluetooth board, it does not exist and we should fail
+    if(btThread == NULL)
+    {
+        pi_error("Bluetooth board does not exist");
+
+        return false;
+    }
+
     btThread->addInputPCF8575(this, m_slaveAddress, m_port);
 
     return true;
@@ -86,7 +95,9 @@ bool HWInputButtonBt::init(ConfigManager* config)
 void HWInputButtonBt::deinit(ConfigManager* config)
 {
     BTThread* btThread = config->getBTThreadByName(m_btName);
-    btThread->removeInputPCF8575(this, m_slaveAddress);
+
+    if(btThread != NULL)
+        btThread->removeInputPCF8575(this, m_slaveAddress);
 }
 
 void HWInputButtonBt::onInputPolled(bool state)

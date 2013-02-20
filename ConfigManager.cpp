@@ -349,6 +349,12 @@ RuleTimerThread* ConfigManager::getRuleTimerThread()
     return m_ruleTimer;
 }
 
+/**
+ * @brief ConfigManager::getBTThreadByName
+ *return a pointer to the BTThread for the given argument or NULL if it does not exist
+ * @param str
+ * @return
+ */
 BTThread* ConfigManager::getBTThreadByName(std::string str)
 {
     for(std::list<BTThread*>::iterator it = m_config.m_listBTThread.begin(); it != m_config.m_listBTThread.end(); it++)

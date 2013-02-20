@@ -86,6 +86,11 @@ void HWOutputDCMotorBt::setI2CBt(BTThread* btThread)
 void HWOutputDCMotorBt::init(ConfigManager *config)
 {
     m_btThread = config->getBTThreadByName(m_btName);
+
+    if(m_btThread == NULL)
+    {
+        pi_error("Bluetooth board does not exist");
+    }
 }
 
 void HWOutputDCMotorBt::deinit(ConfigManager* config)
@@ -97,5 +102,6 @@ void HWOutputDCMotorBt::outputChanged()
 {
     HWOutputDCMotor::outputChanged();
 
-    m_btThread->addOutput( std::bind(&HWOutputDCMotorBt::setI2CBt, this, std::placeholders::_1) );
+    if(m_btThread != NULL)
+        m_btThread->addOutput( std::bind(&HWOutputDCMotorBt::setI2CBt, this, std::placeholders::_1) );
 }
