@@ -63,35 +63,30 @@ public:
     virtual void poll(BTThread* btThread) = 0;
 };
 
-/**
- * @brief The BTThread class does the actual communication with the devices on the Bluetooth boarrd.
- * A HWInput or HWOutput object uses an BTThread object to read or write to/from devices on Bluetooth.
- * There is a seperate BTThread object for each Bluetooth board.
- */
 class BTThread
 {
 public:
     BTThread();
-    ~BTThread();
+    virtual ~BTThread();
 
-    void start();
-    void kill();
+    virtual void start() = 0;
+    virtual void kill() = 0;
 
     static BTThread* load(QDomElement* root);
-    QDomElement save(QDomElement* root, QDomDocument* document);
+    virtual QDomElement save(QDomElement* root, QDomDocument* document);
 
-    void addInput(BTI2CPolling* hw, unsigned int freq);
-    void removeInput(BTI2CPolling* hw);
+    virtual void addInput(BTI2CPolling* hw, unsigned int freq) = 0;
+    virtual void removeInput(BTI2CPolling* hw) = 0;
 
-    void addOutput(std::function<void (BTThread*)> func);
+    virtual void addOutput(std::function<void (BTThread*)> func) = 0;
 
-    void addInputPCF8575(HWInput* hw, int slaveAddress, unsigned int port);
-    void removeInputPCF8575(HWInput* hw, int slaveAddress);
-    void addOutputPCF8575(HWOutput* hw, int slaveAddress, unsigned int port);
-    void removeOutputPCF8575(HWOutput* hw, int slaveAddress);
+    virtual void addInputPCF8575(HWInput* hw, int slaveAddress, unsigned int port) = 0;
+    virtual void removeInputPCF8575(HWInput* hw, int slaveAddress) = 0;
+    virtual void addOutputPCF8575(HWOutput* hw, int slaveAddress, unsigned int port) = 0;
+    virtual void removeOutputPCF8575(HWOutput* hw, int slaveAddress) = 0;
 
-    void addGPInput(HWInputButtonBtGPIO* hw);
-    void removeGPInput(HWInputButtonBtGPIO* hw);
+    virtual void addGPInput(HWInputButtonBtGPIO* hw) = 0;
+    virtual void removeGPInput(HWInputButtonBtGPIO* hw) = 0;
 
     void setName(std::string name) { m_name = name;}
     std::string getName() const { return m_name;}
@@ -99,79 +94,15 @@ public:
     std::string getBTAddr() const { return m_btaddr;}
 
 
-
     // ATTENTION: USE ONLY IN BTTHREAD!!!!
-    void sendI2CPackets(BTI2CPacket* packets, unsigned int num);
+    virtual void sendI2CPackets(BTI2CPacket* packets, unsigned int num) = 0;
 
-private:
-    struct InputElement
-    {
-        unsigned int freq;
-        timespec time;
-        BTI2CPolling* hw;
-
-        bool operator< (const InputElement& rhs)
-        {
-            return timespecGreaterThan(this->time, rhs.time);
-        }
-
-        bool operator == (const InputElement& rhs)
-        {
-            // return true if hw objects match
-            // this is the case if lhs and rhs are actually the same polling object
-            return this->hw == rhs.hw;
-        }
-    };
-    struct OutputElement
-    {
-        std::function<void (BTThread*)> func;
-    };
-
-    static void* run_internal(void* arg);
-    void run();
-
-    void connectBt();
-    void disconnectBt();
-    void reconnectBt();
-
-    void readBlocking();
-
-    bool readWait(timespec timeout);
-    void packetHandler(char* buffer, unsigned int length);
-    unsigned short seqInc() { m_seq = (m_seq + 1) % 0xFF; return m_seq;}
-    void send(char* buffer, unsigned int length);
-    void sendGPUpdateRequest(unsigned int pinGroup, BTThread*);
-
-
-    int m_socket;
+protected:
     pthread_t m_thread;
     std::mutex m_mutex;
     bool m_bStop;
     std::string m_name;
     std::string m_btaddr; // must be in format 11:22:33:44:55:66
-
-    unsigned short m_seq;
-    PriorityQueue<InputElement> m_inputQueue;
-    std::queue<OutputElement> m_outputQueue;
-
-    std::list<PCF8575Bt*> m_listPCF8575;
-
-    struct GPInput
-    {
-        HWInputButtonBtGPIO* hw;
-        unsigned int pinGroup;
-        unsigned int pin;
-    };
-
-    std::list<GPInput> m_listGPInput;
-
-    struct PacketSeq
-    {
-        unsigned char seq;
-        std::function<void (BTThread*, BTI2CPacket*)> callbackFunc;
-
-    };
-
-    std::list<PacketSeq> m_listSeq;
 };
+
 #endif // BTTHREAD_H

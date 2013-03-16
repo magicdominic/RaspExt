@@ -2,7 +2,7 @@
 #include "ui/ConfigDialog.h"
 #include "hw/HWInput.h"
 #include "hw/HWOutput.h"
-#include "hw/BTThread.h"
+#include "hw/BTClassicThread.h"
 #include "ConfigManager.h"
 #include "hw/I2CThread.h"
 #include "util/Debug.h"
@@ -140,7 +140,7 @@ int ConfigDialog::btI2CScan(std::string name)
         // apparently we did not find it, so we must create it ourselfs
         bOwn = true;
 
-        btThread = new BTThread();
+        btThread = new BTClassicThread();
         btThread->setBTAddr(addr);
 
         btThread->start();
@@ -690,7 +690,7 @@ void ConfigBTDialog::edit(BTThread *btThread)
 
 BTThread* ConfigBTDialog::assemble() const
 {
-    BTThread* btThread = new BTThread();
+    BTThread* btThread = new BTClassicThread();
 
     btThread->setName( ui->editName->text().toStdString() );
     btThread->setBTAddr( ui->editAddr->text().toStdString() );

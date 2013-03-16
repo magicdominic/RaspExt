@@ -63,7 +63,6 @@ SOURCES += main.cpp \
     script/ActionOutputStepper.cpp \
     script/ActionOutputStepperSoftStop.cpp \
     script/ActionOutputStepperRunVelocity.cpp \
-    hw/BTThread.cpp \
     script/ActionOutputStepperSetParam.cpp \
     ui/VariableListDialog.cpp \
     ui/VariableTableModel.cpp \
@@ -94,7 +93,10 @@ SOURCES += main.cpp \
     hw/HWOutputGPOBt.cpp \
     ui/BTScanDialog.cpp \
     hw/HWOutputRelayBt.cpp \
-    hw/HWOutputStepperBt.cpp
+    hw/HWOutputStepperBt.cpp \
+    hw/BTClassicThread.cpp \
+    hw/BTThread.cpp \
+    hw/BLEThread.cpp
 HEADERS += ui/MainWindow.h \
     ui/InputFaderFrame.h \
     ui/ScriptsTableModel.h \
@@ -157,7 +159,6 @@ HEADERS += ui/MainWindow.h \
     script/ActionOutputStepper.h \
     script/ActionOutputStepperRunVelocity.h \
     util/Config.h \
-    hw/BTThread.h \
     script/ActionOutputStepperSetParam.h \
     ui/VariableListDialog.h \
     ui/VariableTableModel.h \
@@ -187,7 +188,10 @@ HEADERS += ui/MainWindow.h \
     hw/HWOutputGPOBt.h \
     ui/BTScanDialog.h \
     hw/HWOutputRelayBt.h \
-    hw/HWOutputStepperBt.h
+    hw/HWOutputStepperBt.h \
+    hw/BLEThread.h \
+    hw/BTClassicThread.h \
+    hw/BTThread.h
 FORMS += ui/MainWindow.ui \
     ui/RuleDialog.ui \
     ui/ScriptDialog.ui \
