@@ -26,6 +26,7 @@ BTThread::BTThread()
     m_socket = -1;
     m_seq = 0;
     m_btaddr = "11:22:33:44:55:66";
+    m_bLE = true;
 
     // specify a dummy handler for SIGUSR1
     struct sigaction sa;
@@ -236,8 +237,20 @@ void BTThread::connectBt()
 
         // set the connection parameters (who to connect to)
         addr.l2_family = AF_BLUETOOTH;
-        addr.l2_psm = htobs(0x1001);
-        addr.l2_cid = 0;
+
+        if(!m_bLE)
+        {
+            addr.l2_psm = htobs(0x1001);
+            addr.l2_cid = 0;
+            addr.l2_bdaddr_type = BDADDR_BREDR;
+        }
+        else
+        {
+            addr.l2_psm = 0;
+            addr.l2_cid = 0x0004;
+            addr.l2_bdaddr_type = BDADDR_LE_PUBLIC;
+        }
+
         str2ba(m_btaddr.c_str(), &addr.l2_bdaddr);
 
         // connect to target
@@ -376,7 +389,7 @@ void BTThread::readBlocking()
 {
     char buffer[256];
     memset(buffer, 0, sizeof(buffer));
-    int readBytes = recv(m_socket, buffer, sizeof(buffer), 0);
+    int readBytes = recv(m_socket, buffer, sizeof(buffer), MSG_WAITALL);
 
     // TODO: check if this is enough error checking
     if(readBytes == 0)
@@ -392,7 +405,7 @@ void BTThread::readBlocking()
     }
     else
     {
-        // we have received the packet, now we have to parse it and call the apropriate functions
+        // we have received the packet, now we have to parse it and call the appropriate functions
         this->packetHandler(buffer, readBytes);
     }
 }
