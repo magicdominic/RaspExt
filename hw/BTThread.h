@@ -149,7 +149,6 @@ private:
     bool m_bStop;
     std::string m_name;
     std::string m_btaddr; // must be in format 11:22:33:44:55:66
-    bool m_bLE;
 
     unsigned short m_seq;
     PriorityQueue<InputElement> m_inputQueue;
