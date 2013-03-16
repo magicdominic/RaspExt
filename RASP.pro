@@ -2,9 +2,11 @@
 # Project created by QtCreator 2012-09-22T17:55:01
 # -------------------------------------------------
 QMAKE_CXXFLAGS += -std=c++0x
+CONFIG += link_pkgconfig
 QT += xml
 LIBS += -lbluetooth
 LIBS += -lSDL_mixer -lSDL -lrt
+PKGCONFIG += glib-2.0 gio-2.0
 TARGET = RASP
 TEMPLATE = app
 SOURCES += main.cpp \

@@ -3,6 +3,8 @@
 
 #include "hw/BTThread.h"
 
+#include <glib.h>
+
 class BLEThread : public BTThread
 {
 public:
@@ -38,15 +40,13 @@ public:
     // ATTENTION: USE ONLY IN BTTHREAD!!!!
     void sendI2CPackets(BTI2CPacket* packets, unsigned int num);
 
+
+    // TODO: should be private
+    void setState(unsigned char state);
 private:
     static void* run_internal(void* arg);
     void run();
 
-    pthread_t m_thread;
-    std::mutex m_mutex;
-    bool m_bStop;
-    std::string m_name;
-    std::string m_btaddr; // must be in format 11:22:33:44:55:66
     struct GPInput
     {
         HWInputButtonBtGPIO* hw;
@@ -55,6 +55,8 @@ private:
     };
 
     std::list<GPInput> m_listGPInput;
+
+    GMainLoop* m_loop;
 };
 
 #endif // BLETHREAD_H
