@@ -4,6 +4,7 @@
 #include "hw/BTThread.h"
 
 #include <glib.h>
+#include <gio/gio.h>
 
 class BLEThread : public BTThread
 {
@@ -47,6 +48,18 @@ private:
     static void* run_internal(void* arg);
     void run();
 
+    bool bluezInit();
+    bool bluezFindDevice();
+    bool bluezCreateWatcher();
+    void bluezCleanup();
+    void bluezDestroyWatcher();
+
+    bool bluezRegisterWatcher();
+    bool bluezRegisterDisconnectHandler();
+    bool bluezUnregisterWatcher();
+    void bluezUnregisterDisconnectHandler();
+    void bluezCheckConnection();
+
     struct GPInput
     {
         HWInputButtonBtGPIO* hw;
@@ -57,6 +70,15 @@ private:
     std::list<GPInput> m_listGPInput;
 
     GMainLoop* m_loop;
+    GDBusConnection* m_connection;
+    guint m_busOwnerID;
+    guint m_disconnectSignalID;
+    gchar* m_servicePath;
+    gchar* m_watcherPath;
+    gchar* m_devicePath;
+    gchar* m_adapterPath;
+
+    friend gboolean check_connection_helper(gpointer data);
 };
 
 #endif // BLETHREAD_H

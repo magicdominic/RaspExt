@@ -589,6 +589,11 @@ unsigned char bluez_characteristic_extract_value(GVariant* variant)
 BLEThread::BLEThread()
 {
     m_loop = NULL;
+    m_connection = NULL;
+    m_devicePath = NULL;
+    m_servicePath = NULL;
+    m_adapterPath = NULL;
+    m_watcherPath = NULL;
 }
 
 BLEThread::~BLEThread()
@@ -696,32 +701,17 @@ void
 BLEThread::run()
 {
     // initialize everything
-    GDBusConnection* conn = bluez_init();
-    if(conn == NULL)
-    {
-        pi_warn("Could not connect to bus");
+    if(!this->bluezInit())
         return;
-    }
 
-    gchar* adapter_path = bluez_get_default_adapter(conn);
-    if(adapter_path == NULL)
-    {
-        pi_warn("Could not get default adapter");
+    if(!this->bluezFindDevice())
         return;
-    }
-
-    gchar* device_path = bluez_find_device(conn, adapter_path, m_btaddr.c_str());
-    if(device_path == NULL)
-    {
-        pi_warn("Could not get device path for the given bluetooth device");
-        return;
-    }
 
     // we want to take a look at only one special characteristic
-    gchar* service_path = g_strconcat(device_path, "/service0007", NULL);
-    gchar* char_path = g_strconcat(service_path, "/characteristic0009", NULL);
+    m_servicePath = g_strconcat(m_devicePath, "/service0007", NULL);
+    gchar* char_path = g_strconcat(m_servicePath, "/characteristic0009", NULL);
 
-    GVariant* var = bluez_characteristic_get_value(conn, char_path);
+    GVariant* var = bluez_characteristic_get_value(m_connection, char_path);
     if(var != NULL)
     {
         unsigned char buttonState = bluez_characteristic_extract_value(var);
@@ -732,13 +722,12 @@ BLEThread::run()
     }
 
     // register disconnect handler
-    bluez_register_disconnect_handler(conn, device_path);
+    this->bluezRegisterDisconnectHandler();
 
     // register watcher
-    guint owner_id = bluez_create_watcher(conn, this);
-    bluez_register_watcher(conn, service_path);
+    this->bluezCreateWatcher();
 
-
+    this->bluezRegisterWatcher();
 
     // start runloop, will only exit, if the thread will be killed soon
     m_loop = g_main_loop_new(NULL, FALSE);
@@ -747,18 +736,373 @@ BLEThread::run()
 
 
     // cleanup
-    bluez_destroy_watcher(owner_id);
-
-    // TODO: Unsubscribe the disconnect handler
+    this->bluezUnregisterDisconnectHandler();
+    this->bluezUnregisterWatcher();
+    this->bluezDestroyWatcher();
 
     g_free(char_path);
-    g_free(service_path);
-    g_free(device_path);
-    g_free(adapter_path);
+    g_free(m_servicePath);
 
-    bluez_cleanup(conn);
+    this->bluezCleanup();
 }
 
+gboolean check_connection_helper(gpointer data)
+{
+    BLEThread* obj = (BLEThread*)data;
+
+    obj->bluezCheckConnection();
+
+    return false;
+}
+
+bool
+BLEThread::bluezRegisterWatcher()
+{
+    if(m_servicePath == NULL)
+        pi_warn("Service path is not defined");
+
+    GError* error = NULL;
+
+    GDBusMessage* call_message = g_dbus_message_new_method_call("org.bluez",
+                                                       m_servicePath,
+                                                       "org.bluez.Characteristic",
+                                                       "RegisterCharacteristicsWatcher");
+    if(call_message == NULL)
+    {
+        printf("g_dbus_message_new_method_call failed\n");
+
+        return false;
+    }
+
+    GVariant* variant_addr = g_variant_new_object_path(m_watcherPath);
+    GVariant* variant_body = g_variant_new_tuple(&variant_addr, 1);
+
+    g_dbus_message_set_body(call_message, variant_body);
+
+    GDBusMessage* reply_message = g_dbus_connection_send_message_with_reply_sync(m_connection,
+                                                                          call_message,
+                                                                          G_DBUS_SEND_MESSAGE_FLAGS_NONE,
+                                                                          -1,
+                                                                          NULL,
+                                                                          NULL,
+                                                                          &error);
+    if(reply_message == NULL)
+    {
+        printf("g_dbus_connection_send_message_with_reply_sync failed\n");
+
+        return false;
+    }
+
+    if(g_dbus_message_get_message_type(reply_message) == G_DBUS_MESSAGE_TYPE_ERROR)
+    {
+        printf("Error occured\n");
+
+        g_dbus_message_to_gerror(reply_message, &error);
+        g_printerr("Error invoking g_dbus_connection_send_message_with_reply_sync: %s\n", error->message);
+
+        g_error_free(error);
+
+        return false;
+    }
+
+    g_timeout_add(2000,
+                  &check_connection_helper,
+                  this);
+
+    // cleanup
+    g_object_unref(call_message);
+    g_object_unref(reply_message);
+
+
+    return true;
+}
+
+bool
+BLEThread::bluezUnregisterWatcher()
+{
+    if(m_servicePath == NULL)
+    {
+        pi_warn("Not all paths are defined");
+        return false;
+    }
+
+    GError* error = NULL;
+
+    GDBusMessage* call_message = g_dbus_message_new_method_call("org.bluez",
+                                                       m_servicePath,
+                                                       "org.bluez.Characteristic",
+                                                       "UnregisterCharacteristicsWatcher");
+    if(call_message == NULL)
+    {
+        printf("g_dbus_message_new_method_call failed\n");
+
+        return false;
+    }
+
+    GVariant* variant_addr = g_variant_new_object_path(m_watcherPath);
+    GVariant* variant_body = g_variant_new_tuple(&variant_addr, 1);
+
+    g_dbus_message_set_body(call_message, variant_body);
+
+    GDBusMessage* reply_message = g_dbus_connection_send_message_with_reply_sync(m_connection,
+                                                                          call_message,
+                                                                          G_DBUS_SEND_MESSAGE_FLAGS_NONE,
+                                                                          -1,
+                                                                          NULL,
+                                                                          NULL,
+                                                                          &error);
+    if(reply_message == NULL)
+    {
+        printf("g_dbus_connection_send_message_with_reply_sync failed\n");
+
+        return false;
+    }
+
+    if(g_dbus_message_get_message_type(reply_message) == G_DBUS_MESSAGE_TYPE_ERROR)
+    {
+        printf("Error occured\n");
+
+        g_dbus_message_to_gerror(reply_message, &error);
+        g_printerr("Error invoking g_dbus_connection_send_message_with_reply_sync: %s\n", error->message);
+
+        g_error_free(error);
+
+        return false;
+    }
+
+    // cleanup
+    g_object_unref(call_message);
+    g_object_unref(reply_message);
+
+    return true;
+}
+
+void BLEThread::bluezCheckConnection()
+{
+    pi_warn("Check connection called");
+}
+
+
+bool BLEThread::bluezCreateWatcher()
+{
+    /* We are lazy here - we don't want to manually provide
+    * the introspection data structures - so we just build
+    * them from XML.
+    */
+    introspection_data = g_dbus_node_info_new_for_xml (introspection_xml, NULL);
+    g_assert(introspection_data != NULL);
+
+    guint registration_id;
+
+    gchar path[255];
+    g_snprintf(path, 255, "/test/bluez/%d", getpid());
+
+    m_watcherPath = g_strdup(path);
+
+    registration_id = g_dbus_connection_register_object(m_connection,
+                                                       m_watcherPath,
+                                                       introspection_data->interfaces[0],
+                                                       &interface_vtable,
+                                                       this,  /* user_data */
+                                                       NULL,  /* user_data_free_func */
+                                                       NULL); /* GError** */
+
+    if(registration_id <= 0)
+        return false;
+
+    m_busOwnerID = g_bus_own_name_on_connection(m_connection,
+                                     "org.test.bluez",
+                                     G_BUS_NAME_OWNER_FLAGS_NONE,
+                                     on_name_acquired,
+                                     on_name_lost,
+                                     NULL,
+                                     NULL);
+
+    return true;
+}
+
+void
+BLEThread::bluezDestroyWatcher()
+{
+    g_bus_unown_name(m_busOwnerID);
+}
+
+bool
+BLEThread::bluezRegisterDisconnectHandler()
+{
+    m_disconnectSignalID = g_dbus_connection_signal_subscribe(m_connection,
+                                                         "org.bluez",
+                                                         "org.bluez.Device",
+                                                         "PropertyChanged",
+                                                         m_devicePath,
+                                                         "Connected",
+                                                         G_DBUS_SIGNAL_FLAGS_NONE,
+                                                         bluez_handle_disconnect,
+                                                         m_devicePath,
+                                                         NULL);
+
+    if(m_disconnectSignalID <= 0)
+    {
+        g_printerr("g_dbus_connection_signal_subscribe failed: %d\n", m_disconnectSignalID);
+
+        return false;
+    }
+
+    return true;
+}
+
+void
+BLEThread::bluezUnregisterDisconnectHandler()
+{
+    // TODO
+}
+
+bool
+BLEThread::bluezInit()
+{
+    GError* error = NULL;
+
+    g_type_init();
+
+    m_connection = g_bus_get_sync(G_BUS_TYPE_SYSTEM,
+                                          NULL,
+                                          &error);
+    if(m_connection == NULL)
+    {
+        g_printerr("Error invoking g_bus_get_sync: %s\n", error->message);
+
+        return false;
+    }
+
+
+    // Now get the default adapter
+    GDBusMessage* call_message = g_dbus_message_new_method_call("org.bluez",
+                                                       "/",
+                                                       "org.bluez.Manager",
+                                                       "DefaultAdapter");
+    if(call_message == NULL)
+    {
+        g_printf("g_dbus_message_new_method_call failed\n");
+
+        return false;
+    }
+
+    GDBusMessage* reply_message = g_dbus_connection_send_message_with_reply_sync(m_connection,
+                                                                          call_message,
+                                                                          G_DBUS_SEND_MESSAGE_FLAGS_NONE,
+                                                                          -1,
+                                                                          NULL,
+                                                                          NULL,
+                                                                          &error);
+    if(reply_message == NULL)
+    {
+        g_printf("g_dbus_connection_send_message_with_reply_sync failed\n");
+
+        return false;
+    }
+
+    if(g_dbus_message_get_message_type(reply_message) == G_DBUS_MESSAGE_TYPE_ERROR)
+    {
+        printf("Error occured\n");
+
+        g_dbus_message_to_gerror(reply_message, &error);
+        g_printerr("Error invoking g_dbus_connection_send_message_with_reply_sync: %s\n", error->message);
+
+        g_error_free(error);
+
+        return false;
+    }
+
+
+    GVariant* variant = g_dbus_message_get_body(reply_message);
+
+    // get first child, as this is the object path of the default interface of bluez
+    GVariant* var_child = g_variant_get_child_value(variant, 0);
+
+    const gchar* tmp_path = g_variant_get_string(var_child, NULL);
+
+    // copy content of tmp_path to obj_path, as tmp_path gets freed after unref of the variant
+    gchar* obj_path = g_strdup(tmp_path);
+
+    // cleanup
+    g_variant_unref(var_child);
+
+    g_object_unref(call_message);
+    g_object_unref(reply_message);
+
+    m_devicePath = obj_path;
+
+    return true;
+}
+
+void
+BLEThread::bluezCleanup()
+{
+    g_object_unref(m_connection);
+}
+
+bool
+BLEThread::bluezFindDevice()
+{
+    if(m_adapterPath == NULL)
+    {
+        pi_warn("Adapter path is empty");
+        return false;
+    }
+
+    GError* error = NULL;
+
+    GDBusMessage* call_message = g_dbus_message_new_method_call("org.bluez",
+                                                       m_adapterPath,
+                                                       "org.bluez.Adapter",
+                                                       "FindDevice");
+    if(call_message == NULL)
+    {
+        return false;
+    }
+
+    GVariant* variant_addr = g_variant_new_string(m_btaddr.c_str());
+    GVariant* variant_body = g_variant_new_tuple(&variant_addr, 1);
+
+    g_dbus_message_set_body(call_message, variant_body);
+
+    GDBusMessage* reply_message = g_dbus_connection_send_message_with_reply_sync(m_connection,
+                                                                          call_message,
+                                                                          G_DBUS_SEND_MESSAGE_FLAGS_NONE,
+                                                                          -1,
+                                                                          NULL,
+                                                                          NULL,
+                                                                          &error);
+    if(reply_message == NULL)
+    {
+        return false;
+    }
+
+    if(g_dbus_message_get_message_type(reply_message) == G_DBUS_MESSAGE_TYPE_ERROR)
+    {
+        return false;
+    }
+
+    GVariant* variant = g_dbus_message_get_body(reply_message);
+
+    // get first child, as this is the object path of the default interface of bluez
+    GVariant* var_child = g_variant_get_child_value(variant, 0);
+
+    const gchar* tmp_path = g_variant_get_string(var_child, NULL);
+
+    // copy content of tmp_path to obj_path, as tmp_path gets freed after unref of the variant
+    gchar* obj_path = g_strdup(tmp_path);
+
+    // cleanup
+    g_variant_unref(var_child);
+
+    g_object_unref(call_message);
+    g_object_unref(reply_message);
+
+    m_devicePath = obj_path;
+
+    return true;
+}
 
 /*******************************************************
  * Virtual methods, not yet implemented
