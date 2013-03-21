@@ -746,7 +746,8 @@ BLEThread::run()
     this->bluezCleanup();
 }
 
-gboolean check_connection_helper(gpointer data)
+gboolean
+check_connection_helper(gpointer data)
 {
     BLEThread* obj = (BLEThread*)data;
 
