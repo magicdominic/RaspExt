@@ -147,7 +147,6 @@ void BTClassicThread::connectBt()
         addr.l2_family = AF_BLUETOOTH;
         addr.l2_psm = htobs(0x1001);
         addr.l2_cid = 0;
-        addr.l2_bdaddr_type = BDADDR_BREDR;
 
         str2ba(m_btaddr.c_str(), &addr.l2_bdaddr);
 

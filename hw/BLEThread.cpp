@@ -1030,7 +1030,7 @@ BLEThread::bluezInit()
     g_object_unref(call_message);
     g_object_unref(reply_message);
 
-    m_devicePath = obj_path;
+    m_adapterPath = obj_path;
 
     return true;
 }
