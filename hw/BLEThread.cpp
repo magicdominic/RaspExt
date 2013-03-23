@@ -15,150 +15,6 @@
 #include <gio/gio.h>
 #include <glib/gprintf.h>
 
-GDBusConnection* bluez_init()
-{
-    GError* error = NULL;
-
-    g_type_init();
-
-    GDBusConnection* conn = g_bus_get_sync(G_BUS_TYPE_SYSTEM,
-                                          NULL,
-                                          &error);
-    if(conn == NULL)
-    {
-        g_printf("g_bus_get_sync failed\n");
-
-        g_printerr("Error invoking g_bus_get_sync: %s\n", error->message);
-    }
-
-    return conn;
-}
-
-void bluez_cleanup(GDBusConnection* conn)
-{
-    g_object_unref(conn);
-}
-
-// returns object path of default adapter or NULL if failed
-// this object path must be freed with g_free()
-gchar* bluez_get_default_adapter(GDBusConnection* conn)
-{
-    GError* error = NULL;
-
-    GDBusMessage* call_message = g_dbus_message_new_method_call("org.bluez",
-                                                       "/",
-                                                       "org.bluez.Manager",
-                                                       "DefaultAdapter");
-    if(call_message == NULL)
-    {
-        g_printf("g_dbus_message_new_method_call failed\n");
-
-        return NULL;
-    }
-
-    GDBusMessage* reply_message = g_dbus_connection_send_message_with_reply_sync(conn,
-                                                                          call_message,
-                                                                          G_DBUS_SEND_MESSAGE_FLAGS_NONE,
-                                                                          -1,
-                                                                          NULL,
-                                                                          NULL,
-                                                                          &error);
-    if(reply_message == NULL)
-    {
-        g_printf("g_dbus_connection_send_message_with_reply_sync failed\n");
-
-        return NULL;
-    }
-
-    if(g_dbus_message_get_message_type(reply_message) == G_DBUS_MESSAGE_TYPE_ERROR)
-    {
-        printf("Error occured\n");
-
-        g_dbus_message_to_gerror(reply_message, &error);
-        g_printerr("Error invoking g_dbus_connection_send_message_with_reply_sync: %s\n", error->message);
-
-        g_error_free(error);
-
-        return NULL;
-    }
-
-
-    GVariant* variant = g_dbus_message_get_body(reply_message);
-
-    // get first child, as this is the object path of the default interface of bluez
-    GVariant* var_child = g_variant_get_child_value(variant, 0);
-
-    const gchar* tmp_path = g_variant_get_string(var_child, NULL);
-
-    // copy content of tmp_path to obj_path, as tmp_path gets freed after unref of the variant
-    gchar* obj_path = g_strdup(tmp_path);
-
-    // cleanup
-    g_variant_unref(var_child);
-
-    g_object_unref(call_message);
-    g_object_unref(reply_message);
-
-    return obj_path;
-}
-
-
-// returns the object path to a given device or NULL if failed
-// object path has to be freed with g_free()
-gchar* bluez_find_device(GDBusConnection* conn, const gchar* adapter_path, const char* bt_addr)
-{
-    GError* error = NULL;
-
-    GDBusMessage* call_message = g_dbus_message_new_method_call("org.bluez",
-                                                       adapter_path,
-                                                       "org.bluez.Adapter",
-                                                       "FindDevice");
-    if(call_message == NULL)
-    {
-        return NULL;
-    }
-
-    GVariant* variant_addr = g_variant_new_string(bt_addr);
-    GVariant* variant_body = g_variant_new_tuple(&variant_addr, 1);
-
-    g_dbus_message_set_body(call_message, variant_body);
-
-    GDBusMessage* reply_message = g_dbus_connection_send_message_with_reply_sync(conn,
-                                                                          call_message,
-                                                                          G_DBUS_SEND_MESSAGE_FLAGS_NONE,
-                                                                          -1,
-                                                                          NULL,
-                                                                          NULL,
-                                                                          &error);
-    if(reply_message == NULL)
-    {
-        return NULL;
-    }
-
-    if(g_dbus_message_get_message_type(reply_message) == G_DBUS_MESSAGE_TYPE_ERROR)
-    {
-        return NULL;
-    }
-
-    GVariant* variant = g_dbus_message_get_body(reply_message);
-
-    // get first child, as this is the object path of the default interface of bluez
-    GVariant* var_child = g_variant_get_child_value(variant, 0);
-
-    const gchar* tmp_path = g_variant_get_string(var_child, NULL);
-
-    // copy content of tmp_path to obj_path, as tmp_path gets freed after unref of the variant
-    gchar* obj_path = g_strdup(tmp_path);
-
-    // cleanup
-    g_variant_unref(var_child);
-
-    g_object_unref(call_message);
-    g_object_unref(reply_message);
-
-    return obj_path;
-}
-
 
 GVariant* bluez_characteristic_get_value(GDBusConnection* conn, const gchar* char_path)
 {
@@ -215,174 +71,6 @@ GVariant* bluez_characteristic_get_value(GDBusConnection* conn, const gchar* cha
 }
 
 
-void bluez_register_watcher(GDBusConnection* conn, const gchar* service_path)
-{
-    GError* error = NULL;
-
-    GDBusMessage* call_message = g_dbus_message_new_method_call("org.bluez",
-                                                       service_path,
-                                                       "org.bluez.Characteristic",
-                                                       "RegisterCharacteristicsWatcher");
-    if(call_message == NULL)
-    {
-        printf("g_dbus_message_new_method_call failed\n");
-
-        return;
-    }
-
-    gchar path[255];
-    g_snprintf(path, 255, "/test/bluez/%d", getpid());
-
-    GVariant* variant_addr = g_variant_new_object_path(path);
-    GVariant* variant_body = g_variant_new_tuple(&variant_addr, 1);
-
-    g_dbus_message_set_body(call_message, variant_body);
-
-    GDBusMessage* reply_message = g_dbus_connection_send_message_with_reply_sync(conn,
-                                                                          call_message,
-                                                                          G_DBUS_SEND_MESSAGE_FLAGS_NONE,
-                                                                          -1,
-                                                                          NULL,
-                                                                          NULL,
-                                                                          &error);
-    if(reply_message == NULL)
-    {
-        printf("g_dbus_connection_send_message_with_reply_sync failed\n");
-
-        return;
-    }
-
-    if(g_dbus_message_get_message_type(reply_message) == G_DBUS_MESSAGE_TYPE_ERROR)
-    {
-        printf("Error occured\n");
-
-        g_dbus_message_to_gerror(reply_message, &error);
-        g_printerr("Error invoking g_dbus_connection_send_message_with_reply_sync: %s\n", error->message);
-
-        g_error_free(error);
-
-        return;
-    }
-
-    // cleanup
-    g_object_unref(call_message);
-    g_object_unref(reply_message);
-}
-
-void bluez_unregister_watcher(GDBusConnection* conn, const gchar* service_path)
-{
-    GError* error = NULL;
-
-    GDBusMessage* call_message = g_dbus_message_new_method_call("org.bluez",
-                                                       service_path,
-                                                       "org.bluez.Characteristic",
-                                                       "UnregisterCharacteristicsWatcher");
-    if(call_message == NULL)
-    {
-        printf("g_dbus_message_new_method_call failed\n");
-
-        return;
-    }
-
-    gchar path[255];
-    g_snprintf(path, 255, "/test/bluez/%d", getpid());
-
-    GVariant* variant_addr = g_variant_new_object_path(path);
-    GVariant* variant_body = g_variant_new_tuple(&variant_addr, 1);
-
-    g_dbus_message_set_body(call_message, variant_body);
-
-    GDBusMessage* reply_message = g_dbus_connection_send_message_with_reply_sync(conn,
-                                                                          call_message,
-                                                                          G_DBUS_SEND_MESSAGE_FLAGS_NONE,
-                                                                          -1,
-                                                                          NULL,
-                                                                          NULL,
-                                                                          &error);
-    if(reply_message == NULL)
-    {
-        printf("g_dbus_connection_send_message_with_reply_sync failed\n");
-
-        return;
-    }
-
-    if(g_dbus_message_get_message_type(reply_message) == G_DBUS_MESSAGE_TYPE_ERROR)
-    {
-        printf("Error occured\n");
-
-        g_dbus_message_to_gerror(reply_message, &error);
-        g_printerr("Error invoking g_dbus_connection_send_message_with_reply_sync: %s\n", error->message);
-
-        g_error_free(error);
-
-        return;
-    }
-
-    // cleanup
-    g_object_unref(call_message);
-    g_object_unref(reply_message);
-}
-
-/*******************************************************************************************************
- * Handle disconnects
- *******************************************************************************************************/
-
-static void
-bluez_handle_disconnect(GDBusConnection       *connection,
-                    const gchar           *sender,
-                    const gchar           *object_path,
-                    const gchar           *interface_name,
-                    const gchar           *signal_name,
-                    GVariant              *parameters,
-                    gpointer               user_data)
-{
-    // check if parameter is valid and is the parameter we were looking for
-    if( !(g_variant_type_equal(g_variant_get_type(parameters), "(sv)") &&
-          g_variant_n_children(parameters) == 2) )
-        return;
-
-    GVariant* name = g_variant_get_child_value(parameters, 0);
-    GVariant* value = g_variant_get_variant(g_variant_get_child_value(parameters, 1));
-
-    if( !(g_strcmp0(g_variant_get_string(name, NULL), "Connected") == 0 &&
-          g_variant_type_equal(g_variant_get_type(value), G_VARIANT_TYPE_BOOLEAN) ) )
-        return;
-
-    gboolean connected = g_variant_get_boolean(value);
-    g_printf("Connected: %d\n", connected);
-
-    if(!connected)
-    {
-        gchar* device_path = (gchar*)user_data;
-        gchar* service_path = g_strconcat(device_path, "/service0007", NULL);
-
-        bluez_unregister_watcher(connection, service_path);
-        bluez_register_watcher(connection, service_path);
-    }
-}
-
-guint bluez_register_disconnect_handler(GDBusConnection* conn, char* device_path)
-{
-    guint signal_id = g_dbus_connection_signal_subscribe(conn,
-                                                         "org.bluez",
-                                                         "org.bluez.Device",
-                                                         "PropertyChanged",
-                                                         device_path,
-                                                         "Connected",
-                                                         G_DBUS_SIGNAL_FLAGS_NONE,
-                                                         bluez_handle_disconnect,
-                                                         device_path,
-                                                         NULL);
-
-    if(signal_id <= 0)
-    {
-        g_printerr("g_dbus_connection_signal_subscribe failed: %d\n", signal_id);
-    }
-
-    return signal_id;
-}
-
-
 /*******************************************************************************************************
  * Watcher
  *******************************************************************************************************/
@@ -408,11 +96,6 @@ static const gchar introspection_xml[] =
     "  </interface>"
   "</node>";
 /* ---------------------------------------------------------------------------------------------------- */
-
-struct bluez_user_data
-{
-    std::function<void (unsigned char)> callback_func;
-};
 
 static void
 handle_method_call (GDBusConnection       *connection,
@@ -510,42 +193,6 @@ static void on_name_lost (GDBusConnection *connection,
     //g_main_loop_quit();
 }
 
-guint bluez_create_watcher(GDBusConnection* conn, BLEThread* thread)
-{
-    /* We are lazy here - we don't want to manually provide
-    * the introspection data structures - so we just build
-    * them from XML.
-    */
-    introspection_data = g_dbus_node_info_new_for_xml (introspection_xml, NULL);
-    g_assert(introspection_data != NULL);
-
-    guint registration_id;
-
-    gchar path[255];
-    g_snprintf(path, 255, "/test/bluez/%d", getpid());
-
-    registration_id = g_dbus_connection_register_object(conn,
-                                                       path,
-                                                       introspection_data->interfaces[0],
-                                                       &interface_vtable,
-                                                       thread,  /* user_data */
-                                                       NULL,  /* user_data_free_func */
-                                                       NULL); /* GError** */
-    g_assert(registration_id > 0);
-
-    return g_bus_own_name_on_connection(conn,
-                                     "org.test.bluez",
-                                     G_BUS_NAME_OWNER_FLAGS_NONE,
-                                     on_name_acquired,
-                                     on_name_lost,
-                                     NULL,
-                                     NULL);
-}
-
-void bluez_destroy_watcher(guint owner_id)
-{
-    g_bus_unown_name(owner_id);
-}
 
 unsigned char bluez_characteristic_extract_value(GVariant* variant)
 {
@@ -686,8 +333,6 @@ BLEThread::removeGPInput(HWInputButtonBtGPIO* hw)
 void
 BLEThread::setState(unsigned char state)
 {
-    pi_message("New state: %d", state);
-
     for(std::list<GPInput>::iterator it = m_listGPInput.begin(); it != m_listGPInput.end(); it++)
     {
         if( (*it).pinGroup == 2 )
@@ -806,7 +451,7 @@ BLEThread::bluezRegisterWatcher()
         return false;
     }
 
-    g_timeout_add(2000,
+    g_timeout_add(5000,
                   &check_connection_helper,
                   this);
 
@@ -878,9 +523,76 @@ BLEThread::bluezUnregisterWatcher()
     return true;
 }
 
-void BLEThread::bluezCheckConnection()
+bool BLEThread::bluezCheckConnection()
 {
-    pi_warn("Check connection called");
+    if(m_devicePath == NULL)
+    {
+        pi_warn("Device path is empty");
+        return false;
+    }
+
+    GError* error = NULL;
+
+    GDBusMessage* call_message = g_dbus_message_new_method_call("org.bluez",
+                                                       m_devicePath,
+                                                       "org.bluez.Device",
+                                                       "GetProperties");
+    if(call_message == NULL)
+    {
+        return false;
+    }
+
+    GDBusMessage* reply_message = g_dbus_connection_send_message_with_reply_sync(m_connection,
+                                                                          call_message,
+                                                                          G_DBUS_SEND_MESSAGE_FLAGS_NONE,
+                                                                          -1,
+                                                                          NULL,
+                                                                          NULL,
+                                                                          &error);
+    if(reply_message == NULL)
+    {
+        return false;
+    }
+
+    if(g_dbus_message_get_message_type(reply_message) == G_DBUS_MESSAGE_TYPE_ERROR)
+    {
+        return false;
+    }
+
+    GVariant* variant = g_variant_get_child_value(g_dbus_message_get_body(reply_message), 0);
+
+    // now parse the result
+    for(unsigned int i = 0; i < g_variant_n_children(variant); i++)
+    {
+        GVariant* var_child = g_variant_get_child_value(variant, i);
+
+        GVariant* var_str = g_variant_get_child_value(var_child, 0);
+        const gchar* str = g_variant_get_string(var_str, NULL);
+
+        if(g_strcmp0(str, "Connected") == 0)
+        {
+            GVariant* var_bool = g_variant_get_variant(g_variant_get_child_value(var_child, 1));
+
+            if( !g_variant_get_boolean(var_bool) )
+            {
+                g_printf("Not connected, retrying\n");
+
+                this->bluezUnregisterWatcher();
+                this->bluezRegisterWatcher();
+            }
+            else
+                g_printf("Connected\n");
+        }
+
+        g_variant_unref(var_child);
+    }
+
+
+    // cleanup
+    g_object_unref(call_message);
+    g_object_unref(reply_message);
+
+    return true;
 }
 
 
@@ -928,6 +640,37 @@ BLEThread::bluezDestroyWatcher()
     g_bus_unown_name(m_busOwnerID);
 }
 
+/*******************************************************************************************************
+ * Handle disconnects
+ *******************************************************************************************************/
+
+void
+handle_disconnect_helper(GDBusConnection       *connection,
+                        const gchar           *sender,
+                        const gchar           *object_path,
+                        const gchar           *interface_name,
+                        const gchar           *signal_name,
+                        GVariant              *parameters,
+                        gpointer               user_data)
+{
+    // check if parameter is valid and is the parameter we were looking for
+    if( !(g_variant_type_equal(g_variant_get_type(parameters), "(sv)") &&
+          g_variant_n_children(parameters) == 2) )
+        return;
+
+    GVariant* name = g_variant_get_child_value(parameters, 0);
+    GVariant* value = g_variant_get_variant(g_variant_get_child_value(parameters, 1));
+
+    if( !(g_strcmp0(g_variant_get_string(name, NULL), "Connected") == 0 &&
+          g_variant_type_equal(g_variant_get_type(value), G_VARIANT_TYPE_BOOLEAN) ) )
+        return;
+
+    gboolean connected = g_variant_get_boolean(value);
+
+    BLEThread* thread = (BLEThread*)user_data;
+    thread->bluezDisconnectHandler(connected);
+}
+
 bool
 BLEThread::bluezRegisterDisconnectHandler()
 {
@@ -938,8 +681,8 @@ BLEThread::bluezRegisterDisconnectHandler()
                                                          m_devicePath,
                                                          "Connected",
                                                          G_DBUS_SIGNAL_FLAGS_NONE,
-                                                         bluez_handle_disconnect,
-                                                         m_devicePath,
+                                                         handle_disconnect_helper,
+                                                         this,
                                                          NULL);
 
     if(m_disconnectSignalID <= 0)
@@ -956,6 +699,20 @@ void
 BLEThread::bluezUnregisterDisconnectHandler()
 {
     // TODO
+}
+
+void
+BLEThread::bluezDisconnectHandler(bool connected)
+{
+    if(!connected)
+    {
+        pi_message("Connection lost, retrying\n");
+
+        this->bluezUnregisterWatcher();
+        this->bluezRegisterWatcher();
+    }
+    else
+        pi_message("Connection established\n");
 }
 
 bool
