@@ -1,0 +1,71 @@
+<config>
+    <input>
+        <name>remo 6</name>
+        <type>Button</type>
+        <hwtype>I2C</hwtype>
+        <SlaveAddress>38</SlaveAddress>
+        <Port>6</Port>
+    </input>
+    <input>
+        <name>remo 4</name>
+        <type>Button</type>
+        <hwtype>I2C</hwtype>
+        <SlaveAddress>38</SlaveAddress>
+        <Port>4</Port>
+    </input>
+    <input>
+        <name>remo5</name>
+        <type>Button</type>
+        <hwtype>I2C</hwtype>
+        <SlaveAddress>38</SlaveAddress>
+        <Port>5</Port>
+    </input>
+    <input>
+        <name>remo 7</name>
+        <type>Button</type>
+        <hwtype>I2C</hwtype>
+        <SlaveAddress>38</SlaveAddress>
+        <Port>7</Port>
+    </input>
+    <output>
+        <name>out0 slurp</name>
+        <type>GPO</type>
+        <hwtype>I2C</hwtype>
+        <SlaveAddress>38</SlaveAddress>
+        <Port>0</Port>
+    </output>
+    <output>
+        <name>out1 howl</name>
+        <type>GPO</type>
+        <hwtype>I2C</hwtype>
+        <SlaveAddress>38</SlaveAddress>
+        <Port>1</Port>
+    </output>
+    <output>
+        <name>out2 wag</name>
+        <type>GPO</type>
+        <hwtype>I2C</hwtype>
+        <SlaveAddress>38</SlaveAddress>
+        <Port>2</Port>
+    </output>
+    <output>
+        <name>out3 walk</name>
+        <type>GPO</type>
+        <hwtype>I2C</hwtype>
+        <SlaveAddress>38</SlaveAddress>
+        <Port>3</Port>
+    </output>
+    <output>
+        <name>Kartensprudel</name>
+        <type>DCMotor</type>
+        <hwtype>I2C</hwtype>
+        <SlaveAddress>104</SlaveAddress>
+    </output>
+    <output>
+        <name>LED red</name>
+        <type>GPO</type>
+        <hwtype>I2C</hwtype>
+        <SlaveAddress>38</SlaveAddress>
+        <Port>12</Port>
+    </output>
+</config>

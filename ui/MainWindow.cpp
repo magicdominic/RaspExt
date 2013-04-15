@@ -56,6 +56,10 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->tableConfig->setModel(&m_configTableModel);
     ui->tableConfig->horizontalHeader()->setStretchLastSection(true);
 
+    // Settings page
+    ui->comboStartupConfig->setModel(&m_configTableModel);
+    ui->comboStartupScript->setModel(&m_scriptsModel);
+
 
     // connect all signals-slots
     connect(ui->buttonCreateScript, SIGNAL(clicked()), this, SLOT(createScript()));
@@ -94,6 +98,8 @@ MainWindow::MainWindow(QWidget *parent) :
         return;
     }
 
+    QString defaultScript;
+
     QDomElement elem = docElem.firstChildElement();
     while(!elem.isNull())
     {
@@ -101,7 +107,20 @@ MainWindow::MainWindow(QWidget *parent) :
         {
             // only try to load new config if this string is not empty, otherwise this call would fail anyway
             if(!elem.text().isEmpty())
+            {
+                // try to load the configuration
                 m_config.load( elem.text().toStdString() );
+
+                // and select it in the startup config combo box
+                int index = ui->comboStartupConfig->findText(elem.text());
+                ui->comboStartupConfig->setCurrentIndex(index);
+
+                ui->checkStartupConfig->setChecked(true);
+            }
+        }
+        else if(elem.tagName().toLower().compare("script") == 0)
+        {
+            defaultScript = elem.text();
         }
         elem = elem.nextSiblingElement();
     }
@@ -111,6 +130,24 @@ MainWindow::MainWindow(QWidget *parent) :
     m_config.init();
 
     ui->labelConfig->setText( QString::fromStdString( m_config.getName() ) );
+
+    // Now load the script which was specified in the xml file
+    // We cannot load it before as the configuration was not yet initialized and therefore the loading of the script would fail
+    // only try to load the given script if this string is not empty, otherwise this call would fail anyway
+    if(!defaultScript.isEmpty())
+    {
+        // try to select the script in the list and load it afterwards
+        QModelIndexList matches = m_scriptsModel.match(m_scriptsModel.index(0, 0), Qt::DisplayRole, defaultScript);
+        if(matches.size() > 0)
+        {
+            ui->tableScripts->setCurrentIndex(matches.front());
+            this->selectScript();
+
+            ui->comboStartupScript->setCurrentIndex(matches.front().row());
+
+            ui->checkStartupScript->setChecked(true);
+        }
+    }
 }
 
 MainWindow::~MainWindow()
@@ -124,11 +161,23 @@ MainWindow::~MainWindow()
         QDomElement defaultElem = document.createElement("default");
         document.appendChild(defaultElem);
 
-        // save last loaded config
-        QDomElement config = document.createElement("config");
-        QDomText configText = document.createTextNode( QString::fromStdString( m_config.getName() ) );
-        config.appendChild(configText);
-        defaultElem.appendChild(config);
+        // save specified startup config
+        if(ui->checkStartupConfig->isChecked())
+        {
+            QDomElement config = document.createElement("config");
+            QDomText configText = document.createTextNode( ui->comboStartupConfig->currentText() );
+            config.appendChild(configText);
+            defaultElem.appendChild(config);
+        }
+
+        // save specified startup script
+        if(ui->checkStartupScript->isChecked())
+        {
+            QDomElement script = document.createElement("script");
+            QDomText scriptText = document.createTextNode( ui->comboStartupScript->currentText() );
+            script.appendChild(scriptText);
+            defaultElem.appendChild(script);
+        }
 
         file.write(document.toByteArray(4));
 
