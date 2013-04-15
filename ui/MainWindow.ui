@@ -145,7 +145,7 @@
       <item row="0" column="1" colspan="10">
        <widget class="QTabWidget" name="tabWidget">
         <property name="currentIndex">
-         <number>0</number>
+         <number>3</number>
         </property>
         <widget class="QWidget" name="tabOverview">
          <attribute name="title">
@@ -521,6 +521,63 @@
                </item>
               </layout>
              </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="tabSettings">
+         <attribute name="title">
+          <string>Settings</string>
+         </attribute>
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+           <layout class="QGridLayout" name="gridLayout_4">
+            <item row="0" column="1">
+             <widget class="QComboBox" name="comboStartupConfig"/>
+            </item>
+            <item row="0" column="0">
+             <widget class="QCheckBox" name="checkStartupConfig">
+              <property name="text">
+               <string>Load configuration on start</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QComboBox" name="comboStartupScript"/>
+            </item>
+            <item row="1" column="0">
+             <widget class="QCheckBox" name="checkStartupScript">
+              <property name="text">
+               <string>Load script on start</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="2" rowspan="3">
+             <spacer name="horizontalSpacer_8">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item row="2" column="0" colspan="2">
+             <spacer name="verticalSpacer">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
             </item>
            </layout>
           </item>

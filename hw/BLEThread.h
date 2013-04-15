@@ -58,7 +58,8 @@ private:
     bool bluezRegisterDisconnectHandler();
     bool bluezUnregisterWatcher();
     void bluezUnregisterDisconnectHandler();
-    void bluezCheckConnection();
+    bool bluezCheckConnection();
+    void bluezDisconnectHandler(bool connected);
 
     struct GPInput
     {
@@ -79,6 +80,14 @@ private:
     gchar* m_adapterPath;
 
     friend gboolean check_connection_helper(gpointer data);
+    friend void
+    handle_disconnect_helper(GDBusConnection       *connection,
+                            const gchar           *sender,
+                            const gchar           *object_path,
+                            const gchar           *interface_name,
+                            const gchar           *signal_name,
+                            GVariant              *parameters,
+                            gpointer               user_data);
 };
 
 #endif // BLETHREAD_H
